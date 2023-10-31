@@ -4,10 +4,13 @@
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
+#include <ranges>
+#include <stdexcept>
 
 #include "component/transform.h"
 #include "component/box_collider_2d.h"
 
+// 前方宣言（他のコンポーネントがある場合はここに追加）
 class component;
 class transform;
 class box_collider_2d;
@@ -15,6 +18,10 @@ class box_collider_2d;
 class game_object : public object
 {
 public:
+    game_object() = default;
+    ~game_object() override = default;
+
+    // タグのgetter/setter
     std::string tag() const
     {
         return tagValue;
@@ -27,49 +34,71 @@ public:
 
     // コンポーネントを取得する
     template <typename T>
-    T* GetComponent() const
+    T* get_component() const
     {
-        auto it = components.find(std::type_index(typeid(T)));
-        return it != components.end() ? dynamic_cast<T*>(it->second.get()) : nullptr;
+        if (const auto it = components.find(std::type_index(typeid(T))); it != components.end())
+        {
+            return dynamic_cast<T*>(it->second.get());
+        }
+        return nullptr;
     }
 
     // コンポーネントを追加する
     template <typename T, typename... Args>
-    T* AddComponent(Args&&... args)
+    T* add_component(Args&&... args)
     {
-        std::unique_ptr<component> newComponent(new T(std::forward<Args>(args)...));
-        T* componentPtr = dynamic_cast<T*>(newComponent.get());
+        auto newComponent = std::make_unique<T>(std::forward<Args>(args)...);
+        T* componentPtr = newComponent.get();
         components[std::type_index(typeid(T))] = std::move(newComponent);
+        // ここでコンポーネントの初期化を行う（もし必要なら）
         return componentPtr;
     }
 
     // コンポーネントを削除する
     template <typename T>
-    void RemoveComponent()
+    void remove_component()
     {
-        auto it = components.find(std::type_index(typeid(T)));
-        if (it != components.end())
+        if (const auto it = components.find(std::type_index(typeid(T)));
+            it != components.end())
         {
             components.erase(it);
         }
     }
 
-protected:
-    std::unordered_map<std::type_index, std::unique_ptr<component>> components; //コンポーネントの辞書
-    std::string tagValue;
-
-private:
-    transform* transform_ = nullptr;
-    box_collider_2d* collider_ = nullptr;
-
-public:
-    transform& get_transform()
+    // コンポーネントの初期化
+    void initialize_components()
     {
-        return *transform_; // このクラスが 'transform_' メンバを持っていると仮定
+        for (const auto& comp_ptr : components | std::views::values)
+        {
+            comp_ptr->Start();
+        }
     }
 
-    box_collider_2d& get_collider()
+    // 特定のコンポーネントへのアクセスメソッド
+    transform& get_transform() const
     {
-        return *collider_; // このクラスが 'collider_' メンバを持っていると仮定
+        return *get_component_required<transform>("Transform component not found.");
+    }
+
+    // 特定のコンポーネントへのアクセスメソッド
+    box_collider_2d& get_collider() const
+    {
+        return *get_component_required<box_collider_2d>("BoxCollider2D component not found.");
+    }
+
+private:
+    std::unordered_map<std::type_index, std::unique_ptr<component>> components; // コンポーネントの辞書
+    std::string tagValue;
+
+    // 必須コンポーネントを取得するヘルパーメソッド
+    template <typename T>
+    T* get_component_required(const char* error_message) const
+    {
+        auto* comp = get_component<T>();
+        if (!comp)// コンポーネントが見つからなかった場合はエラーを投げる
+        {
+            throw std::runtime_error(error_message);
+        }
+        return comp;
     }
 };

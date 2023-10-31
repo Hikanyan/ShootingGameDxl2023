@@ -13,7 +13,7 @@ public:
     {
     }
 
-    tnl::Vector3 get_position()
+    tnl::Vector3 get_position() const
     {
         return position;
     }
@@ -23,7 +23,7 @@ public:
         position = value;
     }
 
-    tnl::Vector3 get_rotation()
+    tnl::Vector3 get_rotation() const
     {
         return rotation;
     }
@@ -33,7 +33,7 @@ public:
         rotation = value;
     }
 
-    tnl::Vector3 get_scale()
+    tnl::Vector3 get_scale() const
     {
         return scale;
     }
