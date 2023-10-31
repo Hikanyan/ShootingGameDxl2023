@@ -5,23 +5,22 @@ class game_object; // GameObjectの前方宣言。
 class component : public object
 {
 protected:
-    game_object* owner_; // このコンポーネントを所有するGameObjectへのポインタ。
+    game_object* owner; // このコンポーネントを所有するGameObjectへのポインタ。
 
 public:
-    component() : owner_(nullptr)
+    component() : owner(nullptr)
     {
     }
 
     ~component() override
     = default;
 
-
     // 初期化処理を行います。
     virtual void init()
     {
+        
     }
-
-
+    
     // シーン開始時に呼ばれます。
     virtual void awake()
     {
@@ -34,11 +33,6 @@ public:
 
     // 毎フレーム呼ばれます。
     virtual void update()
-    {
-    }
-
-    // 一定間隔で呼ばれます。
-    virtual void fixed_update()
     {
     }
 
@@ -60,12 +54,12 @@ public:
     // このコンポーネントを所有するGameObjectへの参照を設定します。
     virtual void set_owner(game_object* gameObject)
     {
-        owner_ = gameObject;
+        owner = gameObject;
     }
 
     // このコンポーネントを所有するGameObjectへの参照を取得します。
-    [[nodiscard]] virtual game_object* get_owner() const //[nodiscard] は、戻り値を無視すると警告が出るようになる。
+    [[nodiscard]] virtual game_object* get_owner() const
     {
-        return owner_;
+        return owner;
     }
 };
