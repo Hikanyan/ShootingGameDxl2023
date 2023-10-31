@@ -13,7 +13,7 @@ public:
         // コンストラクタでは何もしない（あるいは別の初期化コードを書く）
     };
 
-    void Start() override
+    void start() override
     {
         my_object.add_component<transform>(); // transformコンポーネントを追加
         my_object.get_transform().position = {100, 100, 0};

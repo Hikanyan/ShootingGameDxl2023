@@ -70,7 +70,7 @@ public:
     {
         for (const auto& comp_ptr : components | std::views::values)
         {
-            comp_ptr->Start();
+            comp_ptr->init();
         }
     }
 
