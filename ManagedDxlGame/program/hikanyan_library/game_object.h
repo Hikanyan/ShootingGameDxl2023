@@ -5,6 +5,7 @@
 #include <typeindex>
 #include <memory>
 
+#include "component/box_collider_2d.h"
 #include "component/transform.h"
 
 class component;
@@ -61,6 +62,12 @@ public:
         return transform_; // このクラスが 'transform_' メンバを持っていると仮定
     }
 
+    box_collider_2d& get_collider()
+    {
+        return collider_; // このクラスが 'collider_' メンバを持っていると仮定
+    }
+
 private:
     transform transform_;
+    box_collider_2d collider_;
 };
