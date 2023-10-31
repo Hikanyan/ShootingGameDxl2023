@@ -18,7 +18,10 @@ class box_collider_2d;
 class game_object : public object
 {
 public:
-    game_object() = default;
+    game_object(const std::string& name) : object(name)
+    {
+    }
+
     ~game_object() override = default;
 
     // タグのgetter/setter
@@ -27,7 +30,7 @@ public:
         return tagValue;
     }
 
-    void setTag(const std::string& value)
+    void set_tag(const std::string& value)
     {
         tagValue = value;
     }
@@ -95,7 +98,7 @@ private:
     T* get_component_required(const char* error_message) const
     {
         auto* comp = get_component<T>();
-        if (!comp)// コンポーネントが見つからなかった場合はエラーを投げる
+        if (!comp) // コンポーネントが見つからなかった場合はエラーを投げる
         {
             throw std::runtime_error(error_message);
         }

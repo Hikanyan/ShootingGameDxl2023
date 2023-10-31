@@ -9,15 +9,14 @@ public:
     }
 
     virtual ~object()
+    = default;
+
+    explicit object(std::string name) : id(instantiate_id()), name(std::move(name))
     {
     }
 
-    object(const std::string& name) : id(instantiate_id()), name(name)
-    {
-    }
-
-    int getID() const { return id; }
-    const std::string& getName() const { return name; }
+    int get_id() const { return id; }
+    const std::string& get_name() const { return name; }
 
     static object* instantiate(const std::string& name)
     {
