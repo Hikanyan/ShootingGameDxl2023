@@ -18,9 +18,8 @@ public:
     // 初期化処理を行います。
     virtual void init()
     {
-        
     }
-    
+
     // シーン開始時に呼ばれます。
     virtual void awake()
     {
@@ -33,6 +32,11 @@ public:
 
     // 毎フレーム呼ばれます。
     virtual void update()
+    {
+    }
+
+    // 一定秒数ごとに呼ばれます。
+    virtual void fixed_update()
     {
     }
 
