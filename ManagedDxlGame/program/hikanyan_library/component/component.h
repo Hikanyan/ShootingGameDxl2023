@@ -1,60 +1,71 @@
 ﻿#pragma once
 #include "../object.h"
-class GameObject; // GameObjectの前方宣言。
+class game_object; // GameObjectの前方宣言。
 
 class component : public object
 {
 protected:
-    GameObject* owner; // このコンポーネントを所有するGameObjectへのポインタ。
+    game_object* owner_; // このコンポーネントを所有するGameObjectへのポインタ。
 
 public:
-    component() : owner(nullptr)
+    component() : owner_(nullptr)
     {
     }
 
-    virtual ~component()
+    ~component() override
+    = default;
+
+
+    // 初期化処理を行います。
+    virtual void init()
+    {
+    }
+
+
+    // シーン開始時に呼ばれます。
+    virtual void awake()
     {
     }
 
     // シーン開始時に呼ばれます。
-    virtual void Awake()
-    {
-    }
-
-    // シーン開始時に呼ばれます。
-    virtual void Start()
+    virtual void start()
     {
     }
 
     // 毎フレーム呼ばれます。
-    virtual void Update()
+    virtual void update()
+    {
+    }
+
+    // 一定間隔で呼ばれます。
+    virtual void fixed_update()
     {
     }
 
     // コンポーネントが有効になった時に呼ばれます。
-    virtual void OnEnable()
+    virtual void on_enable()
     {
     }
 
     // コンポーネントが無効になった時に呼ばれます。
-    virtual void OnDisable()
+    virtual void on_disable()
     {
     }
 
     // コンポーネントが破棄される直前に呼ばれます。
-    virtual void OnDestroy()
+    virtual void on_destroy()
     {
     }
 
     // このコンポーネントを所有するGameObjectへの参照を設定します。
-    void SetOwner(GameObject* gameObject)
+    virtual void set_owner(game_object* gameObject)
     {
-        owner = gameObject;
+        owner_ = gameObject;
     }
 
     // このコンポーネントを所有するGameObjectへの参照を取得します。
-    GameObject* GetOwner() const
+    [[nodiscard]] virtual game_object* get_owner() const //[nodiscard] は、戻り値を無視すると警告が出るようになる。
     {
-        return owner;
+        return owner_;
     }
 };
