@@ -1,18 +1,18 @@
 ﻿#pragma once
-
+#include "../object.h"
 class GameObject; // GameObjectの前方宣言。
 
-class Component
+class component : public object
 {
 protected:
     GameObject* owner; // このコンポーネントを所有するGameObjectへのポインタ。
 
 public:
-    Component() : owner(nullptr)
+    component() : owner(nullptr)
     {
     }
 
-    virtual ~Component()
+    virtual ~component()
     {
     }
 

@@ -5,7 +5,9 @@
 #include <typeindex>
 #include <memory>
 
-class Component;
+#include "component/transform.h"
+
+class component;
 
 class game_object : public object
 {
@@ -32,7 +34,7 @@ public:
     template <typename T, typename... Args>
     T* AddComponent(Args&&... args)
     {
-        std::unique_ptr<Component> newComponent(new T(std::forward<Args>(args)...));
+        std::unique_ptr<component> newComponent(new T(std::forward<Args>(args)...));
         T* componentPtr = dynamic_cast<T*>(newComponent.get());
         components[std::type_index(typeid(T))] = std::move(newComponent);
         return componentPtr;
@@ -50,6 +52,15 @@ public:
     }
 
 protected:
-    std::unordered_map<std::type_index, std::unique_ptr<Component>> components; //コンポーネントの辞書
+    std::unordered_map<std::type_index, std::unique_ptr<component>> components; //コンポーネントの辞書
     std::string tagValue;
+
+public:
+    transform& get_transform()
+    {
+        return transform_; // このクラスが 'transform_' メンバを持っていると仮定
+    }
+
+private:
+    transform transform_;
 };

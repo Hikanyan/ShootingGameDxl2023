@@ -11,7 +11,9 @@ public:
     
     bool intersects(const box_collider_2d* other) const
     {
-        return intersects(*other, other->owner->transform.position, this->owner->transform.position);
+        tnl::Vector3 ownPosition = owner_->get_transform().get_position();
+        tnl::Vector3 otherPosition = other->get_owner()->get_transform().get_position();
+        return intersects(*other, ownPosition, otherPosition);
     }
     bool intersects(const box_collider_2d& other, const tnl::Vector3& position, const tnl::Vector3& otherPosition) const
     {
@@ -38,16 +40,16 @@ public:
 
     
 
-    game_object* GetOwner() const
+    game_object* get_owner() const
     {
-        return owner;
+        return owner_;
     }
 
-    void SetOwner(game_object* owningObject)
+    void set_owner(game_object* owningObject)
     {
-        owner = owningObject;
+        owner_ = owningObject;
     }
 
 private:
-    game_object* owner; // コンポーネントを所持しているゲームオブジェクト
+    game_object* owner_ = nullptr; // コンポーネントを所持しているゲームオブジェクト
 };

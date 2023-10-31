@@ -1,7 +1,8 @@
 ﻿#pragma once
+#include "component.h"
 #include "../dxlib_ext/dxlib_ext.h"
 
-class transform
+class transform:public component
 {
 public:
 
@@ -13,14 +14,14 @@ public:
     {
     }
 
-    tnl::Vector3 getPosition()
+    tnl::Vector3 get_position()
     {
         tnl::Vector3 ret;
         get_position_Injected(ret);
         return ret;
     }
 
-    void setPosition(const tnl::Vector3& value)
+    void set_position(const tnl::Vector3& value)
     {
         set_position_Injected(value);
     }
