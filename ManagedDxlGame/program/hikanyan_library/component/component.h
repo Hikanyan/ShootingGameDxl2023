@@ -5,10 +5,10 @@ class game_object; // GameObjectの前方宣言。
 class component : public object
 {
 protected:
-    game_object* owner; // このコンポーネントを所有するGameObjectへのポインタ。
+    game_object* owner_; // このコンポーネントを所有するGameObjectへのポインタ。
 
 public:
-    component() : owner(nullptr)
+    component() : owner_(nullptr)
     {
     }
 
@@ -54,12 +54,12 @@ public:
     // このコンポーネントを所有するGameObjectへの参照を設定します。
     virtual void set_owner(game_object* gameObject)
     {
-        owner = gameObject;
+        owner_ = gameObject;
     }
 
     // このコンポーネントを所有するGameObjectへの参照を取得します。
     [[nodiscard]] virtual game_object* get_owner() const
     {
-        return owner;
+        return owner_;
     }
 };
