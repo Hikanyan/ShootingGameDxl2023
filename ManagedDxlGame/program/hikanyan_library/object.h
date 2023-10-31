@@ -9,14 +9,18 @@ public:
     }
 
     virtual ~object()
-    = default;
-
-    explicit object(std::string name) : id(instantiate_id()), name(std::move(name))
     {
     }
 
-    int get_id() const { return id; }
-    const std::string& get_name() const { return name; }
+    object(const std::string& name) : id(instantiate_id()), name(name)
+    {
+    }
+
+    int getID() const { return id; }
+    //nameをgetterで取得する
+    const std::string& getName() const { return name; }
+    //nameをsetterで設定する
+    void setName(const std::string& name) { this->name = name; }
 
     static object* instantiate(const std::string& name)
     {
