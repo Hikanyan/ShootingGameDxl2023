@@ -18,10 +18,7 @@ class box_collider_2d;
 class game_object : public object
 {
 public:
-    game_object(const std::string& name) : object(name)
-    {
-    }
-
+    game_object() = default;
     ~game_object() override = default;
 
     // タグのgetter/setter
