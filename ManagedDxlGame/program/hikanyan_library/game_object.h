@@ -5,10 +5,12 @@
 #include <typeindex>
 #include <memory>
 
-#include "component/box_collider_2d.h"
 #include "component/transform.h"
+#include "component/box_collider_2d.h"
 
 class component;
+class transform;
+class box_collider_2d;
 
 class game_object : public object
 {
@@ -56,18 +58,18 @@ protected:
     std::unordered_map<std::type_index, std::unique_ptr<component>> components; //コンポーネントの辞書
     std::string tagValue;
 
+private:
+    transform* transform_ = nullptr;
+    box_collider_2d* collider_ = nullptr;
+
 public:
     transform& get_transform()
     {
-        return transform_; // このクラスが 'transform_' メンバを持っていると仮定
+        return *transform_; // このクラスが 'transform_' メンバを持っていると仮定
     }
 
     box_collider_2d& get_collider()
     {
-        return collider_; // このクラスが 'collider_' メンバを持っていると仮定
+        return *collider_; // このクラスが 'collider_' メンバを持っていると仮定
     }
-
-private:
-    transform transform_;
-    box_collider_2d collider_;
 };

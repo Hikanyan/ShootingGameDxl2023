@@ -1,20 +1,19 @@
 ﻿#pragma once
 #include "../dxlib_ext/dxlib_ext.h"
 #include "component.h"
-#include "../game_object.h"
+
+class game_object ;
 
 class box_collider_2d : public component
 {
+private:
+    game_object* owner_ = nullptr; // コンポーネントを所持しているゲームオブジェクト
 public:
     tnl::Vector3 size{1, 1, 1}; // コライダーのサイズ
     tnl::Vector3 offset{0, 0, 0}; // 中心からのオフセット
-    
-    bool intersects(const box_collider_2d* other) const
-    {
-        tnl::Vector3 ownPosition = owner_->get_transform().get_position();
-        tnl::Vector3 otherPosition = other->get_owner()->get_transform().get_position();
-        return intersects(*other, ownPosition, otherPosition);
-    }
+
+    bool intersects(const box_collider_2d* other) const ;
+
     bool intersects(const box_collider_2d& other, const tnl::Vector3& position, const tnl::Vector3& otherPosition) const
     {
         tnl::Vector3 halfSize = size / 2;
@@ -38,7 +37,6 @@ public:
     {
     };
 
-    
 
     game_object* get_owner() const
     {
@@ -49,7 +47,4 @@ public:
     {
         owner_ = owningObject;
     }
-
-private:
-    game_object* owner_ = nullptr; // コンポーネントを所持しているゲームオブジェクト
 };
