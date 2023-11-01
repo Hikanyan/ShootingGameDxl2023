@@ -65,14 +65,6 @@ public:
         }
     }
 
-    // コンポーネントの初期化
-    void initialize_components()
-    {
-        for (const auto& comp_ptr : components | std::views::values)
-        {
-            comp_ptr->init();
-        }
-    }
 
     // 特定のコンポーネントへのアクセスメソッド
     transform& get_transform() const
@@ -100,5 +92,78 @@ private:
             throw std::runtime_error(error_message);
         }
         return comp;
+    }
+
+public:
+    // コンポーネントの初期化
+    void init()
+    {
+        for (const auto& comp : components | std::views::values)
+        {
+            comp->init();
+        }
+    }
+
+    // シーン開始時に一度だけ呼ばれる
+    void awake()
+    {
+        for (const auto& comp : components | std::views::values)
+        {
+            comp->awake();
+        }
+    }
+
+    // 最初のフレームの更新前に一度だけ呼ばれる
+    void start()
+    {
+        for (const auto& comp : components | std::views::values)
+        {
+            comp->start();
+        }
+    }
+
+    // 毎フレーム呼ばれる更新処理
+    void update()
+    {
+        for (const auto& comp : components | std::views::values)
+        {
+            comp->update();
+        }
+    }
+
+    // 定期的な時間間隔で呼ばれる更新処理
+    void fixed_update()
+    {
+        for (const auto& comp : components | std::views::values)
+        {
+            comp->fixed_update();
+        }
+    }
+
+    // コンポーネントが有効になった時に呼ばれる
+    void on_enable()
+    {
+        for (const auto& comp : components | std::views::values)
+        {
+            comp->on_enable();
+        }
+    }
+
+    // コンポーネントが無効になった時に呼ばれる
+    void on_disable()
+    {
+        for (const auto& comp : components | std::views::values)
+        {
+            comp->on_disable();
+        }
+    }
+
+    // コンポーネントが破棄される直前に呼ばれる
+    void on_destroy()
+    {
+        for (const auto& comp : components | std::views::values)
+        {
+            comp->on_destroy();
+        }
     }
 };

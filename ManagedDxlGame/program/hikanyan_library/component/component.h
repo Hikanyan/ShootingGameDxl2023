@@ -30,6 +30,11 @@ public:
     {
     }
 
+    // 描画処理を行います。
+    virtual void draw()
+    {
+    }
+
     // 毎フレーム呼ばれます。
     virtual void update()
     {
