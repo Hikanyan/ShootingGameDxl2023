@@ -7,8 +7,13 @@
 */
 class mono_behaviour : public behaviour
 {
+protected:
+    // 保護されたコンストラクタを使用して直接インスタンス化を防ぐ
+    mono_behaviour() = default;
+
 public:
     virtual ~mono_behaviour() = default;
+
 
     // イベントメソッド
 
@@ -33,12 +38,12 @@ public:
     }
 
     // 毎フレーム呼ばれます。
-    virtual void update()
+    virtual void update(float delta_time)
     {
     }
 
     // 一定秒数ごとに呼ばれます。
-    virtual void fixed_update()
+    virtual void fixed_update(float fixed_delta_time)
     {
     }
 

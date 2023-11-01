@@ -4,30 +4,29 @@
 class object
 {
 public:
-    object() : id(instantiate_id()), name("DefaultName")
+    object() : id(instantiate_id()), name_("DefaultName")
     {
     }
 
     virtual ~object()
-    {
-    }
+    = default;
 
-    object(const std::string& name) : id(instantiate_id()), name(name)
+    object(std::string name) : id(instantiate_id()), name_(std::move(name))
     {
     }
 
     int get_id() const { return id; }
     //nameをgetterで取得する
-    const std::string& getName() const { return name; }
+    const std::string& get_name() const { return name_; }
     //nameをsetterで設定する
-    void set_name(const std::string& name) { this->name = name; }
+    void set_name(const std::string& name) { this->name_ = name; }
 
     static object* instantiate(const std::string& name)
     {
         return new object(name);
     }
 
-    static void destroy(object* obj)
+    static void destroy(const object* obj)
     {
         delete obj;
     }
@@ -40,5 +39,5 @@ protected:
     }
 
     int id;
-    std::string name;
+    std::string name_;
 };

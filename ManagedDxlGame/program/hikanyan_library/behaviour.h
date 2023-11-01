@@ -4,7 +4,7 @@ class component;
 class behaviour:public component
 {
 public:
+    virtual ~behaviour() = default;
     bool enabled();
 
-    
 };

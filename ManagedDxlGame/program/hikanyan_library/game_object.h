@@ -24,19 +24,19 @@ public:
     // タグのgetter/setter
     std::string tag() const
     {
-        return tagValue;
+        return tag_value_;
     }
 
     void set_tag(const std::string& value)
     {
-        tagValue = value;
+        tag_value_ = value;
     }
 
     // コンポーネントを取得する
     template <typename T>
     T* get_component() const
     {
-        if (const auto it = components.find(std::type_index(typeid(T))); it != components.end())
+        if (const auto it = components_.find(std::type_index(typeid(T))); it != components_.end())
         {
             return dynamic_cast<T*>(it->second.get());
         }
@@ -49,7 +49,7 @@ public:
     {
         auto newComponent = std::make_unique<T>(std::forward<Args>(args)...);
         T* componentPtr = newComponent.get();
-        components[std::type_index(typeid(T))] = std::move(newComponent);
+        components_[std::type_index(typeid(T))] = std::move(newComponent);
         // ここでコンポーネントの初期化を行う（もし必要なら）
         return componentPtr;
     }
@@ -58,10 +58,10 @@ public:
     template <typename T>
     void remove_component()
     {
-        if (const auto it = components.find(std::type_index(typeid(T)));
-            it != components.end())
+        if (const auto it = components_.find(std::type_index(typeid(T)));
+            it != components_.end())
         {
-            components.erase(it);
+            components_.erase(it);
         }
     }
 
@@ -79,8 +79,8 @@ public:
     }
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<component>> components; // コンポーネントの辞書
-    std::string tagValue;
+    std::unordered_map<std::type_index, std::unique_ptr<component>> components_; // コンポーネントの辞書
+    std::string tag_value_;
 
     // 必須コンポーネントを取得するヘルパーメソッド
     template <typename T>
@@ -98,7 +98,7 @@ public:
     // コンポーネントの初期化
     void init()
     {
-        for (const auto& comp : components | std::views::values)
+        for (const auto& comp : components_ | std::views::values)
         {
             comp->init();
         }
@@ -107,7 +107,7 @@ public:
     // シーン開始時に一度だけ呼ばれる
     void awake()
     {
-        for (const auto& comp : components | std::views::values)
+        for (const auto& comp : components_ | std::views::values)
         {
             comp->awake();
         }
@@ -116,34 +116,43 @@ public:
     // 最初のフレームの更新前に一度だけ呼ばれる
     void start()
     {
-        for (const auto& comp : components | std::views::values)
+        for (const auto& comp : components_ | std::views::values)
         {
             comp->start();
         }
     }
 
-    // 毎フレーム呼ばれる更新処理
-    void update()
+    // 描画処理
+    void draw()
     {
-        for (const auto& comp : components | std::views::values)
+        for (const auto& comp : components_ | std::views::values)
         {
-            comp->update();
+            comp->draw();
+        }
+    }
+
+    // 毎フレーム呼ばれる更新処理
+    void update(float delete_time)
+    {
+        for (const auto& comp : components_ | std::views::values)
+        {
+            comp->update(delete_time);
         }
     }
 
     // 定期的な時間間隔で呼ばれる更新処理
-    void fixed_update()
+    void fixed_update(float fixed_delta_time)
     {
-        for (const auto& comp : components | std::views::values)
+        for (const auto& comp : components_ | std::views::values)
         {
-            comp->fixed_update();
+            comp->fixed_update(fixed_delta_time);
         }
     }
 
     // コンポーネントが有効になった時に呼ばれる
     void on_enable()
     {
-        for (const auto& comp : components | std::views::values)
+        for (const auto& comp : components_ | std::views::values)
         {
             comp->on_enable();
         }
@@ -152,7 +161,7 @@ public:
     // コンポーネントが無効になった時に呼ばれる
     void on_disable()
     {
-        for (const auto& comp : components | std::views::values)
+        for (const auto& comp : components_ | std::views::values)
         {
             comp->on_disable();
         }
@@ -161,7 +170,7 @@ public:
     // コンポーネントが破棄される直前に呼ばれる
     void on_destroy()
     {
-        for (const auto& comp : components | std::views::values)
+        for (const auto& comp : components_ | std::views::values)
         {
             comp->on_destroy();
         }
