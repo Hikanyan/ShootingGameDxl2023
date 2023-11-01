@@ -177,6 +177,7 @@
     <ClCompile Include="program\game\hikanyan_asses\entity\player.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\game_manager.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\hikanyan_library_test.cpp" />
+    <ClCompile Include="program\game\hikanyan_asses\scene_base.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\system\list.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\system\singleton.cpp" />
     <ClCompile Include="program\hikanyan_library\behaviour.cpp" />
@@ -298,6 +299,7 @@
     <ClInclude Include="program\game\hikanyan_asses\entity\player.h" />
     <ClInclude Include="program\game\hikanyan_asses\game_manager.h" />
     <ClInclude Include="program\game\hikanyan_asses\hikanyan_library_test.h" />
+    <ClInclude Include="program\game\hikanyan_asses\scene_base.h" />
     <ClInclude Include="program\game\hikanyan_asses\system\list.h" />
     <ClInclude Include="program\game\hikanyan_asses\system\singleton.h" />
     <ClInclude Include="program\hikanyan_library\behaviour.h" />

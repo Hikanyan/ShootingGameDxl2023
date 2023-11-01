@@ -16,11 +16,11 @@ public:
     {
     }
 
-    int getID() const { return id; }
+    int get_id() const { return id; }
     //nameをgetterで取得する
     const std::string& getName() const { return name; }
     //nameをsetterで設定する
-    void setName(const std::string& name) { this->name = name; }
+    void set_name(const std::string& name) { this->name = name; }
 
     static object* instantiate(const std::string& name)
     {

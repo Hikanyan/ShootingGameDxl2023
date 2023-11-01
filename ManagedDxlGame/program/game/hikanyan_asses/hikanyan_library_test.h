@@ -20,14 +20,15 @@ public:
     {
         //unique_ptrとは、動的に確保したメモリを自動的に解放するためのクラス
         const auto obj = std::make_unique<game_object>();//動的にメモリを確保
-        obj->setName("obj");//名前を設定
+        obj->set_name("obj");//名前を設定
         obj->add_component<transform>();//transformコンポーネントを追加
         obj->get_transform().position = {100, 100, 0};
         obj->get_transform().rotation = {0, 0, 0};
         obj->get_transform().scale = {1, 1, 1};
-
+        obj->add_component<box_collider_2d>();//box_collider_2dコンポーネントを追加
+        
         auto* my_object = new game_object();//動的にメモリを確保
-        my_object->setName("my_object");//名前を設定
+        my_object->set_name("my_object");//名前を設定
         my_object->add_component<transform>(); // transformコンポーネントを追加
         my_object->get_transform().position = {100, 100, 0};
         my_object->get_transform().rotation = {0, 0, 0};
