@@ -8,6 +8,7 @@ class scene_base
 {
 protected:
     std::vector<std::shared_ptr<game_object>> game_objects_;
+
 public:
     scene_base() = default;
     virtual ~scene_base() = default;
@@ -19,38 +20,42 @@ public:
 
     virtual void update(float delta_time)
     {
-        for (auto& gameObject : game_objects_)
+        for (auto& game_object_ : game_objects_)
         {
-            gameObject->update(delta_time);
+            game_object_->update(delta_time);
         }
     }
 
     virtual void draw()
     {
-        for (auto& gameObject : game_objects_)
+        for (auto& game_object_ : game_objects_)
         {
-            gameObject->draw();
+            game_object_->draw();
         }
     }
 
     virtual void start()
     {
-        for (auto& gameObject : game_objects_)
+        for (auto& game_object_ : game_objects_)
         {
-            gameObject->gameStart();
-        }
-    }
-    virtual void Awake()
-    {
-        for (auto& gameObject : game_objects_)
-        {
-            gameObject->Awake();
+            game_object_->start();
         }
     }
 
-    virtual std::shared_ptr<game_object> FindGameObjectByName(const std::string& name) const {
-        for (const auto& game_object_ : game_objects_) {
-            if (game_object_->get_name() == name) {
+    virtual void awake()
+    {
+        for (auto& game_object_ : game_objects_)
+        {
+            game_object_->awake();
+        }
+    }
+
+    virtual std::shared_ptr<game_object> FindGameObjectByName(const std::string& name) const
+    {
+        for (const auto& game_object_ : game_objects_)
+        {
+            if (game_object_->get_name() == name)
+            {
                 return game_object_;
             }
         }
