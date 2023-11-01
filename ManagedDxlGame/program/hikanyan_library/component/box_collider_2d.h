@@ -16,8 +16,8 @@ public:
 
     bool intersects(const box_collider_2d& other, const tnl::Vector3& position, const tnl::Vector3& otherPosition) const
     {
-        tnl::Vector3 half_size = size / 2;
-        tnl::Vector3 other_half_size = other.size / 2;
+        const tnl::Vector3 half_size = size / 2;
+        const tnl::Vector3 other_half_size = other.size / 2;
 
         if (position.x + half_size.x + offset.x < otherPosition.x - other_half_size.x + other.offset.x) return false;
         if (position.x - half_size.x + offset.x > otherPosition.x + other_half_size.x + other.offset.x) return false;
@@ -38,12 +38,12 @@ public:
     };
 
 
-    game_object* get_owner() const
+    game_object* get_owner() const override
     {
         return owner_;
     }
 
-    void set_owner(game_object* owning_object)
+    void set_owner(game_object* owning_object) override
     {
         owner_ = owning_object;
     }
