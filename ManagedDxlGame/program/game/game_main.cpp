@@ -13,19 +13,19 @@
 void gameStart(){
 	srand(time(0));
 	SetBackgroundColor( 32, 32, 32 );
-	game_manager::getInstance()->gameStart();
+	game_manager::getInstance()->game_start();
 }
 
 //------------------------------------------------------------------------------------------------------------
 // 毎フレーム実行されます
 void gameMain(float delta_time) {
 	DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, delta_time);
-	game_manager::getInstance()->gameMain(delta_time);
+	game_manager::getInstance()->game_main(delta_time);
 }
 
 //------------------------------------------------------------------------------------------------------------
 // ゲーム終了時に１度だけ実行されます
 void gameEnd() {
-	game_manager::getInstance()->gameEnd();
+	game_manager::getInstance()->game_end();
 }
 

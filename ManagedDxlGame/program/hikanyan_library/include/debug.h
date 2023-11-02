@@ -2,24 +2,41 @@
 #include <iostream>
 #include <mutex>
 #include <string>
+#include <format>
 
 class debug
 {
 public:
-    // メッセージログ
-    static void log(const std::string& message)
+    // 可変引数テンプレートを使用したメッセージログ
+    template <typename... Args>
+    static void log(const std::string& format, Args... args)
     {
-        std::lock_guard<std::mutex> lock(mutex_);
-        std::cout << message << std::endl;
+        std::string message = std::vformat(format, std::make_format_args(args...));
+        log_message(message);
     }
 
-    // エラーログ
-    static void log_error(const std::string& message)
+    // エラーログも同様に更新
+    template <typename... Args>
+    static void log_error(const std::string& format, Args... args)
     {
-        std::lock_guard<std::mutex> lock(mutex_);
-        std::cerr << "Error: " << message << std::endl;
+        std::string message = std::vformat("Error: " + format, std::make_format_args(args...));
+        log_message(message, true);
     }
 
 private:
     static std::mutex mutex_;
+
+    // メッセージの出力を担当するプライベートメソッド
+    static void log_message(const std::string& message, bool is_error = false)
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (is_error)
+        {
+            std::cerr << message << std::endl;
+        }
+        else
+        {
+            std::cout << message << std::endl;
+        }
+    }
 };
