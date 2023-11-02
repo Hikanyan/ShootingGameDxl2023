@@ -256,6 +256,7 @@
     <ClCompile Include="program\hikanyan_library\include\component\component.cpp" />
     <ClCompile Include="program\hikanyan_library\include\component\rigidbody_2d.cpp" />
     <ClCompile Include="program\hikanyan_library\include\component\transform.cpp" />
+    <ClCompile Include="program\hikanyan_library\include\debug.cpp" />
     <ClCompile Include="program\hikanyan_library\include\game_object.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -744,6 +745,7 @@
     <ClInclude Include="program\hikanyan_library\include\component\component.h" />
     <ClInclude Include="program\hikanyan_library\include\component\rigidbody_2d.h" />
     <ClInclude Include="program\hikanyan_library\include\component\transform.h" />
+    <ClInclude Include="program\hikanyan_library\include\debug.h" />
     <ClInclude Include="program\hikanyan_library\include\game_object.h" />
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour.h" />
     <ClInclude Include="program\hikanyan_library\include\object.h" />

@@ -1,9 +1,12 @@
 ﻿#pragma once
 #include "behaviour.h"
+#include "debug.h"
 
 /*単一行動するオブジェクトクラス
  *MonoBehaviour は、すべての ひかにゃん スクリプトの派生元となる基本クラスです。
- *Task,Invoke
+ *オブジェクトにアタッチされたスクリプトは、そのオブジェクトの機能を制御します。
+ *TODO Task,Invoke
+ *TODO Debug.Log
 */
 class mono_behaviour : public behaviour
 {
@@ -18,47 +21,32 @@ public:
     // イベントメソッド
 
     // 初期化処理を行います。
-    virtual void init()
-    {
-    }
-
+    virtual void init(){}
     // シーン開始時に呼ばれます。
-    virtual void awake()
-    {
-    }
-
+    virtual void awake(){}
     // シーン開始時に呼ばれます。
-    virtual void start()
-    {
-    }
-
+    virtual void start(){}
     // 描画処理を行います。
-    virtual void draw()
-    {
-    }
-
+    virtual void draw(){}
     // 毎フレーム呼ばれます。
-    virtual void update(float delta_time)
-    {
-    }
-
+    virtual void update(float delta_time){}
     // 一定秒数ごとに呼ばれます。
-    virtual void fixed_update(float fixed_delta_time)
-    {
-    }
-
+    virtual void fixed_update(float fixed_delta_time){}
     // コンポーネントが有効になった時に呼ばれます。
-    virtual void on_enable()
-    {
-    }
-
+    virtual void on_enable(){}
     // コンポーネントが無効になった時に呼ばれます。
-    virtual void on_disable()
+    virtual void on_disable(){}
+    // コンポーネントが破棄される直前に呼ばれます。
+    virtual void on_destroy(){}
+
+    // ログメソッド
+    static void log(const std::string& message)
     {
+        debug::log(message);
     }
 
-    // コンポーネントが破棄される直前に呼ばれます。
-    virtual void on_destroy()
+    static void log_error(const std::string& message)
     {
+        debug::log_error(message);
     }
 };
