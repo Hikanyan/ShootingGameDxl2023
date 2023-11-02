@@ -5,8 +5,7 @@
 /*単一行動するオブジェクトクラス
  *MonoBehaviour は、すべての ひかにゃん スクリプトの派生元となる基本クラスです。
  *オブジェクトにアタッチされたスクリプトは、そのオブジェクトの機能を制御します。
- *TODO Task,Invoke
- *TODO Debug.Log
+ *TODO Task,Invoke,Coroutineの実装
 */
 class mono_behaviour : public behaviour
 {

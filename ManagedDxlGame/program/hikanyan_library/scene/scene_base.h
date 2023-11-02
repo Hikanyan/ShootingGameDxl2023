@@ -6,7 +6,7 @@
 class scene_base
 {
 protected:
-    std::vector<std::shared_ptr<game_object>> game_objects_;
+    std::list<std::shared_ptr<game_object>> game_objects_;
     // 任意の処理をゲームオブジェクトに対して行う関数
     void for_each_game_object(const std::function<void(std::shared_ptr<game_object>)>& action) const //関数の引数に関数を渡す
     {

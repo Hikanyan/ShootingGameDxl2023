@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "scene_base.h"
 
-class sample_scene final :public scene_base
+class sample_scene final : public scene_base
 {
 public:
     sample_scene() = default;
@@ -18,6 +18,13 @@ public:
     void on_disable() override;
     void instantiate() override;
     void destroy() override;
+
 private:
-    std::unique_ptr<game_object> obj_ = std::make_unique<game_object>(); //動的にメモリを確保
+    //オブジェクトをコンストラクタで生成する
+
+    //落ちる
+    //std::shared_ptr<game_object> obj_ = std::make_shared<game_object>(); //動的にメモリを確保
+    std::shared_ptr<game_object> obj_ = std::make_shared<game_object>(); //動的にメモリを確保
+    //落ちない
+    //std::unique_ptr<game_object> obj_ = std::make_unique<game_object>(); //動的にメモリを確保
 };
