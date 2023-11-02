@@ -15,6 +15,13 @@ public:
         log_message(message);
     }
 
+    template <typename... Args>
+    static void log_warning(const std::string& format, Args... args)
+    {
+        std::string message = std::vformat("Warning: " + format, std::make_format_args(args...));
+        log_message(message);
+    }
+
     // エラーログも同様に更新
     template <typename... Args>
     static void log_error(const std::string& format, Args... args)

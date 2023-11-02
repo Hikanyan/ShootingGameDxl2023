@@ -100,11 +100,19 @@ public:
         });
     }
 
-    virtual void on_destroy()
+    virtual void instantiate()
     {
         for_each_game_object([](const std::shared_ptr<game_object>& obj)
         {
-            obj->on_destroy();
+            obj->instantiate();
+        });
+    }
+
+    virtual void destroy()
+    {
+        for_each_game_object([](const std::shared_ptr<game_object>& obj)
+        {
+            obj->destroy();
         });
     }
 

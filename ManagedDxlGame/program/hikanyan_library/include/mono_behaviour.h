@@ -37,14 +37,17 @@ public:
     // コンポーネントが無効になった時に呼ばれます。
     virtual void on_disable(){}
     // コンポーネントが破棄される直前に呼ばれます。
-    virtual void on_destroy(){}
+    virtual void destroy(){}
 
     // ログメソッド
     static void log(const std::string& message)
     {
         debug::log(message);
     }
-
+    static void log_warning(const std::string& message)
+    {
+        debug::log_warning(message);
+    }
     static void log_error(const std::string& message)
     {
         debug::log_error(message);

@@ -175,7 +175,7 @@
     <ClCompile Include="program\game\hikanyan_asses\entity\entity.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\entity\entity_controller.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\entity\player.cpp" />
-    <ClCompile Include="program\game\hikanyan_asses\game_manager.cpp" />
+    <ClCompile Include="program\game\hikanyan_asses\scene_manager.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\system\list.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\system\singleton.cpp" />
     <ClCompile Include="program\hikanyan_library\include\behaviour.cpp">
@@ -479,6 +479,8 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="program\hikanyan_library\scene\game_object_manager.cpp" />
+    <ClCompile Include="program\hikanyan_library\scene\sample_scene.cpp" />
     <ClCompile Include="program\hikanyan_library\scene\scene_base.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -737,7 +739,7 @@
     <ClInclude Include="program\game\hikanyan_asses\entity\entity.h" />
     <ClInclude Include="program\game\hikanyan_asses\entity\entity_controller.h" />
     <ClInclude Include="program\game\hikanyan_asses\entity\player.h" />
-    <ClInclude Include="program\game\hikanyan_asses\game_manager.h" />
+    <ClInclude Include="program\game\hikanyan_asses\scene_manager.h" />
     <ClInclude Include="program\game\hikanyan_asses\system\list.h" />
     <ClInclude Include="program\game\hikanyan_asses\system\singleton.h" />
     <ClInclude Include="program\hikanyan_library\include\behaviour.h" />
@@ -749,6 +751,8 @@
     <ClInclude Include="program\hikanyan_library\include\game_object.h" />
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour.h" />
     <ClInclude Include="program\hikanyan_library\include\object.h" />
+    <ClInclude Include="program\hikanyan_library\scene\game_object_manager.h" />
+    <ClInclude Include="program\hikanyan_library\scene\sample_scene.h" />
     <ClInclude Include="program\hikanyan_library\scene\scene_base.h" />
     <ClInclude Include="program\hikanyan_library\tests\hikanyan_library_test.h" />
     <ClInclude Include="program\hikanyan_library\tests\test.h" />

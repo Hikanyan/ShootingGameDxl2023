@@ -167,12 +167,21 @@ public:
         }
     }
 
-    // コンポーネントが破棄される直前に呼ばれる
-    void on_destroy()
+    // コンポーネントをインスタンス化した時に呼ばれる
+    void instantiate()
     {
         for (const auto& comp : components_ | std::views::values)
         {
-            comp->on_destroy();
+            comp->instantiate();
+        }
+    }
+
+    // コンポーネントが破棄される直前に呼ばれる
+    void destroy()
+    {
+        for (const auto& comp : components_ | std::views::values)
+        {
+            comp->destroy();
         }
     }
 };

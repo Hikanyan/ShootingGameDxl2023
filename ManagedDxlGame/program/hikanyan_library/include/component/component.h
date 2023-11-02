@@ -55,8 +55,13 @@ public:
     {
     }
 
+    // コンポーネントをインスタンス化した時に呼ばれます。
+    virtual void instantiate()
+    {
+    }
+
     // コンポーネントが破棄される直前に呼ばれます。
-    virtual void on_destroy()
+    virtual void destroy()
     {
     }
 
