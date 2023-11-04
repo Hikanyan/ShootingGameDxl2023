@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <memory>
 #include <string>
 
 class object
@@ -24,6 +25,12 @@ public:
     static object* instantiate(const std::string& name)
     {
         return new object(name);
+    }
+    
+
+    static void destroy(object* obj)
+    {
+        delete obj;
     }
 
     static void destroy(const object* obj)

@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "behaviour.h"
 #include "debug.h"
+#include "game_object.h"
+#include "../game/hikanyan_asses/scene_manager.h"
 
 /*単一行動するオブジェクトクラス
  *MonoBehaviour は、すべての ひかにゃん スクリプトの派生元となる基本クラスです。
@@ -35,8 +37,19 @@ public:
     virtual void on_enable(){}
     // コンポーネントが無効になった時に呼ばれます。
     virtual void on_disable(){}
-    // コンポーネントが破棄される直前に呼ばれます。
-    virtual void destroy(){}
+    // ゲームオブジェクトをインスタンス化する関数
+    virtual void instantiate(const std::string& name)//objectのinstantiateを呼び出す
+    {
+        auto new_game_object = object::instantiate(name); // 新しいgame_objectインスタンスを作成
+         scene_manager::getInstance()->current_scene_->add_game_object(new_game_object); // シーンに追加
+    }
+    // オブジェクトを破棄した時に呼ばれます。
+    virtual void destroy()//objectのdestroyを呼び出す
+    {
+        // このオブジェクトを削除
+        current_scene->remove_game_object(shared_from_this()); // shared_from_this()は、thisをstd::shared_ptrとして取得する
+        object::destroy(this); // objectの破棄処理を呼び出す
+    }
 
     // ログメソッド
     static void log(const std::string& message)

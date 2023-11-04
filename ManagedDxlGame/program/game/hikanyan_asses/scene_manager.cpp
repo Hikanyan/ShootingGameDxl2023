@@ -1,5 +1,22 @@
 ﻿#include "scene_manager.h"
 
+void scene_manager::set_current_scene(std::unique_ptr<scene_base> scene)
+{
+    // 古いシーンのリソースを解放する前に、必要なクリーンアップを行います。
+    un_load_scene();
+    // 新しいシーンに置き換えます。
+    current_scene_ = std::move(scene);
+}
+
+void scene_manager::un_load_scene() const
+{
+    // 現在のシーンをアンロードし、リソースを解放します。
+    if (current_scene_)
+    {
+        current_scene_->scene_destroy();
+    }
+}
+
 void scene_manager::game_start()
 {
     // ここではsingletonのインスタンスを通じてcurrent_scene_にアクセスします
@@ -26,15 +43,11 @@ void scene_manager::game_main(float delta_time)
 
 void scene_manager::game_end()
 {
-    // そしてここでもsingletonのインスタンスを使用します
-    if (scene_manager::getInstance()->current_scene_)
-    {
-        scene_manager::getInstance()->current_scene_->destroy();
-    }
 }
 
 void scene_manager::draw_screen() const
 {
+    //test用
     DrawStringEx(50, 50, -1, "ねこ");
     DrawStringEx(DXE_WINDOW_WIDTH / 2 - 80, DXE_WINDOW_HEIGHT * 0.2, -1, "シューティングゲーム");
 

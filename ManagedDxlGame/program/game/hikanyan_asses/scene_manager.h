@@ -6,28 +6,27 @@
 class scene_manager : public singleton<scene_manager>
 {
 private:
+    // 全てのシーンのリスト
+    std::list<std::unique_ptr<scene_base>> all_scenes_;
     std::unique_ptr<scene_base> current_scene_;
+    std::unique_ptr<scene_base> next_scene_;
+
+    void set_current_scene(std::unique_ptr<scene_base> scene);
 
 public:
     scene_manager() = default;
     ~scene_manager() = default;
 
-    void set_current_scene(std::unique_ptr<scene_base> scene)
+    // 現在のシーンを取得する関数
+    [[nodiscard]] const std::unique_ptr<scene_base>& get_current_scene() const { return current_scene_; }
+    static void create_scene()
     {
-        // 古いシーンのリソースを解放する前に、必要なクリーンアップを行います。
-        // if (current_scene_) {
-        //     current_scene_->destroy();
-        // }
-
-        // 新しいシーンに置き換えます。
-        current_scene_ = std::move(scene);
-    
-        // 新しいシーンの初期化処理を行います。
-        // if (current_scene_) {
-        //     current_scene_->init();
-        //     current_scene_->awake();
-        // }
+        // シーンを作成します。
+        
     }
+
+
+    void un_load_scene() const;
 
 
     static void game_start();

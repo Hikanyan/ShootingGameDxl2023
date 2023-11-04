@@ -55,15 +55,16 @@ public:
     {
     }
 
-    // コンポーネントをインスタンス化した時に呼ばれます。
-    virtual void instantiate()
-    {
-    }
-
-    // コンポーネントが破棄される直前に呼ばれます。
-    virtual void destroy()
-    {
-    }
+    //instance化とdestroyは使わないのでコメントアウト
+    // // コンポーネントをインスタンス化した時に呼ばれます。
+    // virtual void instantiate()
+    // {
+    // }
+    //
+    // // コンポーネントが破棄される直前に呼ばれます。
+    // virtual void destroy()
+    // {
+    // }
 
     // このコンポーネントを所有するGameObjectへの参照を設定します。
     virtual void set_owner(game_object* gameObject)

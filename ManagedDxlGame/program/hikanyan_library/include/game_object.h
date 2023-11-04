@@ -11,15 +11,22 @@
 #include "component/box_collider_2d.h"
 
 // 前方宣言（他のコンポーネントがある場合はここに追加）
-class component;
-class transform;
-class box_collider_2d;
+// class component;
+//class transform;
+// class box_collider_2d;
 
 class game_object : public object
 {
 public:
     game_object() = default;
     ~game_object() override = default;
+    // object* を受け取るコンストラクタ
+    explicit game_object(object* obj)
+    {
+        // ここでobject*をgame_object*にキャストしている
+        // *this = *static_cast<game_object*>(obj);
+        *this = *dynamic_cast<game_object*>(obj);
+    }
 
     // タグのgetter/setter
     std::string tag() const
@@ -167,21 +174,22 @@ public:
         }
     }
 
-    // コンポーネントをインスタンス化した時に呼ばれる
-    void instantiate()
-    {
-        for (const auto& comp : components_ | std::views::values)
-        {
-            comp->instantiate();
-        }
-    }
-
-    // コンポーネントが破棄される直前に呼ばれる
-    void destroy()
-    {
-        for (const auto& comp : components_ | std::views::values)
-        {
-            comp->destroy();
-        }
-    }
+    //コンポーネントのインスタンス化と破棄は使わないのでコメントアウト
+    // // コンポーネントをインスタンス化した時に呼ばれる
+    // void instantiate()
+    // {
+    //     for (const auto& comp : components_ | std::views::values)
+    //     {
+    //         comp->instantiate();
+    //     }
+    // }
+    //
+    // // コンポーネントが破棄される直前に呼ばれる
+    // void destroy()
+    // {
+    //     for (const auto& comp : components_ | std::views::values)
+    //     {
+    //         comp->destroy();
+    //     }
+    // }
 };

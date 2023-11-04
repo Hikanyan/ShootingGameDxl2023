@@ -28,24 +28,22 @@ void sample_scene::update(float delta_time)
 
 void sample_scene::fixed_update(float delta_time)
 {
+    debug::log("update{}", obj_->get_name());
 }
 
 void sample_scene::draw()
 {
+    debug::log("update{}", obj_->get_name());
 }
 
 void sample_scene::on_enable()
 {
+    debug::log("update{}", obj_->get_name());
 }
 
 void sample_scene::on_disable()
 {
+    debug::log("update{}", obj_->get_name());
 }
 
-void sample_scene::instantiate()
-{
-}
 
-void sample_scene::destroy()
-{
-}

@@ -24,18 +24,18 @@ public:
     virtual ~scene_base() = default;
 
     // ゲームオブジェクトを追加する関数
-    virtual void add_game_object(const std::shared_ptr<game_object>& gameObject)
+    virtual void add_game_object(const std::shared_ptr<game_object>& game_object)
     {
-        game_objects_.push_back(gameObject);
+        game_objects_.push_back(game_object);
     }
 
     // ゲームオブジェクトを削除する関数
-    virtual void remove_game_object(const std::shared_ptr<game_object>& gameObject)
+    virtual void remove_game_object(const std::shared_ptr<game_object>& game_object)
     {
-        std::erase(game_objects_, gameObject);
+        game_objects_.remove(game_object);
     }
 
-    
+
     virtual void init()
     {
         for_each_game_object([](const std::shared_ptr<game_object>& obj)
@@ -100,19 +100,23 @@ public:
         });
     }
 
-    virtual void instantiate()
-    {
-        for_each_game_object([](const std::shared_ptr<game_object>& obj)
-        {
-            obj->instantiate();
-        });
-    }
+    // // ゲームオブジェクトをインスタンス化する関数
+    // virtual void instantiate(const std::string& name)
+    // {
+    //     // 新しいgame_objectインスタンスを作成
+    //     const auto raw_game_object = object::instantiate(name); // ここで返される object* を取得します。
+    //     const auto new_game_object = std::make_shared<game_object>(raw_game_object);
+    //     // 新しいインスタンスをリストに追加
+    //     add_game_object(new_game_object);
+    // }
 
-    virtual void destroy()
+    // ゲームオブジェクトを破棄する関数
+    virtual void scene_destroy()
     {
-        for_each_game_object([](const std::shared_ptr<game_object>& obj)
+        for_each_game_object([this](const std::shared_ptr<game_object>& obj)
         {
-            obj->destroy();
+            object::destroy(obj.get());
+            game_objects_.remove(obj);
         });
     }
 

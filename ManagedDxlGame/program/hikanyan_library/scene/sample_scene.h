@@ -16,8 +16,6 @@ public:
     void draw() override;
     void on_enable() override;
     void on_disable() override;
-    void instantiate() override;
-    void destroy() override;
 
 private:
     //オブジェクトをコンストラクタで生成する
