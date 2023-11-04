@@ -22,9 +22,6 @@ public:
 private:
     //オブジェクトをコンストラクタで生成する
 
-    //落ちる
-    //std::shared_ptr<game_object> obj_ = std::make_shared<game_object>(); //動的にメモリを確保
+    //落ちることがあるので、スマートポインタを使う
     std::shared_ptr<game_object> obj_ = std::make_shared<game_object>(); //動的にメモリを確保
-    //落ちない
-    //std::unique_ptr<game_object> obj_ = std::make_unique<game_object>(); //動的にメモリを確保
 };
