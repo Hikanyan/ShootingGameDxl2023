@@ -7,7 +7,7 @@ class game_object_manager
 {
 private:
     // ゲームオブジェクトのリストを定義します。
-    std::list<std::unique_ptr<game_object>> objects_;
+    std::list<std::shared_ptr<game_object>> objects_;
 
     // 共通の関数ポインタ型を定義します。
     using game_object_function = void (game_object::*)();
@@ -46,10 +46,13 @@ public:
     void on_enable() { for_each_game_object(&game_object::on_enable); }
     void on_disable() { for_each_game_object(&game_object::on_disable); }
 
-    void destroy()
+    void destroy(const std::shared_ptr<game_object> obj) const
     {
-        for_each_game_object(&game_object::destroy);
-        objects_.clear();
+        // このオブジェクトを削除
+        objects_.remove_if([&obj](const std::shared_ptr<game_object>& target)
+        {
+            return target.get() == obj.get();
+        });       
     }
 
     template <typename T, typename... Args>

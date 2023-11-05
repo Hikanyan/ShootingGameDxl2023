@@ -20,6 +20,7 @@ class game_object : public object
 public:
     game_object() = default;
     ~game_object() override = default;
+    
     // object* を受け取るコンストラクタ
     explicit game_object(object* obj)
     {
@@ -29,7 +30,7 @@ public:
     }
 
     // タグのgetter/setter
-    std::string tag() const
+    std::string get_tag() const
     {
         return tag_value_;
     }

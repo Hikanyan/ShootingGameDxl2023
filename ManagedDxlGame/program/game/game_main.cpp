@@ -10,7 +10,7 @@
 
 //------------------------------------------------------------------------------------------------------------
 // ゲーム起動時に１度だけ実行されます
-void gameStart()
+void game_start()
 {
     srand(time(0));
     SetBackgroundColor(32, 32, 32);
@@ -20,7 +20,7 @@ void gameStart()
 
 //------------------------------------------------------------------------------------------------------------
 // 毎フレーム実行されます
-void gameMain(float delta_time)
+void game_main(float delta_time)
 {
     DrawFpsIndicator({10, DXE_WINDOW_HEIGHT - 10, 0}, delta_time);
     scene_manager::getInstance()->game_main(delta_time);
@@ -28,7 +28,7 @@ void gameMain(float delta_time)
 
 //------------------------------------------------------------------------------------------------------------
 // ゲーム終了時に１度だけ実行されます
-void gameEnd()
+void game_end()
 {
     scene_manager::getInstance()->game_end();
 }

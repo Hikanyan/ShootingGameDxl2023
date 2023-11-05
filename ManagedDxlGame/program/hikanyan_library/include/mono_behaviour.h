@@ -40,15 +40,18 @@ public:
     // ゲームオブジェクトをインスタンス化する関数
     virtual void instantiate(const std::string& name)//objectのinstantiateを呼び出す
     {
-        auto new_game_object = object::instantiate(name); // 新しいgame_objectインスタンスを作成
-         scene_manager::getInstance()->current_scene_->add_game_object(new_game_object); // シーンに追加
+        auto raw_game_object = object::instantiate(name); // 新しいgame_objectインスタンスを作成
+        const auto new_game_object = std::make_shared<game_object>(raw_game_object);
+         scene_manager::getInstance()->get_current_scene()->add_game_object(new_game_object); // シーンに追加
     }
+
+    
     // オブジェクトを破棄した時に呼ばれます。
-    virtual void destroy()//objectのdestroyを呼び出す
+    virtual void destroy(const std::shared_ptr<game_object> obj)//objectのdestroyを呼び出す
     {
         // このオブジェクトを削除
-        current_scene->remove_game_object(shared_from_this()); // shared_from_this()は、thisをstd::shared_ptrとして取得する
-        object::destroy(this); // objectの破棄処理を呼び出す
+        scene_manager::getInstance()->get_current_scene()->remove_game_object(obj);
+        object::destroy(obj.get()); // objectの破棄処理を呼び出す
     }
 
     // ログメソッド

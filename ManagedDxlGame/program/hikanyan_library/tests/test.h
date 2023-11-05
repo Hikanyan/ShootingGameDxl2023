@@ -9,6 +9,11 @@ public:
     void start() override
     {
         debug::log("test{}", this->get_name());
+        debug::log("test{},{}", this->get_owner()->get_name(), this->get_owner()->get_tag());
+        get_owner()->add_component<box_collider_2d>();
+        
+        instantiate("test");
+        destroy();
     }
 
     void update(float delta_time) override

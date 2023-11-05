@@ -68,7 +68,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     SetAlwaysRunFlag(TRUE);
 
     // ゲームスタート処理
-    gameStart();
+    game_start();
 
     // メッセージループ
     while (1)
@@ -102,7 +102,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         tnl::Input::Update();
 
         // ゲームメインルーチン
-        gameMain(delta_time);
+        game_main(delta_time);
 
         // バックバッファをフリップ
         ScreenFlip();
@@ -123,7 +123,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     // ゲーム側の終了処理
-    gameEnd();
+    game_end();
 
     ReleaseDC(hWnd, hdc);
 

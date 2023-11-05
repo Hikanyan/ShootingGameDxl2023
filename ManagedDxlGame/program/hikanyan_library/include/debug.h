@@ -11,14 +11,14 @@ public:
     template <typename... Args>
     static void log(const std::string& format, Args... args)
     {
-        std::string message = std::vformat(format, std::make_format_args(args...));
+        const std::string message = std::vformat(format, std::make_format_args(args...));
         log_message(message);
     }
 
     template <typename... Args>
     static void log_warning(const std::string& format, Args... args)
     {
-        std::string message = std::vformat("Warning: " + format, std::make_format_args(args...));
+        const std::string message = std::vformat("Warning: " + format, std::make_format_args(args...));
         log_message(message);
     }
 
@@ -26,7 +26,7 @@ public:
     template <typename... Args>
     static void log_error(const std::string& format, Args... args)
     {
-        std::string message = std::vformat("Error: " + format, std::make_format_args(args...));
+        const std::string message = std::vformat("Error: " + format, std::make_format_args(args...));
         log_message(message, true);
     }
 
