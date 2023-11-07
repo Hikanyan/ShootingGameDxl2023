@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "entity.h"
-#include "../system/list.h"
-#include "../system/singleton.h"
+#include "../hikanyan_library/include/system/singleton.h"
+#include "../hikanyan_library/include/system/list.h"
 
 class entity_controller : public singleton<entity_controller>
 {

@@ -5,7 +5,7 @@
 #include "../dxlib_ext/dxlib_ext.h"
 #include "game_main.h"
 
-#include "hikanyan_asses/scene_manager.h"
+#include "../hikanyan_library/scene/scene_manager.h"
 #include "../hikanyan_library/scene/sample_scene.h"
 
 //------------------------------------------------------------------------------------------------------------

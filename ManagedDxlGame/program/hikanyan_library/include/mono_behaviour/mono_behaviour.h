@@ -2,7 +2,7 @@
 #include "behaviour.h"
 #include "debug.h"
 #include "game_object.h"
-#include "../game/hikanyan_asses/scene_manager.h"
+#include "../hikanyan_library/scene/scene_manager.h"
 
 /*単一行動するオブジェクトクラス
  *MonoBehaviour は、すべての ひかにゃん スクリプトの派生元となる基本クラスです。
@@ -37,7 +37,7 @@ public:
     virtual void on_enable(){}
     // コンポーネントが無効になった時に呼ばれます。
     virtual void on_disable(){}
-    // ゲームオブジェクトをインスタンス化する関数
+    // ゲームオブジェクトをインスタンス化する関数 TODO
     virtual void instantiate(const std::string& name)//objectのinstantiateを呼び出す
     {
         auto raw_game_object = object::instantiate(name); // 新しいgame_objectインスタンスを作成
@@ -46,12 +46,11 @@ public:
     }
 
     
-    // オブジェクトを破棄した時に呼ばれます。
-    virtual void destroy(const std::shared_ptr<game_object> obj)//objectのdestroyを呼び出す
+    // オブジェクトを破棄した時に呼ばれます。 TODO
+    virtual void destroy(const game_object* obj)//objectのdestroyを呼び出す
     {
         // このオブジェクトを削除
-        scene_manager::getInstance()->get_current_scene()->remove_game_object(obj);
-        object::destroy(obj.get()); // objectの破棄処理を呼び出す
+        
     }
 
     // ログメソッド

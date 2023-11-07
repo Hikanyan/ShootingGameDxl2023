@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include <vector>
-#include "../include/game_object.h"
+#include "../include/mono_behaviour/game_object.h"
 
 class game_object_manager
 {
@@ -13,7 +13,7 @@ private:
     using game_object_function = void (game_object::*)();
 
     // 任意の処理をゲームオブジェクトに対して行う関数
-    void for_each_game_object(game_object_function function) const
+    void for_each_game_object(const game_object_function function) const
     {
         for (auto& obj : objects_)
         {
@@ -46,7 +46,7 @@ public:
     void on_enable() { for_each_game_object(&game_object::on_enable); }
     void on_disable() { for_each_game_object(&game_object::on_disable); }
 
-    void destroy(const std::shared_ptr<game_object> obj) const
+    void destroy(std::shared_ptr<game_object>& obj)
     {
         // このオブジェクトを削除
         objects_.remove_if([&obj](const std::shared_ptr<game_object>& target)

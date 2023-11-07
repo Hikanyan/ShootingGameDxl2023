@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include <vector>
-#include "../../hikanyan_library/include/game_object.h"
+#include "../../hikanyan_library/include/mono_behaviour/game_object.h"
 
 class scene_base
 {

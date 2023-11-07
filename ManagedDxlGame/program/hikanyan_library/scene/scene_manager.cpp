@@ -1,6 +1,6 @@
 ﻿#include "scene_manager.h"
 
-void scene_manager::set_current_scene(std::unique_ptr<scene_base> scene)
+void scene_manager::set_current_scene(std::shared_ptr<scene_base> scene)
 {
     // 古いシーンのリソースを解放する前に、必要なクリーンアップを行います。
     un_load_scene();

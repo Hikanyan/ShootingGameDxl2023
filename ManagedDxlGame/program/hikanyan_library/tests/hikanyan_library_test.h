@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include <memory>
 #include "test.h"
-#include "../../hikanyan_library/include/mono_behaviour.h"
-#include "../../hikanyan_library/include/game_object.h"
+#include "../../hikanyan_library/include/mono_behaviour/mono_behaviour.h"
+#include "../../hikanyan_library/include/mono_behaviour/game_object.h"
 class box_collider_2d;
 class transform;
 
@@ -30,7 +30,7 @@ public:
         obj->get_transform().rotation = {0, 0, 0};
         obj->get_transform().scale = {1, 1, 1};
         obj->add_component<box_collider_2d>(); //box_collider_2dコンポーネントを追加
-        
+
         debug::log(std::format("objの名前は{}です", obj->get_name()));
 
         auto* my_object = new game_object(); //動的にメモリを確保

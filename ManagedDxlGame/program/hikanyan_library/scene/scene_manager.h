@@ -1,5 +1,7 @@
 ﻿#pragma once
-#include "system/singleton.h"
+#include <list>
+#include "../hikanyan_library/include/system/singleton.h"
+#include "../hikanyan_library/include/system/list.h"
 #include "../hikanyan_library/scene/scene_base.h"
 
 
@@ -7,22 +9,22 @@ class scene_manager : public singleton<scene_manager>
 {
 private:
     // 全てのシーンのリスト
-    std::list<std::unique_ptr<scene_base>> all_scenes_;
-    std::unique_ptr<scene_base> current_scene_;
-    std::unique_ptr<scene_base> next_scene_;
+    std::list<std::shared_ptr<scene_base>> all_scenes_;
+    std::shared_ptr<scene_base> current_scene_;
+    std::shared_ptr<scene_base> next_scene_;
 
-    void set_current_scene(std::unique_ptr<scene_base> scene);
 
 public:
     scene_manager() = default;
     ~scene_manager() = default;
 
     // 現在のシーンを取得する関数
-    [[nodiscard]] const std::unique_ptr<scene_base>& get_current_scene() const { return current_scene_; }
+    [[nodiscard]] const std::shared_ptr<scene_base>& get_current_scene() const { return current_scene_; }
+    void set_current_scene(std::shared_ptr<scene_base> scene);
+
     static void create_scene()
     {
         // シーンを作成します。
-        
     }
 
 
