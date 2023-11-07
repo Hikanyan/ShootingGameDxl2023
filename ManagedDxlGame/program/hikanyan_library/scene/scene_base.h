@@ -101,15 +101,17 @@ public:
         });
     }
 
-    // // ゲームオブジェクトをインスタンス化する関数
-    // virtual void instantiate(const std::string& name)
-    // {
-    //     // 新しいgame_objectインスタンスを作成
-    //     const auto raw_game_object = object::instantiate(name); // ここで返される object* を取得します。
-    //     const auto new_game_object = std::make_shared<game_object>(raw_game_object);
-    //     // 新しいインスタンスをリストに追加
-    //     add_game_object(new_game_object);
-    // }
+    // ゲームオブジェクトをインスタンス化する関数
+    // 任意のコンストラクタ引数を渡すことができます。
+    // 例: instantiate(obj, transform{ 0, 0, 0 });
+    template <typename... Args>
+    game_object instantiate(game_object&&... args)
+    {
+        game_object* obj = new game_object(std::forward<Args>(args)...);
+        obj->add_component<transform>();
+        game_objects_.emplace_back(obj);
+        return *obj;
+    }
 
     // ゲームオブジェクトを破棄する関数
     virtual void scene_destroy()

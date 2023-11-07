@@ -58,11 +58,5 @@ public:
         });       
     }
 
-    template <typename T, typename... Args>
-    T* instantiate(Args&&... args)
-    {
-        T* obj = new T(std::forward<Args>(args)...);
-        objects_.emplace_back(obj);
-        return obj;
-    }
+    
 };
