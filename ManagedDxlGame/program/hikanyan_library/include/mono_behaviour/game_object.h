@@ -55,7 +55,7 @@ public:
     template <typename T, typename... Args>
     T* add_component(Args&&... args)
     {
-        auto newComponent = std::make_unique<T>(std::forward<Args>(args)...);
+        auto newComponent = std::make_shared<T>(std::forward<Args>(args)...);
         T* componentPtr = newComponent.get();
         components_[std::type_index(typeid(T))] = std::move(newComponent);
         // ここでコンポーネントの初期化を行う（もし必要なら）
@@ -87,7 +87,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::type_index, std::unique_ptr<component>> components_; // コンポーネントの辞書
+    std::unordered_map<std::type_index, std::shared_ptr<component>> components_; // コンポーネントの辞書
     std::string tag_value_;
 
     // 必須コンポーネントを取得するヘルパーメソッド

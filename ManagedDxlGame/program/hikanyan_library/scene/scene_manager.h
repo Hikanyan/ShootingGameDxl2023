@@ -4,7 +4,7 @@
 #include "../hikanyan_library/include/system/list.h"
 #include "../hikanyan_library/scene/scene_base.h"
 
-
+// シーンを管理するクラス
 class scene_manager : public singleton<scene_manager>
 {
 private:

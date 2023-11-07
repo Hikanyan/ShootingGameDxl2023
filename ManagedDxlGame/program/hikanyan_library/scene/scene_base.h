@@ -3,6 +3,7 @@
 #include <vector>
 #include "../../hikanyan_library/include/mono_behaviour/game_object.h"
 
+//game_objectの処理をgame_object_managerで行い、scene_baseで
 class scene_base
 {
 protected:

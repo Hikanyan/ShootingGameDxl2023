@@ -3,6 +3,9 @@
 #include <vector>
 #include "../include/mono_behaviour/game_object.h"
 
+
+//SceneBaseに渡す
+//GameObjectのリストを持つ
 class game_object_manager
 {
 private:
