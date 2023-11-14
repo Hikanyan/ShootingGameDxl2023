@@ -4,64 +4,77 @@
 #include "game_object.h"
 #include "../hikanyan_library/scene/scene_manager.h"
 
-/*単一行動するオブジェクトクラス
- *MonoBehaviour は、すべての ひかにゃん スクリプトの派生元となる基本クラスです。
- *オブジェクトにアタッチされたスクリプトは、そのオブジェクトの機能を制御します。
- *TODO Task,Invoke,Coroutineの実装
-*/
 class mono_behaviour : public behaviour
 {
 protected:
-    // 保護されたコンストラクタを使用して直接インスタンス化を防ぐ
     mono_behaviour() = default;
 
 public:
-    virtual ~mono_behaviour() = default;
-
+    ~mono_behaviour() override = default;
 
     // イベントメソッド
-
-    // 初期化処理を行います。
-    virtual void init(){}
-    // シーン開始時に呼ばれます。
-    virtual void awake(){}
-    // シーン開始時に呼ばれます。
-    virtual void start(){}
-    // 描画処理を行います。
-    virtual void draw(){}
-    // 毎フレーム呼ばれます。
-    virtual void update(float delta_time){}
-    // 一定秒数ごとに呼ばれます。
-    virtual void fixed_update(float fixed_delta_time){}
-    // コンポーネントが有効になった時に呼ばれます。
-    virtual void on_enable(){}
-    // コンポーネントが無効になった時に呼ばれます。
-    virtual void on_disable(){}
-    // ゲームオブジェクトをインスタンス化する関数 TODO
-    virtual void instantiate(const std::string& name)//objectのinstantiateを呼び出す
+    void init() override
     {
-        auto raw_game_object = object::instantiate(name); // 新しいgame_objectインスタンスを作成
-        const auto new_game_object = std::make_shared<game_object>(raw_game_object);
-         scene_manager::getInstance()->get_current_scene()->add_game_object(new_game_object); // シーンに追加
     }
 
+    void awake() override
+    {
+    }
+
+    void start() override
+    {
+    }
+
+    void draw() override
+    {
+    }
+
+    void update(float delta_time) override
+    {
+    }
+
+    void fixed_update(float fixed_delta_time) override
+    {
+    }
+
+    void on_enable() override
+    {
+    }
+
+    void on_disable() override
+    {
+    }
+
+    // ゲームオブジェクトのインスタンス化
+    virtual void instantiate(const std::string& name)
+    {
+        const auto raw_game_object = std::shared_ptr(instantiate<game_object>(name));
+        scene_manager::getInstance()->get_current_scene()->add_game_object(raw_game_object); // シーンに追加
+    }
+
+    // オブジェクトの破棄
+    virtual void destroy(game_object* obj)
+    {
+        if (!obj) return; // null チェック
+
+        // シーンマネージャーから該当する game_object を削除する
+        scene_manager::getInstance()->get_current_scene()->remove_game_object(std::shared_ptr<game_object>(obj));
+        // game_object が shared_ptr によって管理されているため、
+        // shared_ptr がスコープを外れると自動的に破棄されます。
+    }
     
-    // オブジェクトを破棄した時に呼ばれます。 TODO
-    virtual void destroy(const game_object* obj)//objectのdestroyを呼び出す
-    {
-        // このオブジェクトを削除
-        
-    }
 
-    // ログメソッド
+    // ログメソッド（必要に応じて修正または削除）
     static void log(const std::string& message)
     {
         debug::log(message);
     }
+
     static void log_warning(const std::string& message)
     {
         debug::log_warning(message);
     }
+
     static void log_error(const std::string& message)
     {
         debug::log_error(message);

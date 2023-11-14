@@ -1,18 +1,18 @@
 ﻿#pragma once
 #include "component/component.h"
 
-//behaviourは有効または無効にできるコンポーネントです。
+// behaviour は有効または無効にできるコンポーネントです。
 class behaviour : public component
 {
 private:
-    bool enabled_ = true;
+    bool enabled_ = true; // このコンポーネントが現在有効かどうかを示すフラグ
 
 public:
-    virtual ~behaviour() = default;
+    ~behaviour() override = default;
 
-    // enabled() 関数がコンポーネントの状態を返します。
+    // コンポーネントが有効かどうかを返します。
     [[nodiscard]] bool enabled() const { return enabled_; }
 
-    // コンポーネントの状態を設定する関数（例：setEnabled）を追加できます。
-    void set_enabled(const bool enabled) { enabled_ = enabled; }
+    // コンポーネントの有効/無効状態を設定します。
+    void set_enabled(bool enabled) { enabled_ = enabled; }
 };
