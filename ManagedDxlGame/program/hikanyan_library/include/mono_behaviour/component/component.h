@@ -67,9 +67,9 @@ public:
     // }
 
     // このコンポーネントを所有するGameObjectへの参照を設定します。
-    virtual void set_owner(game_object* gameObject)
+    virtual void set_owner(game_object* game_object)
     {
-        owner_ = gameObject;
+        owner_ = game_object;
     }
 
     // このコンポーネントを所有するGameObjectへの参照を取得します。
