@@ -14,5 +14,5 @@ public:
     [[nodiscard]] bool enabled() const { return enabled_; }
 
     // コンポーネントの有効/無効状態を設定します。
-    void set_enabled(bool enabled) { enabled_ = enabled; }
+    void set_enabled(const bool enabled) { enabled_ = enabled; }
 };

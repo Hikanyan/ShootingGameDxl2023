@@ -6,30 +6,30 @@ namespace tnl {
 
 	//------------------------------------------------------------------------------------------
 	//
-	// std::shared_ptr ‚Å‚Ì“®“I¶¬‚ğ‹­§‚·‚éƒtƒ@ƒNƒgƒŠƒNƒ‰ƒX
+	// std::shared_ptr ã§ã®å‹•çš„ç”Ÿæˆã‚’å¼·åˆ¶ã™ã‚‹ãƒ•ã‚¡ã‚¯ãƒˆãƒªã‚¯ãƒ©ã‚¹
 	//  
-	// tips: shared_from_this ‚ÍƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÅŒÄ‚Ño‚µ‚Ä‚Í‚¢‚¯‚È‚¢‚Ì‚Å
-	//       ‘ã‚í‚è‚Æ‚µ‚Ä shared_from_this_shared_from_this_constructor ‚ğ’ñ‹Ÿ
-	//       ”h¶ƒNƒ‰ƒX‚Å‚Í‚±‚ê‚ç‚Ì‰¼‘zŠÖ”‚ğ shared_from_this ‚ªg‚¦‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Æ‚µ‚Äg—p
+	// tips: shared_from_this ã¯ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§å‘¼ã³å‡ºã—ã¦ã¯ã„ã‘ãªã„ã®ã§
+	//       ä»£ã‚ã‚Šã¨ã—ã¦ shared_from_this_shared_from_this_constructor ã‚’æä¾›
+	//       æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã§ã¯ã“ã‚Œã‚‰ã®ä»®æƒ³é–¢æ•°ã‚’ shared_from_this ãŒä½¿ãˆã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¨ã—ã¦ä½¿ç”¨
 	//
 
 	template< class T >
 	class SharedFactory : public std::enable_shared_from_this<T> {
 	private :
 
-		// new ‚Ìg—p‚ğ‹Ö~
+		// new ã®ä½¿ç”¨ã‚’ç¦æ­¢
 		static void* operator new(size_t i) { return _mm_malloc(i, 16); }
 
 	protected : 
 		SharedFactory() {}
 
 		//-----------------------------------------------------------------------------------
-		// ¶¬‚³‚ê‚½Œã‚É•t‚µ‚ÄÀs‚³‚ê‚é‰¼‘zŠÖ” (ˆø”‚È‚µ)
+		// ç”Ÿæˆã•ã‚ŒãŸå¾Œã«ä»˜éšã—ã¦å®Ÿè¡Œã•ã‚Œã‚‹ä»®æƒ³é–¢æ•° (å¼•æ•°ãªã—)
 		virtual void shared_from_this_constructor() {}
 
 		//-----------------------------------------------------------------------------------
-		// ¶¬‚³‚ê‚½Œã‚É•t‚µ‚ÄÀs‚³‚ê‚é‰¼‘zŠÖ”
-		// tips.. ˆø”‚Í create ‚Åw’è‚³‚ê‚½ˆø”‚ª“n‚³‚ê‚é
+		// ç”Ÿæˆã•ã‚ŒãŸå¾Œã«ä»˜éšã—ã¦å®Ÿè¡Œã•ã‚Œã‚‹ä»®æƒ³é–¢æ•°
+		// tips.. å¼•æ•°ã¯ create ã§æŒ‡å®šã•ã‚ŒãŸå¼•æ•°ãŒæ¸¡ã•ã‚Œã‚‹
 		virtual void shared_from_this_accomp_desc_constructor(const std::any& desc) {}
 
 	public :
@@ -37,7 +37,7 @@ namespace tnl {
 		virtual ~SharedFactory() {}
 
 		//-----------------------------------------------------------------------------------
-		// ˆø”‚È‚µ‚Ì¶¬ŠÖ”
+		// å¼•æ•°ãªã—ã®ç”Ÿæˆé–¢æ•°
 		template< class U >
 		static [[nodiscard]] std::shared_ptr<U> Create() {
 			std::shared_ptr<U> ptr = std::shared_ptr<U>(new U());
@@ -45,7 +45,7 @@ namespace tnl {
 			return ptr;
 		}
 
-		// shared_from_this_constructor ‚ğƒR[ƒ‹‚µ‚È‚¢¶¬
+		// shared_from_this_constructor ã‚’ã‚³ãƒ¼ãƒ«ã—ãªã„ç”Ÿæˆ
 		template< class U >
 		static [[nodiscard]] std::shared_ptr<U> NonCalledSharedConstructorCreate() {
 			std::shared_ptr<U> ptr = std::shared_ptr<U>(new U());
@@ -53,7 +53,7 @@ namespace tnl {
 		}
 
 		//-----------------------------------------------------------------------------------
-		// ˆø”•t‚«‚Ì¶¬ŠÖ”
+		// å¼•æ•°ä»˜ãã®ç”Ÿæˆé–¢æ•°
 		template< class U >
 		static [[nodiscard]] std::shared_ptr<U> Create(const std::any& desc) {
 			std::shared_ptr<U> ptr = std::shared_ptr<U>( new U() );

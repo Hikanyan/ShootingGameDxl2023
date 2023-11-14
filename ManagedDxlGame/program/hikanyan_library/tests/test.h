@@ -6,18 +6,22 @@
 class test final : public mono_behaviour
 {
 public:
+    //再起関数を使用して、PlayerがMapを移動できる範囲を表示する
+
     void start() override
     {
-        debug::log("test{}", this->get_name());
-        debug::log("test{},{}", this->get_owner()->get_name(), this->get_owner()->get_tag());
-        get_owner()->add_component<box_collider_2d>();
-        
-        instantiate("test");
-        destroy(get_owner());
     }
 
     void update(float delta_time) override
     {
-        DrawStringEx(50, 250, -1, "test");
+    }
+
+    void draw() override
+    {//owner_->get_transform().get_position()
+    }
+
+    //再起関数
+    static void draw_map(const std::shared_ptr<game_object>& obj)
+    {
     }
 };

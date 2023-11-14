@@ -102,40 +102,31 @@ public:
     }
 
     // ゲームオブジェクトをインスタンス化する関数
-    // 任意のコンストラクタ引数を渡すことができます。
-    // 例: instantiate(obj, transform{ 0, 0, 0 });
     template <typename... Args>
-    game_object instantiate(game_object&&... args)
+    std::shared_ptr<game_object> instantiate(Args&&... args)
     {
-        game_object* obj = new game_object(std::forward<Args>(args)...);
-        obj->add_component<transform>();
-        game_objects_.emplace_back(obj);
-        return *obj;
+        auto obj = object::instantiate<game_object>(std::forward<Args>(args)...);
+        add_game_object(obj);
+        return obj;
     }
 
     // ゲームオブジェクトを破棄する関数
-    virtual void scene_destroy()
+    void scene_destroy()
     {
-        for_each_game_object([this](const std::shared_ptr<game_object>& obj)
-        {
-            object::destroy(obj.get());
-            game_objects_.remove(obj);
-        });
+        game_objects_.clear(); // shared_ptr が自動的にリソースを解放する
     }
 
     // ゲームオブジェクトを名前で検索する関数
-    virtual std::shared_ptr<game_object> find_game_object_by_name(const std::string& name) const
+    std::shared_ptr<game_object> find_game_object_by_name(const std::string& name) const
     {
-        for (const auto& game_object_ : game_objects_)
-        {
-            if (game_object_ && game_object_->get_name() == name)
-            {
-                // getName を使用する
-                return game_object_;
-            }
-        }
-        return nullptr;
+        const auto it = std::ranges::find_if(game_objects_,
+                                             [&name](const std::shared_ptr<game_object>& obj)
+                                             {
+                                                 return obj && obj->get_name() == name;
+                                             });
+        return (it != game_objects_.end()) ? *it : nullptr;
     }
+
 
     // 任意の条件を満たすゲームオブジェクトを見つける関数
     std::vector<std::shared_ptr<game_object>> find_game_objects_by_condition(
