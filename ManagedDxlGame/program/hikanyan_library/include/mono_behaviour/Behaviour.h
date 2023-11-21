@@ -10,8 +10,8 @@ private:
 public:
     ~Behaviour() override = default;
 
-    // コンポーネントが有効かどうかを返します。
-    [[nodiscard]] bool enabled() const { return enabled_; }
+    // コンポーネントの有効/無効状態を返します。
+    bool is_enabled() const override { return enabled_; }
 
     // コンポーネントの有効/無効状態を設定します。
     void set_enabled(const bool enabled) { enabled_ = enabled; }

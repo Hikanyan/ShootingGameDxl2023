@@ -12,7 +12,6 @@
 #include "component/BoxCollider2D.h"
 
 
-
 class GameObject : public Object
 {
 public:
@@ -167,12 +166,9 @@ public:
     {
         for (const auto& comp : components_ | std::views::values)
         {
-            if (const auto behaviour = std::dynamic_pointer_cast<Behaviour>(comp))
+            if (comp->is_enabled())
             {
-                if (behaviour->enabled())
-                {
-                    comp->update(delta_time);
-                }
+                comp->update(delta_time);
             }
         }
     }
@@ -182,15 +178,13 @@ public:
     {
         for (const auto& comp : components_ | std::views::values)
         {
-            if (const auto behaviour = std::dynamic_pointer_cast<Behaviour>(comp))
+            if (comp->is_enabled())
             {
-                if (behaviour->enabled())
-                {
-                    comp->fixed_update(fixed_delta_time);
-                }
+                comp->fixed_update(fixed_delta_time);
             }
         }
     }
+
 
     // コンポーネントが有効になった時に呼ばれる
     void on_enable()

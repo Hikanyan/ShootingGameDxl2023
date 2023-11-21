@@ -6,11 +6,12 @@ class Component : public Object
 {
 protected:
     GameObject* owner_; // このコンポーネントを所有するGameObjectへのポインタ。
-
 public:
     Component() : owner_(nullptr)
     {
     }
+
+    [[nodiscard]] virtual bool is_enabled() const { return true; }
 
     ~Component() override
     = default;
