@@ -7,13 +7,11 @@
 #include <ranges>
 #include <stdexcept>
 
+#include "Behaviour.h"
 #include "component/Transform.h"
 #include "component/BoxCollider2D.h"
 
-// 前方宣言（他のコンポーネントがある場合はここに追加）
-// class component;
-// class transform;
-// class box_collider_2d;
+
 
 class GameObject : public Object
 {
@@ -169,7 +167,13 @@ public:
     {
         for (const auto& comp : components_ | std::views::values)
         {
-            comp->update(delta_time);
+            if (const auto behaviour = std::dynamic_pointer_cast<Behaviour>(comp))
+            {
+                if (behaviour->enabled())
+                {
+                    comp->update(delta_time);
+                }
+            }
         }
     }
 
@@ -178,7 +182,13 @@ public:
     {
         for (const auto& comp : components_ | std::views::values)
         {
-            comp->fixed_update(fixed_delta_time);
+            if (const auto behaviour = std::dynamic_pointer_cast<Behaviour>(comp))
+            {
+                if (behaviour->enabled())
+                {
+                    comp->fixed_update(fixed_delta_time);
+                }
+            }
         }
     }
 
