@@ -38,7 +38,7 @@ public:
     }
 
     // タグのgetter/setter
-    std::string get_tag() const
+    [[nodiscard]] std::string get_tag() const
     {
         return tag_value_;
     }
@@ -53,7 +53,7 @@ public:
         is_active_ = value;
     }
 
-    bool get_active() const
+    [[nodiscard]] bool get_active() const
     {
         return is_active_;
     }
@@ -78,12 +78,12 @@ public:
         {
             throw std::logic_error("Component already exists");
         }
-        auto newComponent = std::make_shared<T>(std::forward<Args>(args)...);
-        T* componentPtr = newComponent.get();
-        components_[type_index] = std::move(newComponent);
+        auto new_component = std::make_shared<T>(std::forward<Args>(args)...);
+        T* component_ptr = new_component.get();
+        components_[type_index] = std::move(new_component);
         //set_ownerをする
-        componentPtr->set_owner(this);
-        return componentPtr;
+        component_ptr->set_owner(this);
+        return component_ptr;
     }
 
     // コンポーネントを削除する
@@ -97,13 +97,13 @@ public:
     }
 
     // 特定のコンポーネントへのアクセスメソッド
-    Transform& get_transform() const
+    [[nodiscard]] Transform& get_transform() const
     {
         return *get_component_required<Transform>("Transform component not found");
     }
 
     // 特定のコンポーネントへのアクセスメソッド
-    BoxCollider2D& get_collider() const
+    [[nodiscard]] BoxCollider2D& get_collider() const
     {
         return *get_component_required<BoxCollider2D>("BoxCollider2D component not found");
     }
@@ -164,7 +164,7 @@ public:
     }
 
     // 毎フレーム呼ばれる更新処理
-    void update(float delta_time)
+    void update(const float delta_time)
     {
         for (const auto& comp : components_ | std::views::values)
         {
@@ -176,7 +176,7 @@ public:
     }
 
     // 定期的な時間間隔で呼ばれる更新処理
-    void fixed_update(float fixed_delta_time)
+    void fixed_update(const float fixed_delta_time)
     {
         for (const auto& comp : components_ | std::views::values)
         {
