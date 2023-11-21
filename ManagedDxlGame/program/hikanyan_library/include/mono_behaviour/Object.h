@@ -39,6 +39,7 @@ public:
     template <typename T, typename... Args>
     static std::shared_ptr<T> instantiate(Args&&... args)
     {
+        
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
 

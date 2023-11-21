@@ -12,13 +12,14 @@ protected:
     // シーンに所属するゲームオブジェクト
     std::list<std::shared_ptr<GameObject>> game_objects_;
     // 任意の処理をゲームオブジェクトに対して行う関数
-    void for_each_game_object(const std::function<void(std::shared_ptr<GameObject>)>& action) const //関数の引数に関数を渡す
+    
+    void for_each_game_object(const std::function<void(std::shared_ptr<GameObject>)>& action) const
     {
-        for (auto& game_object_ : game_objects_)
+        for (auto& game_object : game_objects_)
         {
-            if (game_object_)
+            if (game_object && game_object->get_active())
             {
-                action(game_object_);
+                action(game_object);
             }
         }
     }
@@ -115,13 +116,13 @@ public:
     }
 
     // ゲームオブジェクトをインスタンス化する関数
-    // template <typename... Args>
-    // std::shared_ptr<game_object> instantiate(Args&&... args)
-    // {
-    //     auto obj = object::instantiate<game_object>(std::forward<Args>(args)...);
-    //     add_game_object(obj);
-    //     return obj;
-    // }
+    template <typename... Args>
+    std::shared_ptr<GameObject> instantiate(Args&&... args)
+    {
+        auto obj = Object::instantiate<GameObject>(std::forward<Args>(args)...);
+        add_game_object(obj);
+        return obj;
+    }
 
     // ゲームオブジェクトを破棄する関数
     void scene_destroy()

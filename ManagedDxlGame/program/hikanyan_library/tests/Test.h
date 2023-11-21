@@ -11,6 +11,8 @@ public:
     void start() override
     {
         owner_->get_transform().set_position(tnl::Vector3(0, 0, 0));
+        auto obj = instantiate<GameObject>();
+        obj->add_component<Transform>();
     }
 
     void update(float delta_time) override
