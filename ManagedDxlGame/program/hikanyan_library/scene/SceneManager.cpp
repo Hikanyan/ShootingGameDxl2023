@@ -1,58 +1,90 @@
 ﻿#include "SceneManager.h"
 
-void scene_manager::set_current_scene(std::shared_ptr<SceneBase> scene)
-{
-    // 古いシーンのリソースを解放する前に、必要なクリーンアップを行います。
+void SceneManager::create_scene(const std::string& name) {
+    std::lock_guard<std::mutex> lock(scene_mutex_);
+    scenes_[name] = std::make_shared<SceneBase>();
+}
+
+void SceneManager::add_scene(const std::string& name, std::shared_ptr<SceneBase> scene) {
+    std::lock_guard<std::mutex> lock(scene_mutex_);
+    scenes_[name] = std::move(scene);
+}
+
+std::shared_ptr<SceneBase> SceneManager::get_active_scene() const {
+    std::lock_guard<std::mutex> lock(scene_mutex_);
+    return active_scene_;
+}
+
+void SceneManager::load_scene(const std::string& name) {
+    std::lock_guard<std::mutex> lock(scene_mutex_);
+    if (const auto it = scenes_.find(name); it != scenes_.end()) {
+        active_scene_ = it->second;
+        active_scene_->init();  // 初期化処理
+    }
+}
+
+std::future<void> SceneManager::load_scene_async(const std::string& name) {
+    return std::async(std::launch::async, [this, name] {
+        load_scene(name);
+    });
+}
+
+bool SceneManager::set_active_scene(const std::string& name) {
+    std::lock_guard<std::mutex> lock(scene_mutex_);
+    if (const auto it = scenes_.find(name); it != scenes_.end()) {
+        active_scene_ = it->second;
+        return true;
+    }
+    return false;
+}
+
+std::future<void> SceneManager::unload_scene_async(const std::string& name) {
+    return std::async(std::launch::async, [this, name] {
+        std::lock_guard<std::mutex> lock(scene_mutex_);
+        scenes_.erase(name);
+        if (active_scene_ && active_scene_->get_name() == name) {
+            active_scene_ = nullptr;
+        }
+    });
+}
+
+void SceneManager::set_current_scene(std::shared_ptr<SceneBase> scene) {
     un_load_scene();
-    // 新しいシーンに置き換えます。
-    current_scene_ = std::move(scene);
+    active_scene_ = std::move(scene);
 }
 
-void scene_manager::un_load_scene() const
+std::shared_ptr<SceneBase> SceneManager::get_current_scene() const
 {
-    // 現在のシーンをアンロードし、リソースを解放します。
-    if (current_scene_)
-    {
-        current_scene_->scene_destroy();
+    return active_scene_;
+}
+
+void SceneManager::un_load_scene() const {
+    if (active_scene_) {
+        active_scene_->scene_destroy();
     }
 }
 
-void scene_manager::game_start()
-{
-    // ここではsingletonのインスタンスを通じてcurrent_scene_にアクセスします
-    if (scene_manager::getInstance()->current_scene_)
-    {
-        scene_manager::getInstance()->current_scene_->init();
-        scene_manager::getInstance()->current_scene_->awake();
-        scene_manager::getInstance()->current_scene_->start();
+void SceneManager::game_start() {
+    if (SceneManager::getInstance()->active_scene_) {
+        SceneManager::getInstance()->active_scene_->init();
+        SceneManager::getInstance()->active_scene_->awake();
+        SceneManager::getInstance()->active_scene_->start();
     }
-    //entity_controller::getInstance()->gameStart();
 }
 
-void scene_manager::game_main(float delta_time)
-{
-    // ここでもsingletonのインスタンスを通じてcurrent_scene_にアクセスします
-    if (scene_manager::getInstance()->current_scene_)
-    {
-        scene_manager::getInstance()->current_scene_->update(delta_time);
+void SceneManager::game_main(float delta_time) {
+    if (SceneManager::getInstance()->active_scene_) {
+        SceneManager::getInstance()->active_scene_->update(delta_time);
     }
-    scene_manager::getInstance()->draw_screen();
-    //entity_controller::getInstance()->update(delta_time);
-    //entity_controller::getInstance()->draw();
+    draw_screen();
 }
 
-void scene_manager::game_end()
-{
+void SceneManager::game_end() {
+    // ゲーム終了時の処理
 }
 
-void scene_manager::draw_screen() const
-{
-    //test用
-    DrawStringEx(50, 50, -1, "ねこ");
-    DrawStringEx(DXE_WINDOW_WIDTH / 2 - 80, DXE_WINDOW_HEIGHT * 0.2, -1, "シューティングゲーム");
-
-    if (current_scene_)
-    {
-        current_scene_->draw();
+void SceneManager::draw_screen() const {
+    if (active_scene_) {
+        active_scene_->draw();
     }
 }

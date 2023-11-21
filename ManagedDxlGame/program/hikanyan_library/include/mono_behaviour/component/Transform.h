@@ -10,9 +10,7 @@ private:
     tnl::Vector3 scale_{1, 1, 1};
 
 public:
-    Transform()
-    {
-    }
+    Transform() = default;
 
     // positionプロパティ
     tnl::Vector3 get_position() const { return position_; }
