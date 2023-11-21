@@ -10,9 +10,11 @@ public:
 
     void start() override
     {
-        owner_->get_transform().set_position(tnl::Vector3(0, 0, 0));
-        auto obj = instantiate<GameObject>();
-        obj->add_component<Transform>();
+        //もしかしたらSampleSceneで作成したGameObjectがowner_が
+        // owner_->get_transform().set_position(tnl::Vector3(0, 0, 0));
+        // auto obj = instantiate<GameObject>();
+        // obj->add_component<Transform>();
+        // obj->get_transform().set_position(tnl::Vector3(0, 0, 0));
     }
 
     void update(float delta_time) override
@@ -21,5 +23,7 @@ public:
 
     void draw() override
     {
+        DrawBoxEx(owner_->get_transform().get_position(), owner_->get_transform().get_scale().x,
+                  owner_->get_transform().get_scale().y, false);
     }
 };

@@ -81,6 +81,8 @@ public:
         auto newComponent = std::make_shared<T>(std::forward<Args>(args)...);
         T* componentPtr = newComponent.get();
         components_[type_index] = std::move(newComponent);
+        //set_ownerをする
+        componentPtr->set_owner(this);
         return componentPtr;
     }
 
