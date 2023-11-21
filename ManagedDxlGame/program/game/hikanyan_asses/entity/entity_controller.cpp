@@ -1,9 +1,9 @@
 ﻿#include "entity_controller.h"
-#include "bullet.h"
-#include "player.h"
+#include "Bullet.h"
+#include "Player.h"
 #include <random>
 
-#include "enemy.h"
+#include "Enemy.h"
 
 tnl::Vector3 getRandomPosition()
 {
@@ -20,13 +20,13 @@ tnl::Vector3 getRandomPosition()
 
 void entity_controller::initialize()
 {
-    auto* player_ = new player();
+    auto* player_ = new Player();
     entityList.push_back(player_);
 }
 
 void entity_controller::bulletInstance(tnl::Vector3 position)
 {
-    auto* bullet_ = new bullet();
+    auto* bullet_ = new Bullet();
     bullet_->setPosition(position);
     entityList.push_back(bullet_);
 }
@@ -36,7 +36,7 @@ void entity_controller::enemyInstance(tnl::Vector3 position)
     // エネミーを指定された数だけ生成し、ランダムな位置に配置
     for (int i = 0; i < num_enemies; ++i)
     {
-        auto* enemy_ = new enemy();
+        auto* enemy_ = new Enemy();
         enemy_->setPosition(getRandomPosition()); // ランダムな位置に配置
         entityList.push_back(enemy_);
     }

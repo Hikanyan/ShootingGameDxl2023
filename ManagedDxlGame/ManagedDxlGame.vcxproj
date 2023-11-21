@@ -170,15 +170,13 @@
     <ClCompile Include="program\dxlib_ext\dxlib_ext_texture.cpp" />
     <ClCompile Include="program\dxlib_ext\OBJLoader.cpp" />
     <ClCompile Include="program\game\game_main.cpp" />
-    <ClCompile Include="program\game\hikanyan_asses\entity\bullet.cpp" />
-    <ClCompile Include="program\game\hikanyan_asses\entity\enemy.cpp" />
-    <ClCompile Include="program\game\hikanyan_asses\entity\entity.cpp" />
+    <ClCompile Include="program\game\hikanyan_asses\entity\Bullet.cpp" />
+    <ClCompile Include="program\game\hikanyan_asses\entity\Enemy.cpp" />
+    <ClCompile Include="program\game\hikanyan_asses\entity\Entity.cpp" />
     <ClCompile Include="program\game\hikanyan_asses\entity\entity_controller.cpp" />
-    <ClCompile Include="program\game\hikanyan_asses\entity\player.cpp" />
-    <ClCompile Include="program\game\hikanyan_asses\scene_manager.cpp" />
-    <ClCompile Include="program\game\hikanyan_asses\system\list.cpp" />
-    <ClCompile Include="program\game\hikanyan_asses\system\singleton.cpp" />
-    <ClCompile Include="program\hikanyan_library\include\behaviour.cpp">
+    <ClCompile Include="program\game\hikanyan_asses\entity\Player.cpp" />
+    <ClCompile Include="program\game\hikanyan_asses\GameManager.cpp" />
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\Behaviour.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -252,12 +250,11 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="program\hikanyan_library\include\component\box_collider_2d.cpp" />
-    <ClCompile Include="program\hikanyan_library\include\component\component.cpp" />
-    <ClCompile Include="program\hikanyan_library\include\component\rigidbody_2d.cpp" />
-    <ClCompile Include="program\hikanyan_library\include\component\transform.cpp" />
-    <ClCompile Include="program\hikanyan_library\include\debug.cpp" />
-    <ClCompile Include="program\hikanyan_library\include\game_object.cpp">
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\BoxCollider2D.cpp" />
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\Component.cpp" />
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\Rigidbody2D.cpp" />
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\Transform.cpp" />
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\Debug.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -331,7 +328,7 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="program\hikanyan_library\include\mono_behaviour.cpp">
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\GameObject.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -405,7 +402,7 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="program\hikanyan_library\include\object.cpp">
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\MonoBehaviour.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -479,9 +476,7 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="program\hikanyan_library\scene\game_object_manager.cpp" />
-    <ClCompile Include="program\hikanyan_library\scene\sample_scene.cpp" />
-    <ClCompile Include="program\hikanyan_library\scene\scene_base.cpp">
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\Object.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -555,7 +550,10 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="program\hikanyan_library\tests\hikanyan_library_test.cpp">
+    <ClCompile Include="program\hikanyan_library\include\system\MyList.cpp" />
+    <ClCompile Include="program\hikanyan_library\include\system\Singleton.cpp" />
+    <ClCompile Include="program\hikanyan_library\scene\SampleScene.cpp" />
+    <ClCompile Include="program\hikanyan_library\scene\SceneBase.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -629,7 +627,155 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
-    <ClCompile Include="program\hikanyan_library\tests\test.cpp">
+    <ClCompile Include="program\hikanyan_library\scene\SceneManager.cpp">
+      <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
+      <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+      <CompileAs>Default</CompileAs>
+      <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableASAN>false</EnableASAN>
+      <EnableFuzzer>false</EnableFuzzer>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <GenerateModuleDependencies>false</GenerateModuleDependencies>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ObjectFileName>x64\Debug\</ObjectFileName>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>x64\Debug\ManagedDxlGame.pch</PrecompiledHeaderOutputFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+      <ShowIncludes>false</ShowIncludes>
+      <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <SpectreMitigation>false</SpectreMitigation>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <TrackerLogDirectory>x64\Debug\ManagedDxlGame.tlog\</TrackerLogDirectory>
+      <TranslateIncludes>false</TranslateIncludes>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <BuildStlModules>false</BuildStlModules>
+      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_MBCS;</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <LinkCompiled>true</LinkCompiled>
+    </ClCompile>
+    <ClCompile Include="program\hikanyan_library\tests\HikanyanLibraryTest.cpp">
+      <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
+      <BrowseInformationFile>x64\Debug\</BrowseInformationFile>
+      <CompileAs>Default</CompileAs>
+      <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableASAN>false</EnableASAN>
+      <EnableFuzzer>false</EnableFuzzer>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <GenerateModuleDependencies>false</GenerateModuleDependencies>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ModuleDependenciesFile>x64\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>x64\Debug\</ModuleOutputFile>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ObjectFileName>x64\Debug\</ObjectFileName>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ProgramDataBaseFileName>x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>x64\Debug\ManagedDxlGame.pch</PrecompiledHeaderOutputFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+      <ShowIncludes>false</ShowIncludes>
+      <SourceDependenciesFile>x64\Debug\</SourceDependenciesFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <SpectreMitigation>false</SpectreMitigation>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <TrackerLogDirectory>x64\Debug\ManagedDxlGame.tlog\</TrackerLogDirectory>
+      <TranslateIncludes>false</TranslateIncludes>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <XMLDocumentationFileName>x64\Debug\</XMLDocumentationFileName>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <BuildStlModules>false</BuildStlModules>
+      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_MBCS;</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <LinkCompiled>true</LinkCompiled>
+    </ClCompile>
+    <ClCompile Include="program\hikanyan_library\tests\Test.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -734,28 +880,28 @@
     <ClInclude Include="program\dxlib_ext\dxlib_ext_texture.h" />
     <ClInclude Include="program\dxlib_ext\OBJLoader.h" />
     <ClInclude Include="program\game\game_main.h" />
-    <ClInclude Include="program\game\hikanyan_asses\entity\bullet.h" />
-    <ClInclude Include="program\game\hikanyan_asses\entity\enemy.h" />
-    <ClInclude Include="program\game\hikanyan_asses\entity\entity.h" />
+    <ClInclude Include="program\game\hikanyan_asses\entity\Bullet.h" />
+    <ClInclude Include="program\game\hikanyan_asses\entity\Enemy.h" />
+    <ClInclude Include="program\game\hikanyan_asses\entity\Entity.h" />
     <ClInclude Include="program\game\hikanyan_asses\entity\entity_controller.h" />
-    <ClInclude Include="program\game\hikanyan_asses\entity\player.h" />
-    <ClInclude Include="program\game\hikanyan_asses\scene_manager.h" />
-    <ClInclude Include="program\game\hikanyan_asses\system\list.h" />
-    <ClInclude Include="program\game\hikanyan_asses\system\singleton.h" />
-    <ClInclude Include="program\hikanyan_library\include\behaviour.h" />
-    <ClInclude Include="program\hikanyan_library\include\component\box_collider_2d.h" />
-    <ClInclude Include="program\hikanyan_library\include\component\component.h" />
-    <ClInclude Include="program\hikanyan_library\include\component\rigidbody_2d.h" />
-    <ClInclude Include="program\hikanyan_library\include\component\transform.h" />
-    <ClInclude Include="program\hikanyan_library\include\debug.h" />
-    <ClInclude Include="program\hikanyan_library\include\game_object.h" />
-    <ClInclude Include="program\hikanyan_library\include\mono_behaviour.h" />
-    <ClInclude Include="program\hikanyan_library\include\object.h" />
-    <ClInclude Include="program\hikanyan_library\scene\game_object_manager.h" />
-    <ClInclude Include="program\hikanyan_library\scene\sample_scene.h" />
-    <ClInclude Include="program\hikanyan_library\scene\scene_base.h" />
-    <ClInclude Include="program\hikanyan_library\tests\hikanyan_library_test.h" />
-    <ClInclude Include="program\hikanyan_library\tests\test.h" />
+    <ClInclude Include="program\game\hikanyan_asses\entity\Player.h" />
+    <ClInclude Include="program\game\hikanyan_asses\GameManager.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\Behaviour.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\BoxCollider2D.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\Component.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\Rigidbody2D.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\Transform.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\Debug.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\GameObject.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\MonoBehaviour.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\Object.h" />
+    <ClInclude Include="program\hikanyan_library\include\system\MyList.h" />
+    <ClInclude Include="program\hikanyan_library\include\system\Singleton.h" />
+    <ClInclude Include="program\hikanyan_library\scene\SampleScene.h" />
+    <ClInclude Include="program\hikanyan_library\scene\SceneBase.h" />
+    <ClInclude Include="program\hikanyan_library\scene\SceneManager.h" />
+    <ClInclude Include="program\hikanyan_library\tests\HikanyanLibraryTest.h" />
+    <ClInclude Include="program\hikanyan_library\tests\Test.h" />
     <ClInclude Include="program\library\json11.hpp" />
     <ClInclude Include="program\library\stb_image.h" />
     <ClInclude Include="program\library\tnl_csv.h" />

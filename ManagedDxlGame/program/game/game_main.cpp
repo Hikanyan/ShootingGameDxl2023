@@ -5,30 +5,34 @@
 #include "../dxlib_ext/dxlib_ext.h"
 #include "game_main.h"
 
-#include "hikanyan_asses/scene_manager.h"
-#include "../hikanyan_library/scene/sample_scene.h"
+#include "../hikanyan_library/scene/SceneManager.h"
+#include "../hikanyan_library/scene/SampleScene.h"
 
 //------------------------------------------------------------------------------------------------------------
 // ゲーム起動時に１度だけ実行されます
-void gameStart()
+void game_start()
 {
     srand(time(0));
     SetBackgroundColor(32, 32, 32);
-    scene_manager::getInstance()->set_current_scene(std::make_unique<sample_scene>());
-    scene_manager::getInstance()->game_start();
+    // SampleSceneのインスタンスを作成
+    auto sampleScene = std::make_shared<SampleScene>();
+    SceneManager::getInstance()->add_scene("SampleScene",sampleScene);
+    SceneManager::getInstance()->load_scene("SampleScene");
+    SceneManager::getInstance()->game_start();
+    
 }
 
 //------------------------------------------------------------------------------------------------------------
 // 毎フレーム実行されます
-void gameMain(float delta_time)
+void game_main(float delta_time)
 {
     DrawFpsIndicator({10, DXE_WINDOW_HEIGHT - 10, 0}, delta_time);
-    scene_manager::getInstance()->game_main(delta_time);
+    SceneManager::getInstance()->game_main(delta_time);
 }
 
 //------------------------------------------------------------------------------------------------------------
 // ゲーム終了時に１度だけ実行されます
-void gameEnd()
+void game_end()
 {
-    scene_manager::getInstance()->game_end();
+    SceneManager::getInstance()->game_end();
 }
