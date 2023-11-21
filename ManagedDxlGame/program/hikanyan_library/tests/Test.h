@@ -17,9 +17,15 @@ public:
         // obj->get_transform().set_position(tnl::Vector3(0, 0, 0));
     }
 
-    void update(float delta_time) override
-    {
-    }
+    // void update(float delta_time) override
+    // {
+    //     Debug::log("update{}", owner_->get_name());
+    // }
+    //
+    // void fixed_update(float delta_time) override
+    // {
+    //     Debug::log("fixed_update{}", owner_->get_name());
+    // }
 
     void draw() override
     {
