@@ -10,6 +10,7 @@ public:
 
     void start() override
     {
+        owner_->get_transform().set_position(tnl::Vector3(0, 0, 0));
     }
 
     void update(float delta_time) override
@@ -17,11 +18,6 @@ public:
     }
 
     void draw() override
-    {//owner_->get_transform().get_position()
-    }
-
-    //再起関数
-    static void draw_map(const std::shared_ptr<GameObject>& obj)
     {
     }
 };

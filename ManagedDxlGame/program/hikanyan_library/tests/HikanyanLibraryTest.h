@@ -26,9 +26,9 @@ public:
         const auto obj = std::make_unique<GameObject>(); //動的にメモリを確保
         obj->set_name("obj"); //名前を設定
         obj->add_component<Transform>(); //transformコンポーネントを追加
-        obj->get_transform().position = {100, 100, 0};
-        obj->get_transform().rotation = {0, 0, 0};
-        obj->get_transform().scale = {1, 1, 1};
+        obj->get_transform().position_ = {100, 100, 0};
+        obj->get_transform().rotation_ = {0, 0, 0};
+        obj->get_transform().scale_ = {1, 1, 1};
         obj->add_component<BoxCollider2D>(); //box_collider_2dコンポーネントを追加
 
         Debug::log(std::format("objの名前は{}です", obj->get_name()));
@@ -36,9 +36,9 @@ public:
         auto* my_object = new GameObject(); //動的にメモリを確保
         my_object->set_name("my_object"); //名前を設定
         my_object->add_component<Transform>(); // transformコンポーネントを追加
-        my_object->get_transform().position = {100, 100, 0};
-        my_object->get_transform().rotation = {0, 0, 0};
-        my_object->get_transform().scale = {1, 1, 1};
+        my_object->get_transform().position_ = {100, 100, 0};
+        my_object->get_transform().rotation_ = {0, 0, 0};
+        my_object->get_transform().scale_ = {1, 1, 1};
 
         auto* my_object2 = new GameObject(); //動的にメモリを確保
         my_object2->set_name("test"); //名前を設定
