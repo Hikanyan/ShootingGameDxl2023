@@ -1,49 +1,49 @@
-﻿#include "sample_scene.h"
+﻿#include "SampleScene.h"
 
-#include "../tests/test.h"
+#include "../tests/Test.h"
 
 
-void sample_scene::init()
+void SampleScene::init()
 {
     add_game_object(obj_); //オブジェクトを追加
     obj_->set_name("obj"); //名前を設定
-    obj_->add_component<transform>(); //コンポーネントを追加
+    obj_->add_component<Transform>(); //コンポーネントを追加
     obj_->get_transform().set_position(tnl::Vector3(100, 100, 0));
-    obj_->add_component<test>();
-    debug::log("init{}", obj_->get_name());
+    obj_->add_component<Test>();
+    Debug::log("init{}", obj_->get_name());
 }
 
-void sample_scene::awake()
+void SampleScene::awake()
 {
-    debug::log("awake{}", obj_->get_name());
+    Debug::log("awake{}", obj_->get_name());
 }
 
-void sample_scene::start()
+void SampleScene::start()
 {
-    debug::log("start{}", obj_->get_name());
+    Debug::log("start{}", obj_->get_name());
 }
 
-void sample_scene::update(float delta_time)
+void SampleScene::update(float delta_time)
 {
-    debug::log("update{}", obj_->get_name());
+    Debug::log("update{}", obj_->get_name());
 }
 
-void sample_scene::fixed_update(float delta_time)
+void SampleScene::fixed_update(float delta_time)
 {
-    debug::log("update{}", obj_->get_name());
+    Debug::log("update{}", obj_->get_name());
 }
 
-void sample_scene::draw()
+void SampleScene::draw()
 {
-    debug::log("update{}", obj_->get_name());
+    Debug::log("update{}", obj_->get_name());
 }
 
-void sample_scene::on_enable()
+void SampleScene::on_enable()
 {
-    debug::log("update{}", obj_->get_name());
+    Debug::log("update{}", obj_->get_name());
 }
 
-void sample_scene::on_disable()
+void SampleScene::on_disable()
 {
-    debug::log("update{}", obj_->get_name());
+    Debug::log("update{}", obj_->get_name());
 }

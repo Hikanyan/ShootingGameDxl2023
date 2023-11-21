@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include "SceneBase.h"
 
-class sample_scene final : public SceneBase
+class SampleScene final : public SceneBase
 {
 public:
-    sample_scene() = default;
-    virtual ~sample_scene() override = default;
+    SampleScene() = default;
+    virtual ~SampleScene() override = default;
 
     // シーン固有の初期化
     void init() override;
@@ -21,5 +21,5 @@ private:
     //オブジェクトをコンストラクタで生成する
 
     //落ちることがあるので、スマートポインタを使う
-    std::shared_ptr<game_object> obj_ = std::make_shared<game_object>(); //動的にメモリを確保
+    std::shared_ptr<GameObject> obj_ = std::make_shared<GameObject>(); //動的にメモリを確保
 };
