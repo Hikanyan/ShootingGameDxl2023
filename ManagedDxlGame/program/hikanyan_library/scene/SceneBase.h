@@ -4,9 +4,12 @@
 #include "../../hikanyan_library/include/mono_behaviour/game_object.h"
 
 //game_objectの処理をgame_object_managerで行い、scene_baseで
-class scene_base
+class SceneBase
 {
 protected:
+    // シーンの名前
+    std::string name_;
+    // シーンに所属するゲームオブジェクト
     std::list<std::shared_ptr<game_object>> game_objects_;
     // 任意の処理をゲームオブジェクトに対して行う関数
     void for_each_game_object(const std::function<void(std::shared_ptr<game_object>)>& action) const //関数の引数に関数を渡す
@@ -21,8 +24,18 @@ protected:
     }
 
 public:
-    scene_base() = default;
-    virtual ~scene_base() = default;
+    SceneBase() = default;
+    virtual ~SceneBase() = default;
+
+    void set_name(const std::string& name)
+    {
+        name_ = name;
+    }
+
+    const std::string& get_name() const
+    {
+        return name_;
+    }
 
     // ゲームオブジェクトを追加する関数
     virtual void add_game_object(const std::shared_ptr<game_object>& game_object)
@@ -102,13 +115,13 @@ public:
     }
 
     // ゲームオブジェクトをインスタンス化する関数
-    template <typename... Args>
-    std::shared_ptr<game_object> instantiate(Args&&... args)
-    {
-        auto obj = object::instantiate<game_object>(std::forward<Args>(args)...);
-        add_game_object(obj);
-        return obj;
-    }
+    // template <typename... Args>
+    // std::shared_ptr<game_object> instantiate(Args&&... args)
+    // {
+    //     auto obj = object::instantiate<game_object>(std::forward<Args>(args)...);
+    //     add_game_object(obj);
+    //     return obj;
+    // }
 
     // ゲームオブジェクトを破棄する関数
     void scene_destroy()

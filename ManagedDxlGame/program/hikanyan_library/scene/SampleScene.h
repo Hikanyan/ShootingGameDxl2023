@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "scene_base.h"
+#include "SceneBase.h"
 
-class sample_scene final : public scene_base
+class sample_scene final : public SceneBase
 {
 public:
     sample_scene() = default;
