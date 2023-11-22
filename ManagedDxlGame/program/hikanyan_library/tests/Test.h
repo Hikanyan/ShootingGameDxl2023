@@ -19,6 +19,7 @@ public:
 
     void update(float delta_time) override
     {
+        owner_->get_transform().set_position(owner_->get_transform().get_position() + tnl::Vector3(1, 0, 0));
         Debug::log("update{}", owner_->get_name());
     }
 

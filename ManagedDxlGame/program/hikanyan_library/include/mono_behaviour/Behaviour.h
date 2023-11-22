@@ -22,10 +22,10 @@ public:
     }
 
     // コルーチンのサポート
-    virtual Coroutine start_coroutine(...);
+   // virtual Coroutine start_coroutine(...);
 
     // イベントハンドラの追加
-    virtual void handle_event(EventType event);
+    //virtual void handle_event(EventType event);
 };
 
 class Coroutine
