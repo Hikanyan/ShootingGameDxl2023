@@ -41,3 +41,16 @@ public:
         Debug::log("on_disable{}", owner_->get_name());
     }
 };
+/*
+実行される順番が正常になった。
+initobj
+startobj
+updateobj
+fixed_updateobj
+updateobj
+updateobj
+fixed_updateobj
+updateobj
+updateobj
+...
+*/
