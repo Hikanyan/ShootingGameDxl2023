@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "../Object.h"
-#include "../GameObject.h"
+
+class GameObject;
 
 class Component : public Object
 {
