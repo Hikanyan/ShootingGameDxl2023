@@ -15,8 +15,8 @@ void game_start()
     srand(time(0));
     SetBackgroundColor(32, 32, 32);
     // SampleSceneのインスタンスを作成
-    auto sampleScene = std::make_shared<SampleScene>();
-    SceneManager::getInstance()->add_scene("SampleScene",sampleScene);
+    auto sample_scene = std::make_shared<SampleScene>();
+    SceneManager::getInstance()->add_scene("SampleScene",sample_scene);
     SceneManager::getInstance()->load_scene("SampleScene");
     SceneManager::getInstance()->game_start();
     

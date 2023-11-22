@@ -1,20 +1,28 @@
 ﻿#pragma once
 #include "../Object.h"
-class GameObject; // GameObjectの前方宣言。
+
+class GameObject;
 
 class Component : public Object
 {
 protected:
     GameObject* owner_; // このコンポーネントを所有するGameObjectへのポインタ。
+    bool is_enabled_; // コンポーネントの有効/無効状態を示すフラグ。
 public:
-    Component() : owner_(nullptr)
+    Component() : owner_(nullptr), is_enabled_(true)
     {
     }
 
-    [[nodiscard]] virtual bool is_enabled() const { return true; }
+    ~Component() override = default;
 
-    ~Component() override
-    = default;
+    [[nodiscard]] virtual bool is_enabled() const { return is_enabled_; }
+    virtual void set_enabled(const bool enabled) { is_enabled_ = enabled; }
+
+    // このコンポーネントを所有するGameObjectへの参照を設定します。
+    virtual void set_owner(GameObject* game_object) { owner_ = game_object; }
+
+    // このコンポーネントを所有するGameObjectへの参照を取得します。
+    [[nodiscard]] virtual GameObject* get_owner() const { return owner_; }
 
     // 初期化処理を行います。
     virtual void init()
@@ -55,21 +63,4 @@ public:
     virtual void on_disable()
     {
     }
-
-    //instance化とdestroyは使わないのでコメントアウト
-    // // コンポーネントをインスタンス化した時に呼ばれます。
-    // virtual void instantiate()
-    // {
-    // }
-    //
-    // // コンポーネントが破棄される直前に呼ばれます。
-    // virtual void destroy()
-    // {
-    // }
-
-    // このコンポーネントを所有するGameObjectへの参照を設定します。
-    virtual void set_owner(GameObject* game_object) { owner_ = game_object; }
-
-    // このコンポーネントを所有するGameObjectへの参照を取得します。
-    [[nodiscard]] virtual GameObject* get_owner() const { return owner_; }
 };

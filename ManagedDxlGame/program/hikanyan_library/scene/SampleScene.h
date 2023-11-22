@@ -18,5 +18,6 @@ public:
     void on_disable() override;
 
 private:
+    //落ちることがあるので、スマートポインタを使う
     std::shared_ptr<GameObject> obj_ = std::make_shared<GameObject>(); //動的にメモリを確保
 };
