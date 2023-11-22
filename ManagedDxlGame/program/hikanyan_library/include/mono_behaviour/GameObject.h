@@ -38,25 +38,11 @@ public:
     }
 
     // タグのgetter/setter
-    std::string get_tag() const
-    {
-        return tag_value_;
-    }
+    [[nodiscard]] std::string get_tag() const { return tag_value_; }
+    void set_tag(const std::string& value) { tag_value_ = value; }
+    [[nodiscard]] bool get_active() const { return is_active_; }
+    void set_active(const bool value) { is_active_ = value; }
 
-    void set_tag(const std::string& value)
-    {
-        tag_value_ = value;
-    }
-
-    void set_active(const bool value)
-    {
-        is_active_ = value;
-    }
-
-    bool get_active() const
-    {
-        return is_active_;
-    }
 
     // コンポーネントを取得する
     template <typename T>
