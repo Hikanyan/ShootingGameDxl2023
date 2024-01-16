@@ -6,11 +6,11 @@ public:
     int current_health;
     int max_health;
 
-    Health(int maxHealth) : current_health(maxHealth), max_health(maxHealth)
+    Health(int max_health) : current_health(max_health), max_health(max_health)
     {
     }
 
-    void TakeDamage(int amount)
+    void take_damage(int amount)
     {
         current_health -= amount;
         if (current_health < 0)
@@ -20,7 +20,7 @@ public:
         }
     }
 
-    void Heal(int amount)
+    void heal(int amount)
     {
         current_health += amount;
         if (current_health > max_health)
@@ -29,7 +29,7 @@ public:
         }
     }
 
-    bool IsAlive() const
+    bool is_alive() const
     {
         return current_health > 0;
     }

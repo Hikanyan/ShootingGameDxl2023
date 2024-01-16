@@ -190,11 +190,13 @@
     <ClCompile Include="program\game\hikanyan_laboratory\entity\Health.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\entity\player\IPlayerController.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\entity\player\Player.cpp" />
+    <ClCompile Include="program\game\hikanyan_laboratory\entity\player\PlayerController.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\entity\player\PlayerMove.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\Scene\TitleScene.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\userInterface\InputManager.cpp" />
     <ClCompile Include="program\hikanyan_library\include\mono_behaviour\Behaviour.cpp" />
     <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\BoxCollider2D.cpp" />
+    <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\Collider2D.cpp" />
     <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\Component.cpp" />
     <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\Rigidbody2D.cpp" />
     <ClCompile Include="program\hikanyan_library\include\mono_behaviour\component\Text.cpp" />
@@ -279,11 +281,13 @@
     <ClInclude Include="program\game\hikanyan_laboratory\entity\Health.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\entity\player\IPlayerController.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\entity\player\Player.h" />
+    <ClInclude Include="program\game\hikanyan_laboratory\entity\player\PlayerController.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\entity\player\PlayerMove.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\Scene\TitleScene.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\userInterface\InputManager.h" />
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour\Behaviour.h" />
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\BoxCollider2D.h" />
+    <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\Collider2D.h" />
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\Component.h" />
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\Rigidbody2D.h" />
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour\component\Text.h" />

@@ -1,10 +1,16 @@
 ﻿#pragma once
-#include "tnl_vector3.h"
+#include "IPlayerController.h"
+#include "../Health.h"
+#include "../hikanyan_library/include/mono_behaviour/MonoBehaviour.h"
 
-class Player {
+class Player : public MonoBehaviour, public IPlayerController
+{
 public:
-    tnl::Vector3 position;
     Health health;
+    BoxCollider2D collider;
+    Rigidbody2D rigidbody;
 
     // 他のプレイヤー関連の属性とメソッド
+
+    void on_TrrigerEnter2D(Collider2D& collider) override;
 };

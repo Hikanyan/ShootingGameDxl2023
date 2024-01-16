@@ -10,6 +10,7 @@
 #include "Behaviour.h"
 #include "component/Transform.h"
 #include "component/BoxCollider2D.h"
+#include "component/Rigidbody2D.h"
 
 
 class GameObject : public Object
@@ -106,6 +107,10 @@ public:
     BoxCollider2D& get_collider() const
     {
         return *get_component_required<BoxCollider2D>("BoxCollider2D component not found");
+    }
+    Rigidbody2D& get_rigidbody() const
+    {
+        return *get_component_required<Rigidbody2D>("Rigidbody2D component not found");
     }
 
 private:

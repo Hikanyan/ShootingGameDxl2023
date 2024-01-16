@@ -6,15 +6,15 @@ namespace tnl {
 
 	//--------------------------------------------------------------------------------------------------------------------------
 	// Sequence
-	// tips... 1.�f���Q�[�g�ɂ�郁�\�b�h�̌Ăѕ����@�\��񋟂��܂�
-	// �@�@�@�@2.�^���R���[�`���}�N���ɂ��ȈՃR���[�`���L�q��񋟂��܂�
-	//         3.invoke �ɂ�鎞�Ԍo�߂Ɋ�Â��ď��������s���邽�߂̋@�\��񋟂��܂�
+	// tips... 1.デリゲートによるメソッドの呼び分け機能を提供します
+	// 　　　　2.疑似コルーチンマクロによる簡易コルーチン記述を提供します
+	//         3.invoke による時間経過に基づいて処理を実行するための機能を提供します
 	// 
-	//			���ꂼ��̋@�\�͑g�ݍ��킹�Ďg�p���邱�Ƃ��ł��܂�
+	//			それぞれの機能は組み合わせて使用することもできます
 	// 
 	// 
 	// ==================================================================================================================
-	// �� �g�p�@�T���v�� 1.�f���Q�[�g�ɂ�郁�\�b�h�̌Ăѕ����@�\
+	// ◇ 使用法サンプル 1.デリゲートによるメソッドの呼び分け機能
 	// ==================================================================================================================
 	// 
 	//  --------------- Example.h ----------------
@@ -22,18 +22,18 @@ namespace tnl {
 	// class Example
 	// {
 	//	public:
-	//		// �V�[�P���X�@�\�̐錾
-	//		TNL_CO_SEQUENCE(Example, &Example::seqCallFunctionA); // ������ seqCallFunctionA �����s����܂�
+	//		// シーケンス機能の宣言
+	//		TNL_CO_SEQUENCE(Example, &Example::seqCallFunctionA); // 初動で seqCallFunctionA が実行されます
 	// 
-	//		// ���t���[�����s�����X�V����
+	//		// 毎フレーム実行される更新処理
 	//		void update(float delta_time) ;
 	// 
-	//		// �V�[�P���X�@�\�ŌĂѕ����郁�\�b�h
+	//		// シーケンス機能で呼び分けるメソッド
 	//		bool seqCallFunctionA(float delta_time);
 	//		bool seqCallFunctionB(float delta_time);
 	//		bool seqCallFunctionC(float delta_time);
 	//
-	//		����
+	//		中略
 	// } ;
 	// 
 	//  --------------- Example.cpp ----------------
@@ -45,12 +45,12 @@ namespace tnl {
 	// 
 	// bool Example::seqCallFunctionA(float delta_time)
 	// {
-	//		// ����if���̓��\�b�h���R�[�����ꂽ�ŏ��̂P�t���[���̂ݐ^�ɂȂ�
+	//		// このif文はメソッドがコールされた最初の１フレームのみ真になる
 	//		if( tnl_sequence_.isStart() ){
-	//			// seqCallFunctionA �̔C�ӂ̏���������
+	//			// seqCallFunctionA の任意の初期化処理
 	//		}
 	// 
-	//		// �T�b�o�߂Ŏ��̃t���[������ seqCallFunctionB �Ɉڍs
+	//		// ５秒経過で次のフレームから seqCallFunctionB に移行
 	//		if( tnl_sequence_.getProgressTime() > 5.0f ){
 	//			tnl_sequence_.change( &Example::seqCallFunctionB ) ;
 	//		}
@@ -60,12 +60,12 @@ namespace tnl {
 	// 
 	// bool Example::seqCallFunctionB(float delta_time)
 	// {
-	//		// ����if���̓��\�b�h���R�[�����ꂽ�ŏ��̂P�t���[���̂ݐ^�ɂȂ�
+	//		// このif文はメソッドがコールされた最初の１フレームのみ真になる
 	//		if( tnl_sequence_.isStart() ){
-	//			// seqCallFunctionA �̔C�ӂ̏���������
+	//			// seqCallFunctionA の任意の初期化処理
 	//		}
 	// 
-	//		// �R�b�o�߂Ŏ��̃t���[�����璼�O�ɌĂяo����Ă������\�b�h�ɖ߂�
+	//		// ３秒経過で次のフレームから直前に呼び出されていたメソッドに戻る
 	//		if( tnl_sequence_.getProgressTime() > 3.0f ){
 	//			tnl_sequence_.undo() ;
 	//		}
@@ -75,12 +75,12 @@ namespace tnl {
 	// 
 	// 
 	// ==================================================================================================================
-	// �� �g�p�@�T���v�� 2.�^���R���[�`���}�N���ɂ��ȈՃR���[�`���L�q
+	// ◇ 使用法サンプル 2.疑似コルーチンマクロによる簡易コルーチン記述
 	// ==================================================================================================================
 	// 
 	//  --------------- Example.h ----------------
 	// 
-	//				�@�@���T���v���P
+	//				　　同サンプル１
 	// 
 	// 
 	//  --------------- Example.cpp ----------------
@@ -88,34 +88,34 @@ namespace tnl {
 	// bool Example::seqCallFunctionA(float delta_time)
 	// {
 	// 
-	//		// ---------- �t���[���w��ł̃R���[�`�� ----------
+	//		// ---------- フレーム指定でのコルーチン ----------
 	// 
-	//		// 10 �t���[���̊ԃ����_���w��̏��������s�����
+	//		// 10 フレームの間ラムダ式指定の処理が実行される
 	//		TNL_SEQ_CO_FRM_YIELD_RETURN(10, delta_time, [&] {
 	// 
-	//			// �ŏ��̂P�t���[���̂ݐ^�ɂȂ�
+	//			// 最初の１フレームのみ真になる
 	//			if ( TNL_SEQ_CO_YIELD_FRM_IS_START ) {
 	//			}
 	// 
 	//		});
 	// 
-	//		// ---------- �b���w��ł̃R���[�`�� ----------
+	//		// ---------- 秒数指定でのコルーチン ----------
 	// 
-	//		// 1 �b�Ԃ̊ԃ����_���w��̏��������s�����
+	//		// 1 秒間の間ラムダ式指定の処理が実行される
 	//		TNL_SEQ_CO_TIM_YIELD_RETURN(1.0f, delta_time, [&] {
 	// 
-	//			// �ŏ��̂P�t���[���̂ݐ^�ɂȂ�
+	//			// 最初の１フレームのみ真になる
 	//			if ( TNL_SEQ_CO_YIELD_FRM_IS_START ) {
 	//			}
 	// 
 	//		});
 	// 
-	//		// ��L�Q�̃R���[�`���������I�������� seqCallFunctionB �Ɉڍs
+	//		// 上記２つのコルーチン処理が終了したら seqCallFunctionB に移行
 	//		tnl_sequence_.change(&Example::seqCallFunctionB) ;
 	// 
 	// 
-	//		// �R���[�`���}�N�����g�p���郁�\�b�h�̍Ō�ɕK���L�q
-	//		// ���̃}�N���g�p���� return false �s�v
+	//		// コルーチンマクロを使用するメソッドの最後に必ず記述
+	//		// このマクロ使用時は return false 不要
 	//		TNL_SEQ_CO_END ;
 	// }
 	// 
@@ -124,23 +124,23 @@ namespace tnl {
 	// bool Example::seqCallFunctionB(float delta_time){
 	// 
 	// 
-	//		// ---------- �R���[�`�������̓r���j�� ----------
+	//		// ---------- コルーチン処理の途中破棄 ----------
 	// 
-	//		// 60 �t���[���̊ԃ����_���w��̏��������s�����
+	//		// 60 フレームの間ラムダ式指定の処理が実行される
 	//		TNL_SEQ_CO_FRM_YIELD_RETURN(60, delta_time, [&] {
 	// 
-	//			// ���̃R���[�`���̌o�߃t���[������ 30 �ɂȂ�����^
+	//			// このコルーチンの経過フレーム数が 30 になったら真
 	//			if( TNL_SEQ_CO_PROG_FRAME == 30 ){
-	//				// ���̃R���[�`����j������
+	//				// このコルーチンを破棄する
 	//				TNL_SEQ_CO_BREAK ;
 	//			}
 	// 
 	//		});
 	// 
-	//		// �R���[�`���������I�������� seqCallFunctionC �Ɉڍs
+	//		// コルーチン処理が終了したら seqCallFunctionC に移行
 	//		tnl_sequence_.change( &Example::seqCallFunctionC ) ;
 	// 
-	//		// �R���[�`���}�N�����g�p���郁�\�b�h�̍Ō�ɕK���L�q
+	//		// コルーチンマクロを使用するメソッドの最後に必ず記述
 	//		TNL_SEQ_CO_END ;
 	// 
 	// }
@@ -148,29 +148,29 @@ namespace tnl {
 	// 
 	// bool Example::seqCallFunctionC( float delta_time ){
 	// 
-	//		// ---------- �R���[�`���������J��Ԃ�( �������[�v�Œ�~�͂��Ȃ� ) ----------
+	//		// ---------- コルーチン処理を繰り返す( 無限ループで停止はしない ) ----------
 	// 
 	//		while( 1 ){
-	//			// 10 �t���[���̊ԃ����_���w��̏��������s�����
+	//			// 10 フレームの間ラムダ式指定の処理が実行される
 	//			TNL_SEQ_CO_FRM_YIELD_RETURN(10, delta_time, [&] {
 	// 
 	//			});
 	// 
-	//			// 10 �t���[���̊ԃ����_���w��̏��������s�����
+	//			// 10 フレームの間ラムダ式指定の処理が実行される
 	//			TNL_SEQ_CO_FRM_YIELD_RETURN(10, delta_time, [&] {
 	// 
 	//			});
 	// 
 	//		}
 	// 
-	//		// �R���[�`���}�N�����g�p���郁�\�b�h�̍Ō�ɕK���L�q
+	//		// コルーチンマクロを使用するメソッドの最後に必ず記述
 	//		TNL_SEQ_CO_END ;
 	// 
 	// }
 	// 
 	// 
 	// ==================================================================================================================
-	// �� �g�p�@�T���v�� 3.invoke �ɂ�鎞�Ԍo�߂Ɋ�Â��ď��������s���邽�߂̋@�\
+	// ◇ 使用法サンプル 3.invoke による時間経過に基づいて処理を実行するための機能
 	// ==================================================================================================================
 	// 
 	//  --------------- Example.h ----------------
@@ -181,16 +181,16 @@ namespace tnl {
 	// 
 	//		Example() ;
 	// 
-	//		TNL_CO_SEQUENCE(Example, &Example::seqCallFunctionA); // ������ seqCallFunctionA �����s����܂�
+	//		TNL_CO_SEQUENCE(Example, &Example::seqCallFunctionA); // 初動で seqCallFunctionA が実行されます
 	// 
-	//		// �V�[�P���X�@�\�ŌĂѕ����郁�\�b�h
+	//		// シーケンス機能で呼び分けるメソッド
 	//		bool seqCallFunctionA(float delta_time);
 	// 
-	//		// Invoke �ŌĂяo�����\�b�h
+	//		// Invoke で呼び出すメソッド
 	//		void calledFromInvokeA(float delta_time);
 	//		void calledFromInvokeB(float delta_time);
 	//
-	//		����
+	//		中略
 	// } ;
 	// 
 	//  --------------- Example.cpp ----------------
@@ -198,27 +198,27 @@ namespace tnl {
 	// void Example::Example()
 	// {
 	// 
-	//		// seqCallFunctionB �� 1�b��� 1�񂾂����s
+	//		// seqCallFunctionB を 1秒後に 1回だけ実行
 	//		tnl_sequence_.invoke( &Example::calledFromInvokeA, 1.0f);
 	// 
-	//		// seqCallFunctionC �� 3�b��� 0.5�b�Ԋu�Ŏ��s
+	//		// seqCallFunctionC を 3秒後に 0.5秒間隔で実行
 	//		tnl_sequence_.invokeRepeating( &Example::calledFromInvokeB, 3.0f, 0.5f);
 	// 
-	//		// �w�肵�� invoke ��S�ăL�����Z��
+	//		// 指定した invoke を全てキャンセル
 	//		tnl_sequence_.cancelInvoke( &Example::calledFromInvokeB ) ;
 	// }
 	// 
 	// bool Example::seqCallFunctionA(float DeltaSeconds)
 	// {
-	//		// �C�ӂ̏���
+	//		// 任意の処理
 	// }
 	// bool Example::calledFromInvokeA(float DeltaSeconds)
 	// {
-	//		// �C�ӂ̏���
+	//		// 任意の処理
 	// }
 	// bool Example::calledFromInvokeB(float DeltaSeconds)
 	// {
-	//		// �C�ӂ̏���
+	//		// 任意の処理
 	// }
 	// 
 	// 
@@ -294,9 +294,9 @@ namespace tnl {
 	public:
 
 		//---------------------------------------------------------------------------------------------------------
-		// �R���X�g���N�^
-		// arg1... ��܃N���X�� this �|�C���^���w��
-		// arg2... �R�[���o�b�N�ŌĂяo��������܃N���X�̃����o���\�b�h
+		// コンストラクタ
+		// arg1... 包含クラスの this ポインタを指定
+		// arg2... コールバックで呼び出したい包含クラスのメンバメソッド
 		Sequence(T* obj, bool (T::*func)(const float))
 			: object_(obj)
 			, next_(func)
@@ -308,8 +308,8 @@ namespace tnl {
 		~Sequence() {}
 
 		//---------------------------------------------------------------------------------------------------------
-		// �V�[�P���X�̃A�b�v�f�[�g ( ���t���[���Ăяo����OK )
-		// arg1... �t���[���Ԃ̌o�ߎ���( �b�̃f���^�^�C�� )
+		// シーケンスのアップデート ( 毎フレーム呼び出せばOK )
+		// arg1... フレーム間の経過時間( 秒のデルタタイム )
 		inline bool update(const float deltatime) {
 
 			auto it = invokes_.begin();
@@ -340,24 +340,24 @@ namespace tnl {
 		}
 
 		//---------------------------------------------------------------------------------------------------------
-		// ��r
+		// 比較
 		inline bool isComparable(bool (T::*func)(const float)) const { return p_now_ == func; }
 
 		//---------------------------------------------------------------------------------------------------------
-		// �������p�@�V�[�P���X�̍ŏ��̂P�t���[������ true ���A��
+		// 初期化用　シーケンスの最初の１フレームだけ true が帰る
 		inline bool isStart() const { return is_start_; }
 
 		//---------------------------------------------------------------------------------------------------------
-		// �V�[�P���X�̌o�ߎ��Ԃ��擾 ( �b )
+		// シーケンスの経過時間を取得 ( 秒 )
 		inline float getProgressTime() const { return sum_time_; }
 
 		//---------------------------------------------------------------------------------------------------------
-		// �V�[�P���X�̌o�ߎ��Ԃ��擾 ( �b )
+		// シーケンスの経過時間を取得 ( 秒 )
 		inline uint32_t getProgressFrame() const { return sum_frame_; }
 
 		//---------------------------------------------------------------------------------------------------------
-		// �V�[�P���X�̕ύX
-		// arg1... ���̃t���[��������s�������܃N���X�̃��\�b�h���w��
+		// シーケンスの変更
+		// arg1... 次のフレームから実行させる包含クラスのメソッドを指定
 		inline void change(bool (T::*func)(const float)) {
 			prevs_.push(now_);
 			p_prevs_.push(p_now_);
@@ -367,8 +367,8 @@ namespace tnl {
 		}
 
 		//---------------------------------------------------------------------------------------------------------
-		// 1�O�̃V�[�P���X�ɖ߂�
-		// tips... �O�̃V�[�P���X�����݂��Ȃ���Ή������Ȃ�
+		// 1つ前のシーケンスに戻る
+		// tips... 前のシーケンスが存在しなければ何もしない
 		inline void undo() {
 			if (prevs_.empty()) return;			
 			next_ = prevs_.top();
@@ -380,9 +380,9 @@ namespace tnl {
 
 
 		//---------------------------------------------------------------------------------------------------------
-		// �V�[�P���X�𑦍��ɕύX
-		// arg1... ���s�������܃N���X�̃��\�b�h���w��
-		// tisp... ���t���[����҂��������ɃV�[�P���X��ύX����
+		// シーケンスを即座に変更
+		// arg1... 実行させる包含クラスのメソッドを指定
+		// tisp... 次フレームを待たず即座にシーケンスを変更する
 		inline void immediatelyChange(bool (T::*func)(const float)) {
 			prevs_.push(now_);
 			p_prevs_.push(p_now_);
@@ -395,26 +395,26 @@ namespace tnl {
 		}
 
 		//---------------------------------------------------------------------------------------------------------
-		// �w��b���o�ߌ�Ɏ��s����郁�\�b�h
-		// arg1... ���s���\�b�h
-		// arg2... �����܂ł̎���
+		// 指定秒数経過後に実行されるメソッド
+		// arg1... 実行メソッド
+		// arg2... 発動までの時間
 		void invoke(void (T::* func)(), float invoke_time) {
 			invokes_.emplace_back( std::make_shared<Invoke>(object_, invoke_time, func) );
 		}
 
 		//---------------------------------------------------------------------------------------------------------
-		// �w��b���o�ߌ�ɌJ��Ԃ����s����郁�\�b�h
-		// arg1... ���s���\�b�h
-		// arg2... �����܂ł̎���
-		// arg3... ���b���Ƃɂ��肩������
+		// 指定秒数経過後に繰り返し実行されるメソッド
+		// arg1... 実行メソッド
+		// arg2... 発動までの時間
+		// arg3... 何秒ごとにくりかえすか
 		void invokeRepeating(void (T::* func)(), float invoke_time, float repeat_time) {
 			invokes_.emplace_back(std::make_shared<Invoke>(object_, invoke_time, repeat_time, func));
 		}
 
 		//---------------------------------------------------------------------------------------------------------
-		// invoke �̎�����
-		// arg1... invoke or invokeRepeating �Ŏw�肵�����\�b�h
-		// tips... �����o�^����Ă��Ă��S�ăL�����Z������܂�
+		// invoke の取り消し
+		// arg1... invoke or invokeRepeating で指定したメソッド
+		// tips... 複数登録されていても全てキャンセルされます
 		void cancelInvoke(void (T::* func)()) {
 			auto it = invokes_.begin();
 			while (it != invokes_.end()) {
@@ -431,60 +431,60 @@ namespace tnl {
 		//------------------------------------------------------------------------------------------------------------------------
 		//
 		//
-		// �^���R���[�`��
+		// 疑似コルーチン
 		// 
 		//
 
-		// �R���[�`���@�\�t���V�[�P���X�錾�}�N��
-		// arg1.. ��܃N���X��
-		// arg2.. �����V�[�P���X
+		// コルーチン機能付きシーケンス宣言マクロ
+		// arg1.. 包含クラス名
+		// arg2.. 初期シーケンス
 		#define TNL_CO_SEQUENCE( class_name, start_func )	tnl::Sequence<class_name> tnl_sequence_ = tnl::Sequence<class_name>(this, start_func);
 
-		// �R���[�`���V�[�P���X�I������
-		// tips.. �R���[�`���g�p���\�b�h�̍Ō�ɕK���R�[�����邱��
+		// コルーチンシーケンス終了処理
+		// tips.. コルーチン使用メソッドの最後に必ずコールすること
 		#define TNL_SEQ_CO_END								tnl_sequence_._co_reset_call_count_(); return true ;
 
-		// �R���[�`�����s�t���[�����̎擾
+		// コルーチン実行フレーム数の取得
 		#define TNL_SEQ_CO_PROG_FRAME						tnl_sequence_._co_get_prog_frame_()
 
-		// �R���[�`�����s���Ԃ̎擾
+		// コルーチン実行時間の取得
 		#define TNL_SEQ_CO_PROG_TIME						tnl_sequence_._co_get_prog_time_()
 
-		// ���Y�R���[�`���̔j��
+		// 当該コルーチンの破棄
 		#define TNL_SEQ_CO_BREAK							{ tnl_sequence_._co_break_() ; return ; }
 
 
-		// �R���[�`���������������}�N��( �t���[�����w�� )
-		// arg1... ���s�t���[���� (�}�C�i�X�̒l�Ŗ������[�v)
-		// arg2... �f���^�^�C��
-		// arg3... �R���[�`���Ŏ��s���郆�[�U��`����( void() �����_�� )
-		// tips... �������[�v���w�肵���ꍇ�ł������Ōo�߃t���[�������J�E���g���Ă��܂�
-		// ....... �t���[�����J�E���g�� int32_t �𒴂���� 0 �Ƀ��Z�b�g����邱�Ƃɒ���
+		// コルーチン内部処理実装マクロ( フレーム数指定 )
+		// arg1... 実行フレーム数 (マイナスの値で無限ループ)
+		// arg2... デルタタイム
+		// arg3... コルーチンで実行するユーザ定義処理( void() ラムダ式 )
+		// tips... 無限ループを指定した場合でも内部で経過フレーム数をカウントしています
+		// ....... フレーム数カウントは int32_t を超えると 0 にリセットされることに注意
 		#define TNL_SEQ_CO_FRM_YIELD_RETURN( lim_frame, delta_time, logic )		if (tnl_sequence_._co_yield_by_frame_( lim_frame, delta_time, logic ) ) return true ;
 
-		// �R���[�`���������������}�N��( ���Ԏw�� )
-		// arg1... ���s����
-		// arg2... �f���^�^�C��
-		// arg3... �R���[�`���Ŏ��s���郆�[�U��`����( void() �����_�� )
-		// tips... ���Ԏw�肵���ꍇ�ł������Ōo�߃t���[�������J�E���g���Ă��܂�
-		// ....... �t���[�����J�E���g�� int32_t �𒴂���� 0 �Ƀ��Z�b�g����邱�Ƃɒ���
+		// コルーチン内部処理実装マクロ( 時間指定 )
+		// arg1... 実行時間
+		// arg2... デルタタイム
+		// arg3... コルーチンで実行するユーザ定義処理( void() ラムダ式 )
+		// tips... 時間指定した場合でも内部で経過フレーム数をカウントしています
+		// ....... フレーム数カウントは int32_t を超えると 0 にリセットされることに注意
 		#define TNL_SEQ_CO_TIM_YIELD_RETURN( lim_time, delta_time, logic )		if (tnl_sequence_._co_yield_by_time_( lim_time, delta_time, logic ) ) return true ;
 
 
-		// �R���[�`������(TNL_SEQ_CO_FRM_YIELD_RETURN) �̍ŏ��̃t���[���Ȃ� true
+		// コルーチン内部(TNL_SEQ_CO_FRM_YIELD_RETURN) の最初のフレームなら true
 		#define TNL_SEQ_CO_YIELD_FRM_IS_START		( 0 == tnl_sequence_._co_get_prog_frame_() )
-		// �R���[�`������(TNL_SEQ_CO_FRM_YIELD_RETURN) �̍Ō�̃t���[���Ȃ� true
+		// コルーチン内部(TNL_SEQ_CO_FRM_YIELD_RETURN) の最後のフレームなら true
 		#define TNL_SEQ_CO_YIELD_FRM_IS_END			( tnl_sequence_._co_get_limit_frame_() == (tnl_sequence_._co_get_prog_frame_()+1) )
 
-		// �R���[�`������(TNL_SEQ_CO_TIM_YIELD_RETURN) �̍ŏ��̃t���[���Ȃ� true
+		// コルーチン内部(TNL_SEQ_CO_TIM_YIELD_RETURN) の最初のフレームなら true
 		#define TNL_SEQ_CO_YIELD_TIM_IS_START		( 0 == tnl_sequence_._co_get_prog_frame_() )
-		// �R���[�`������(TNL_SEQ_CO_TIM_YIELD_RETURN) �̍ŏ��̃t���[���Ȃ� true
+		// コルーチン内部(TNL_SEQ_CO_TIM_YIELD_RETURN) の最初のフレームなら true
 		#define TNL_SEQ_CO_YIELD_TIM_IS_END			( tnl_sequence_._co_get_limit_time_() <= tnl_sequence_._co_get_prog_time_() )
 
 
 		//------------------------------------------------------------------------------------------------------------------------
 		// 
-		// ���[�U�ɂ�钼�ڃR�[���͋֎~
+		// ユーザによる直接コールは禁止
 		//
 		inline void		_co_break_() { co_is_break_ = true; }
 		inline int32_t	_co_get_prog_frame_() { return co_frame_; }
