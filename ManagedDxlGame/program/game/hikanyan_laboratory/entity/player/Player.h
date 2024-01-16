@@ -3,6 +3,8 @@
 #include "../Health.h"
 #include "../hikanyan_library/include/mono_behaviour/MonoBehaviour.h"
 
+class Collider2D;
+
 class Player : public MonoBehaviour, public IPlayerController
 {
 public:
@@ -12,5 +14,8 @@ public:
 
     // 他のプレイヤー関連の属性とメソッド
 
-    void on_TrrigerEnter2D(Collider2D& collider) override;
+    void OnTrrigerEnter2D(Collider2D* other) override
+    {
+        
+    };
 };
