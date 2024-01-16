@@ -145,7 +145,7 @@ void DrawAxis(const dxe::Camera* camera, const tnl::Vector3& pos, const tnl::Qua
 	SetCameraViewMatrix(view);
 	SetupCamera_ProjectionMatrix(proj);
 
-	// �I�u�W�F�N�g�̃��[���h�s��̍쐬
+	// オブジェクトのワールド行列の作成
 	tnl::Matrix mt_trans;
 	tnl::Matrix mt_rot;
 	tnl::Matrix mt_obj_world;
@@ -174,7 +174,7 @@ void DrawOBB(const dxe::Camera* camera, const tnl::Vector3& pos, const tnl::Quat
 	SetCameraViewMatrix(view);
 	SetupCamera_ProjectionMatrix(proj);
 
-	// �I�u�W�F�N�g�̃��[���h�s��̍쐬
+	// オブジェクトのワールド行列の作成
 	tnl::Matrix mt_trans;
 	tnl::Matrix mt_rot;
 	tnl::Matrix mt_obj_world;
@@ -209,7 +209,7 @@ void DrawAABB(const dxe::Camera* camera, const tnl::Vector3& pos, const tnl::Vec
 	SetCameraViewMatrix(view);
 	SetupCamera_ProjectionMatrix(proj);
 
-	// �I�u�W�F�N�g�̃��[���h�s��̍쐬
+	// オブジェクトのワールド行列の作成
 	tnl::Matrix mt_trans;
 	tnl::Matrix mt_obj_world;
 	mt_trans = tnl::Matrix::Translation(pos.x, pos.y, pos.z);
@@ -242,7 +242,7 @@ void DrawBdSphere(const dxe::Camera* camera, const tnl::Vector3& pos, const floa
 	SetCameraViewMatrix(view);
 	SetupCamera_ProjectionMatrix(proj);
 
-	// �I�u�W�F�N�g�̃��[���h�s��̍쐬
+	// オブジェクトのワールド行列の作成
 	tnl::Matrix mt_trans;
 	tnl::Matrix mt_rot;
 	tnl::Matrix mt_obj_world;
@@ -260,7 +260,7 @@ void DrawBdSphere(const dxe::Camera* camera, const tnl::Vector3& pos, const floa
 	tnl::Vector3 vy[ring_vtx_num];
 	tnl::Vector3 vz[ring_vtx_num];
 
-	// X�������O
+	// X軸リング
 	for (int i = 0; i < ring_vtx_num; ++i) {
 		vx[i].x = 0;
 		vx[i].y = cos(tnl::ToRadian(360.0f / ring_vtx_num) * i) * radius;
@@ -274,7 +274,7 @@ void DrawBdSphere(const dxe::Camera* camera, const tnl::Vector3& pos, const floa
 		{ vx[e].x, vx[e].y, vx[e].z }, 0xffff0000);
 
 
-	// Y�������O
+	// Y軸リング
 	for (int i = 0; i < ring_vtx_num; ++i) {
 		vy[i].x = sin(tnl::ToRadian(360.0f / ring_vtx_num) * i) * radius;
 		vy[i].y = 0;
@@ -287,7 +287,7 @@ void DrawBdSphere(const dxe::Camera* camera, const tnl::Vector3& pos, const floa
 	DrawLine3D({ vy[s].x, vy[s].y, vy[s].z },
 		{ vy[e].x, vy[e].y, vy[e].z }, 0xff00ff00);
 
-	// Z�������O
+	// Z軸リング
 	for (int i = 0; i < ring_vtx_num; ++i) {
 		vz[i].x = sin(tnl::ToRadian(360.0f / ring_vtx_num) * i) * radius;
 		vz[i].y = cos(tnl::ToRadian(360.0f / ring_vtx_num) * i) * radius;
