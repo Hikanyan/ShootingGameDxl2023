@@ -38,11 +38,25 @@ public:
     }
 
     // タグのgetter/setter
-    [[nodiscard]] std::string get_tag() const { return tag_value_; }
-    void set_tag(const std::string& value) { tag_value_ = value; }
-    [[nodiscard]] bool get_active() const { return is_active_; }
-    void set_active(const bool value) { is_active_ = value; }
+    std::string get_tag() const
+    {
+        return tag_value_;
+    }
 
+    void set_tag(const std::string& value)
+    {
+        tag_value_ = value;
+    }
+
+    void set_active(const bool value)
+    {
+        is_active_ = value;
+    }
+
+    bool get_active() const
+    {
+        return is_active_;
+    }
 
     // コンポーネントを取得する
     template <typename T>
@@ -64,9 +78,9 @@ public:
         {
             throw std::logic_error("Component already exists");
         }
-        auto new_component = std::make_shared<T>(std::forward<Args>(args)...);
-        T* component_ptr = new_component.get();
-        components_[type_index] = std::move(new_component);
+        auto newComponent = std::make_shared<T>(std::forward<Args>(args)...);
+        T* component_ptr = newComponent.get();
+        components_[type_index] = std::move(newComponent);
         //set_ownerをする
         component_ptr->set_owner(this);
         return component_ptr;
@@ -150,7 +164,7 @@ public:
     }
 
     // 毎フレーム呼ばれる更新処理
-    void update(const float delta_time)
+    void update(float delta_time)
     {
         for (const auto& comp : components_ | std::views::values)
         {
@@ -162,7 +176,7 @@ public:
     }
 
     // 定期的な時間間隔で呼ばれる更新処理
-    void fixed_update(const float fixed_delta_time)
+    void fixed_update(float fixed_delta_time)
     {
         for (const auto& comp : components_ | std::views::values)
         {

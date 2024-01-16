@@ -4,7 +4,7 @@
 class SampleScene final : public SceneBase
 {
 public:
-    SampleScene();
+    SampleScene() = default;
     virtual ~SampleScene() override = default;
 
     // シーン固有の初期化
@@ -18,6 +18,10 @@ public:
     void on_disable() override;
 
 private:
+    //オブジェクトをコンストラクタで生成する
+
     //落ちることがあるので、スマートポインタを使う
     std::shared_ptr<GameObject> obj_ = std::make_shared<GameObject>(); //動的にメモリを確保
+    std::shared_ptr<GameObject> obj_1 = std::make_shared<GameObject>(); //動的にメモリを確保
+    
 };
