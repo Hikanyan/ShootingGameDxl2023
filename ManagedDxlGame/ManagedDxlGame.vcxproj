@@ -207,6 +207,7 @@
     <ClCompile Include="program\hikanyan_library\include\mono_behaviour\Object.cpp" />
     <ClCompile Include="program\hikanyan_library\include\system\MyList.cpp" />
     <ClCompile Include="program\hikanyan_library\include\system\Singleton.cpp" />
+    <ClCompile Include="program\hikanyan_library\scene\CollisionManager.cpp" />
     <ClCompile Include="program\hikanyan_library\scene\SampleScene.cpp" />
     <ClCompile Include="program\hikanyan_library\scene\SceneBase.cpp" />
     <ClCompile Include="program\hikanyan_library\scene\SceneManager.cpp" />
@@ -298,6 +299,7 @@
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour\Object.h" />
     <ClInclude Include="program\hikanyan_library\include\system\MyList.h" />
     <ClInclude Include="program\hikanyan_library\include\system\Singleton.h" />
+    <ClInclude Include="program\hikanyan_library\scene\CollisionManager.h" />
     <ClInclude Include="program\hikanyan_library\scene\SampleScene.h" />
     <ClInclude Include="program\hikanyan_library\scene\SceneBase.h" />
     <ClInclude Include="program\hikanyan_library\scene\SceneManager.h" />

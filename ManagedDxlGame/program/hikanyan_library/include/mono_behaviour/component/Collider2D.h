@@ -7,7 +7,7 @@ enum colliderType
     None,
     Box,
     Circle,
-    Polygon,
+    PolygonCollider,
     Edge,
     Capsule,
     Composite,

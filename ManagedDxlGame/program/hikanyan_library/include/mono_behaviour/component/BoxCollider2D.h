@@ -9,7 +9,7 @@ class GameObject;
 BoxCollider2Dは、物体が他の物体とどのように衝突するかを定義します。
 サイズや位置などのプロパティを持つことができます。
 */
-class final BoxCollider2D : public Collider2D
+class BoxCollider2D final : public Collider2D
 {
 public:
     bool intersects(const Collider2D* other) const;
