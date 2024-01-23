@@ -192,6 +192,7 @@
     <ClCompile Include="program\game\hikanyan_laboratory\entity\player\Player.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\entity\player\PlayerController.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\entity\player\PlayerMove.cpp" />
+    <ClCompile Include="program\game\hikanyan_laboratory\entity\player\PlayerStatus.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\Scene\TitleScene.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\userInterface\InputManager.cpp" />
     <ClCompile Include="program\hikanyan_library\include\mono_behaviour\Behaviour.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="program\game\hikanyan_laboratory\entity\player\Player.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\entity\player\PlayerController.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\entity\player\PlayerMove.h" />
+    <ClInclude Include="program\game\hikanyan_laboratory\entity\player\PlayerStatus.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\Scene\TitleScene.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\userInterface\InputManager.h" />
     <ClInclude Include="program\hikanyan_library\include\mono_behaviour\Behaviour.h" />

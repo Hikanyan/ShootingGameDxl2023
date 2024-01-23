@@ -15,7 +15,14 @@ public:
         rigid_body = owner_->get_component<Rigidbody2D>();
     }
 
-    void OnTriggerEnter2D(Collider2D* other) // メソッド名を修正
+    void update(float delta_time) override
+    {
+        check_input();
+        update_player_state(delta_time);
+        execute_actions(delta_time);
+    }
+
+    void OnTriggerEnter2D(const Collider2D* other) // メソッド名を修正
     {
         // otherのlogを出力
         Debug::log(other->get_name());

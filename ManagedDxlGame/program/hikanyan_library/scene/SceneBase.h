@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include "../../hikanyan_library/include/mono_behaviour/GameObject.h"
+#include "CollisionManager.h"
 
 //game_objectの処理をgame_object_managerで行い、scene_baseで
 class SceneBase
@@ -11,8 +12,11 @@ protected:
     std::string name_;
     // シーンに所属するゲームオブジェクト
     std::list<std::shared_ptr<GameObject>> game_objects_;
+
+    // シーンに所属するゲームオブジェクトの衝突判定を管理するクラス
+    CollisionManager collision_manager;
     // 任意の処理をゲームオブジェクトに対して行う関数
-    
+
     void for_each_game_object(const std::function<void(std::shared_ptr<GameObject>)>& action) const
     {
         for (auto& game_object : game_objects_)
@@ -37,6 +41,7 @@ public:
     {
         return name_;
     }
+
     virtual std::shared_ptr<GameObject> new_game_object(const std::string& name)
     {
         std::shared_ptr<GameObject> game_object = std::make_shared<GameObject>();
@@ -50,12 +55,22 @@ public:
     virtual void add_game_object(const std::shared_ptr<GameObject>& game_object)
     {
         game_objects_.push_back(game_object);
+        // コライダーの登録
+        if (const auto collider = game_object->get_component<Collider2D>())
+        {
+            collision_manager.addCollider(std::shared_ptr<Collider2D>(collider));
+        }
     }
 
     // ゲームオブジェクトを削除する関数
     virtual void remove_game_object(const std::shared_ptr<GameObject>& game_object)
     {
         game_objects_.remove(game_object);
+        // コライダーの削除
+        if (const auto collider = game_object->get_component<Collider2D>())
+        {
+            collision_manager.removeCollider(std::shared_ptr<Collider2D>(collider));
+        }
     }
 
 
@@ -97,6 +112,8 @@ public:
         {
             obj->update(delta_time);
         });
+        // コリジョンのチェック
+        collision_manager.checkCollisions();
     }
 
     virtual void fixed_update(float fixed_delta_time)
