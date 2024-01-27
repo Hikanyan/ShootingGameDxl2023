@@ -1,0 +1,77 @@
+@startuml
+
+package "UI System using MVP Pattern" {
+
+class UIManager {
+    + updateAllViews(): void
+    + handleEvent(event: UIEvent): void
+}
+
+class PlayerPresenter {
+    + updateView(): void
+}
+
+class OtherPresenter {
+    + updateView(): void
+}
+
+class TimerPresenter {
+    + updateView(): void
+}
+
+class ScorePresenter {
+    + updateView(): void
+}
+
+class PlayerModel {
+    + data: PlayerData
+}
+
+class OtherModel {
+    + data: OtherData
+}
+
+class TimerModel {
+    + data: TimerData
+}
+
+class ScoreModel {
+    + data: ScoreData
+}
+
+class PlayerView {
+    + displayData(data: PlayerData): void
+}
+
+class OtherView {
+    + displayData(data: OtherData): void
+}
+
+class TimerView {
+    + displayData(data: TimerData): void
+}
+
+class ScoreView {
+    + displayData(data: ScoreData): void
+}
+
+UIManager -right-> PlayerPresenter : manages
+UIManager -right-> OtherPresenter : manages
+UIManager -right-> TimerPresenter : manages
+UIManager -right-> ScorePresenter : manages
+PlayerPresenter -down-> PlayerModel
+PlayerPresenter -down-> PlayerView
+OtherPresenter -down-> OtherModel
+OtherPresenter -down-> OtherView
+TimerPresenter -down-> TimerModel
+TimerPresenter -down-> TimerView
+ScorePresenter -down-> ScoreModel
+ScorePresenter -down-> ScoreView
+
+}
+
+class UIEvent
+
+UIEvent --> UIManager : triggers
+
+@enduml
