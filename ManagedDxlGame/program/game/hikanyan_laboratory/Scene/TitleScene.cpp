@@ -1,6 +1,6 @@
 ﻿#include "TitleScene.h"
 #include "../hikanyan_library/include/mono_behaviour/component/Text.h"
-#include "../userInterface/InputManager.h"
+#include "../UserInterface/InputManager.h"
 
 void TitleScene::init()
 {
