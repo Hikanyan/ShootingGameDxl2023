@@ -1,16 +1,15 @@
-#include "../dxlib_ext_mesh.h"
+#include "../mesh/dxlib_ext_mesh.h"
 
 namespace dxe {
 
 	//----------------------------------------------------------------------------------------
-	Mesh* Mesh::CreateDome(const float radius, const int div_w, const int div_h, const float angle, const bool is_left_cycle) noexcept
+	Shared<Mesh> Mesh::CreateDome(const float radius, const int div_w, const int div_h, const float angle, const bool is_left_cycle) noexcept
 	{
-		Mesh* mesh = new Mesh();
+		Shared<Mesh> mesh = Shared<Mesh>(new Mesh());
 		mesh->desc_ = std::make_shared<MeshDescDome>(radius, div_w, div_h, angle, is_left_cycle);
 		mesh->shape_type_ = eShapeType::DOME;
 
-		mesh->bd_sphere_radius_ = radius;
-		mesh->bd_box_size_ = { radius * 2,  radius * 2, radius * 2 };
+		tnl::Vector3 far_vtx = { 0, 0, 0 };
 
 		// ‰¡•À‚Ñ‚Ì’¸“_” = ( ‰¡•ªŠ„” * 2 ) - ( ‰¡•ªŠ„” - 1 )
 		// c•À‚Ñ‚Ì’¸“_” = ( c•ªŠ„” * 2 ) - ( c•ªŠ„” - 1 )
@@ -41,6 +40,10 @@ namespace dxe {
 				vv.y = y;
 				vv.z = sinf(angle_ofs + 2 * tnl::PI * u) * r;
 
+				far_vtx.x = (fabs(vv.x) > fabs(far_vtx.x)) ? vv.x : far_vtx.x;
+				far_vtx.y = (fabs(vv.y) > fabs(far_vtx.y)) ? vv.y : far_vtx.y;
+				far_vtx.z = (fabs(vv.z) > fabs(far_vtx.z)) ? vv.z : far_vtx.z;
+
 				mesh->vtxs_[(i * (srice + 1)) + k].pos = { vv.x, vv.y, vv.z };
 
 				mesh->vtxs_[(i * (srice + 1)) + k].u = 1.0f / (float)srice * k;
@@ -48,12 +51,11 @@ namespace dxe {
 
 				vv.normalize();
 				if (is_left_cycle) {
-					mesh->vtxs_[(i * (srice + 1)) + k].norm = { vv.x, vv.y, vv.z };
-				}
-				else {
 					mesh->vtxs_[(i * (srice + 1)) + k].norm = { -vv.x, -vv.y, -vv.z };
 				}
-
+				else {
+					mesh->vtxs_[(i * (srice + 1)) + k].norm = { vv.x, vv.y, vv.z };
+				}
 
 				mesh->vtxs_[(i * (div_w + 1)) + k].dif = GetColorU8(255, 255, 255, 255);
 			}
@@ -61,13 +63,17 @@ namespace dxe {
 
 		mesh->createPlaneIndex(div_w, div_h, is_left_cycle);
 		mesh->createVBO();
+
+		mesh->bd_sphere_radius_ = far_vtx.length();
+		mesh->bd_box_size_ = far_vtx * 2.0f;
+
 		return mesh;
 
 	}
 
 
-	Mesh* Mesh::CreateDomeMV(const float radius, const int div_w, const int div_h, const float angle, const bool is_left_cycle) noexcept {
-		Mesh* mesh = CreateDome(radius, div_w, div_h, angle);
+	Shared<Mesh> Mesh::CreateDomeMV(const float radius, const int div_w, const int div_h, const float angle, const bool is_left_cycle) noexcept {
+		Shared<Mesh> mesh = CreateDome(radius, div_w, div_h, angle);
 		mesh = CreateConvertMV(mesh);
 		return mesh;
 	}

@@ -106,7 +106,7 @@ namespace tnl {
 	}
 
 	//----------------------------------------------------------------------------------------------
-	std::tuple<uint8_t*, uint32_t, uint32_t, uint32_t> LoadGraphicColorBuffer(const std::string& file_path) {
+	std::tuple<std::unique_ptr<uint8_t>, uint32_t, uint32_t, uint32_t> LoadGraphicColorBuffer(const std::string& file_path) {
 
 		unsigned char* stb_memory = nullptr ;
 		uint8_t* pixels = nullptr ;
@@ -117,7 +117,7 @@ namespace tnl {
 		stb_memory = stbi_load(file_path.c_str(), &width, &height, &bpp, 0);
 
 		uint32_t data_size = width * height * 4;
-		pixels = new uint8_t[ data_size ];
+		pixels = new uint8_t[data_size];
 
 		for (uint32_t y = 0; y < (uint32_t)height; ++y) {
 			for (uint32_t x = 0; x < (uint32_t)width; ++x) {
@@ -135,13 +135,49 @@ namespace tnl {
 		}
 		stbi_image_free(stb_memory);
 
-		return std::make_tuple(pixels, width, height, data_size);
+		std::unique_ptr<uint8_t> unique_pixels = std::unique_ptr<uint8_t>( pixels );
+		return std::make_tuple(std::move(unique_pixels), width, height, data_size);
 
 	}
 
 
 	//----------------------------------------------------------------------------------------------
-	char* CreateFormatBmp24(unsigned char* color_buff_rgba8, uint32_t width, uint32_t height, uint32_t* data_size) {
+	std::tuple<std::unique_ptr<uint8_t>, uint32_t, uint32_t, uint32_t> LoadGraphicColorBufferFromMemory(const unsigned char* file_data, int file_size) {
+		unsigned char* stb_memory = nullptr;
+		uint8_t* pixels = nullptr;
+		int width;
+		int height;
+		int bpp;
+
+		stb_memory = stbi_load_from_memory(file_data, file_size, &width, &height, &bpp, 0);
+
+		uint32_t data_size = width * height * 4;
+		pixels = new uint8_t[data_size];
+
+		for (uint32_t y = 0; y < (uint32_t)height; ++y) {
+			for (uint32_t x = 0; x < (uint32_t)width; ++x) {
+
+				uint8_t a = (4 == bpp) ? stb_memory[(y * width + x) * bpp + 3] : 0xff;
+				uint8_t r = stb_memory[(y * width + x) * bpp + 0];
+				uint8_t g = stb_memory[(y * width + x) * bpp + 1];
+				uint8_t b = stb_memory[(y * width + x) * bpp + 2];
+
+				pixels[((y * width + x) * 4) + 0] = r;
+				pixels[((y * width + x) * 4) + 1] = g;
+				pixels[((y * width + x) * 4) + 2] = b;
+				pixels[((y * width + x) * 4) + 3] = a;
+			}
+		}
+		stbi_image_free(stb_memory);
+
+		std::unique_ptr<uint8_t> unique_pixels = std::unique_ptr<uint8_t>(pixels);
+		return std::make_tuple(std::move(unique_pixels), width, height, data_size);
+
+	}
+
+
+	//----------------------------------------------------------------------------------------------
+	std::unique_ptr<int8_t> CreateFormatBmp24(unsigned char* color_buff_rgba8, uint32_t width, uint32_t height, uint32_t* data_size) {
 
 		uint32_t bmp_hedder_size = 54;
 
@@ -151,9 +187,9 @@ namespace tnl {
 
 		uint32_t size = bmp_hedder_size + (w_line_byte * height);
 
-		char* buff = new char[size];
+		signed char* buff = new signed char[size];
 		memset(buff, 0, size);
-		char* p = buff;
+		signed char* p = buff;
 
 		*(short*)p = 19778; p += 2;		// bfType
 		*(int*)p = size;	p += 4;		// bfSize
@@ -176,7 +212,7 @@ namespace tnl {
 		*(int*)p = 0;		p += 4;		// biCirImportant
 
 		for (int32_t h = height - 1; h >= 0; --h) {
-			char* wp = p;
+			signed char* wp = p;
 			for (int32_t w = 0; w < (int32_t)width; ++w) {
 				uint32_t col = *((uint32_t*)(color_buff_rgba8 + (width * h * 4) + w * 4));
 				*(uint8_t*)wp = (col & 0x0000ff00) >> 8;	wp += 1;
@@ -186,19 +222,20 @@ namespace tnl {
 			p += w_line_byte;
 		}
 		if( data_size ) *data_size = size;
-		return buff;
+		std::unique_ptr<int8_t> unique_buff = std::unique_ptr<int8_t>(buff);
+		return std::move(unique_buff) ;
 	}
 
 
 	//----------------------------------------------------------------------------------------------
-	char* CreateFormatTga32(unsigned char* color_buff_rgba8, uint32_t width, uint32_t height, uint32_t* data_size) {
+	std::unique_ptr<int8_t> CreateFormatTga32(unsigned char* color_buff_rgba8, uint32_t width, uint32_t height, uint32_t* data_size) {
 
 		uint32_t hedder_plus_footer_size = 44;
 		uint32_t w_line_byte = width * 4;
 		uint32_t size = hedder_plus_footer_size + (w_line_byte * height);
-		char* buff = new char[size];
+		signed char* buff = new signed char[size];
 		memset(buff, 0, size);
-		char* p = buff;
+		signed char* p = buff;
 		*(char*)p = 0;			p += 1;		// IDField
 		*(char*)p = 0;			p += 1;		// Enable Color Map
 		*(char*)p = 2;			p += 1;		// Image Type
@@ -213,7 +250,7 @@ namespace tnl {
 		*(char*)p = 8;			p += 1;		// Status
 
 		for (int32_t h = (int32_t)height - 1; h >= 0; --h) {
-			char* wp = p;
+			signed char* wp = p;
 			for (int32_t w = 0; w < (int32_t)width; ++w) {
 				uint32_t col = *((uint32_t*)(color_buff_rgba8 + (width * h * 4) + w * 4));
 				*(uint8_t*)wp = (col & 0x0000ff00) >> 8;	wp += 1;
@@ -225,9 +262,11 @@ namespace tnl {
 		}
 		*(int*)p = 0;		p += 4;			// File Pos
 		*(int*)p = 0;		p += 4;			// Dev File Pos
-		sprintf_s(p, 18, "TRUEVISION-XFILE.\0");
+		sprintf_s((char*)p, 18, "TRUEVISION-XFILE.\0");
 		if (data_size) *data_size = size;
-		return buff;
+
+		std::unique_ptr<int8_t> unique_buff = std::unique_ptr<int8_t>(buff);
+		return std::move(unique_buff);
 	}
 
 
@@ -270,12 +309,13 @@ namespace tnl {
 	}
 
 	//----------------------------------------------------------------------------------------------
-	void ToWChara(wchar_t* wstrDest, uint32_t wstr_lenght, const std::string& src) {
+	void ToWChara(wchar_t* wstrDest, const std::string& src) {
 		uint32_t size = static_cast<uint32_t>(src.length()) + 1;
 		char* buff = new char[src.length() + 1];
 		memset(buff, 0, size);
 		sprintf_s( buff, sizeof(char)*size, "%s", src.c_str() );
-		ToWChara( wstrDest, buff, wstr_lenght );
+		ToWChara( wstrDest, buff, src.length() + 1);
+		delete[] buff;
 	}
 
 	//----------------------------------------------------------------------------------------------
@@ -347,11 +387,28 @@ namespace tnl {
 		return strUTF8;
 	}
 
+	//----------------------------------------------------------------------------------------------
 	std::string FloatToString(float value, const std::string& fmt) {
 		char buf[64] = { 0 };
 		sprintf_s(buf, fmt.c_str(), value);
 		return buf;
 	}
+
+	//----------------------------------------------------------------------------------------------
+	std::chrono::system_clock::time_point BeginClock() {
+		std::chrono::system_clock::time_point clock_start;
+		clock_start = std::chrono::system_clock::now();
+		return std::move(clock_start);
+	}
+
+	//----------------------------------------------------------------------------------------------
+	float EndClock(const std::chrono::system_clock::time_point& clock_start) {
+		auto clock_end = std::chrono::system_clock::now();
+		double micro_seconds = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count());
+		float millisecond = static_cast<float>(micro_seconds / 1000.0);
+		return millisecond;
+	}
+
 
 	//----------------------------------------------------------------------------------------------
 	int SpaceBit32(int n) {

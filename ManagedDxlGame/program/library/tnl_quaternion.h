@@ -46,7 +46,7 @@ namespace tnl {
 		Vector3 getEuler() const noexcept;
 
 		void slerp(const Quaternion& q, const float t);
-
+		void normalize();
 	};
 
 

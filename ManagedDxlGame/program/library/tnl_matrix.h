@@ -218,6 +218,7 @@ namespace tnl{
 		// static function
 		//
 		static Matrix RotationQuaternion(const tnl::Quaternion& q) noexcept;
+		static Matrix AffineTransformation(const Vector3& pos, const Vector3& scl, const Quaternion& rot, const Vector3& origin = { 0, 0, 0 }) noexcept;
 
 	};
 

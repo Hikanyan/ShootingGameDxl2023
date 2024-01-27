@@ -12,6 +12,7 @@ namespace dxe {
 			screen_h_ = screen_h;
 			aspect_ = (float)screen_w_ / (float)screen_h_;
 		}
+		virtual ~Camera() {}
 
 		int screen_w_ = 0 ;
 		int screen_h_ = 0 ;
@@ -30,20 +31,22 @@ namespace dxe {
 		// ƒJƒƒ‰‚É‰f‚é”ÍˆÍ‚ÌÅ‹ß‹——£
 		float near_ = 1.0f;
 		// ƒJƒƒ‰‚É‰f‚é”ÍˆÍ‚ÌÅ‰“‹——£
-		float far_ = 5000.0f;
+		float far_ = 50000.0f;
 
 		tnl::Matrix view_;
 		tnl::Matrix proj_;
+
+		virtual inline tnl::Vector3 forward() { return tnl::Vector3::Normalize(target_ - pos_); }
+		virtual inline tnl::Vector3 left() { return tnl::Vector3::Cross(forward(), {0, 1, 0}); }
+		virtual inline tnl::Vector3 right() { return tnl::Vector3::Cross({ 0, 1, 0 }, forward()); }
+		virtual inline tnl::Vector3 back() { return tnl::Vector3::Normalize(pos_ - target_); }
 
 		void update() {
 			view_ = tnl::Matrix::LookAtLH(pos_, target_, up_);
 			proj_ = tnl::Matrix::PerspectiveFovLH(angle_, aspect_, near_, far_);
 		}
 
-		inline tnl::Vector3 forward() { return tnl::Vector3::Normalize(target_ - pos_); }
-		inline tnl::Vector3 left() { return tnl::Vector3::Cross(forward(), { 0, 1, 0 }); }
-		inline tnl::Vector3 right() { return tnl::Vector3::Cross({ 0, 1, 0 }, forward()); }
-		inline tnl::Vector3 back() { return tnl::Vector3::Normalize(pos_ - target_); }
+		void render(float scale, uint32_t color = 0xffffff00);
 
 	};
 

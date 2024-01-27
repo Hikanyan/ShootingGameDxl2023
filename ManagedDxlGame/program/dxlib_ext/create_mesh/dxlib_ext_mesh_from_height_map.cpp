@@ -1,11 +1,11 @@
-#include "../dxlib_ext_mesh.h"
+#include "../mesh/dxlib_ext_mesh.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../library/stb_image.h"
 
 namespace dxe {
 
 	//----------------------------------------------------------------------------------------
-	Mesh* Mesh::CreateFromHeightMap(unsigned char* pixels, const int t_width, const int t_height, const int t_bpp, const float width, const float depth, const float height_max, const int div_w, const int div_h) {
+	Shared<Mesh> Mesh::CreateFromHeightMap(unsigned char* pixels, const int t_width, const int t_height, const int t_bpp, const float width, const float depth, const float height_max, const int div_w, const int div_h) {
 		uint32_t* argb_tbl = new uint32_t[t_width * t_height];
 		for (int y = 0; y < t_height; ++y) {
 			for (int x = 0; x < t_width; ++x) {
@@ -17,7 +17,7 @@ namespace dxe {
 			}
 		}
 
-		Mesh* mesh = new Mesh();
+		Shared<Mesh> mesh = Shared<Mesh>(new Mesh());
 		mesh->desc_ = std::make_shared<MeshDescHeightMap>("", tnl::Vector3(width, height_max, depth), div_w, div_h);
 		mesh->shape_type_ = eShapeType::HEIGHT_MAP;
 
@@ -102,25 +102,25 @@ namespace dxe {
 	}
 
 	//----------------------------------------------------------------------------------------
-	Mesh* Mesh::CreateFromHeightMap(const std::string& file_path, const float width, const float depth, const float height_max, const int div_w, const int div_h)
+	Shared<Mesh> Mesh::CreateFromHeightMap(const std::string& file_path, const float width, const float depth, const float height_max, const int div_w, const int div_h)
 	{
 		unsigned char* pixels = nullptr;
 		int t_width, t_height, t_bpp;
 		pixels = stbi_load(file_path.c_str(), &t_width, &t_height, &t_bpp, 0);
-		Mesh* mesh = CreateFromHeightMap(pixels, t_width, t_height, t_bpp, width, depth, height_max, div_w, div_h);
+		Shared<Mesh> mesh = CreateFromHeightMap(pixels, t_width, t_height, t_bpp, width, depth, height_max, div_w, div_h);
 		mesh->desc_ = std::make_shared<MeshDescHeightMap>(file_path, tnl::Vector3( width, height_max, depth), div_w, div_h);
 		stbi_image_free(pixels);
 		return mesh;
 	}
 
-	Mesh* Mesh::CreateFromHeightMapMV(const std::string& file_path, const float width, const float depth, const float height_max, const int div_w, const int div_h) {
-		Mesh* mesh = CreateFromHeightMap(file_path, width, depth, height_max, div_w, div_h);
+	Shared<Mesh> Mesh::CreateFromHeightMapMV(const std::string& file_path, const float width, const float depth, const float height_max, const int div_w, const int div_h) {
+		Shared<Mesh> mesh = CreateFromHeightMap(file_path, width, depth, height_max, div_w, div_h);
 		mesh = CreateConvertMV(mesh);
 		return mesh;
 	}
 
-	Mesh* Mesh::CreateFromHeightMapMV(unsigned char* pixels, const int t_width, const int t_height, const int t_bpp, const float width, const float depth, const float height_max, const int div_w, const int div_h) {
-		Mesh* mesh = CreateFromHeightMap(pixels, t_width, t_height, t_bpp, width, depth, height_max, div_w, div_h);
+	Shared<Mesh> Mesh::CreateFromHeightMapMV(unsigned char* pixels, const int t_width, const int t_height, const int t_bpp, const float width, const float depth, const float height_max, const int div_w, const int div_h) {
+		Shared<Mesh> mesh = CreateFromHeightMap(pixels, t_width, t_height, t_bpp, width, depth, height_max, div_w, div_h);
 		mesh = CreateConvertMV(mesh);
 		return mesh;
 	}

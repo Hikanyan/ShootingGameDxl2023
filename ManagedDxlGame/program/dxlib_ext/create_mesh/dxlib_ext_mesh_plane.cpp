@@ -1,18 +1,17 @@
-#include "../dxlib_ext_mesh.h"
+#include "../mesh/dxlib_ext_mesh.h"
 
 namespace dxe {
 
 	//----------------------------------------------------------------------------------------
-	Mesh* Mesh::CreatePlane(
+	Shared<Mesh> Mesh::CreatePlane(
 		const tnl::Vector3& size_wh, const int div_w, const int div_h, const bool is_left_cycle,
 		const tnl::Vector3& ltop_uv, const tnl::Vector3& rbottom_uv ) noexcept
 	{
-		Mesh* mesh = new Mesh();
+		Shared<Mesh> mesh = Shared<Mesh>(new Mesh());
 		mesh->desc_ = std::make_shared<MeshDescPlane>(size_wh, div_w, div_h, is_left_cycle, ltop_uv, rbottom_uv);
 		mesh->shape_type_ = eShapeType::PLANE;
 
-		mesh->bd_sphere_radius_ = size_wh.length() / 2;
-		mesh->bd_box_size_ = { size_wh.x, size_wh.y, 1.0f };
+		tnl::Vector3 far_vtx = { 0, 0, 0 };
 
 		// ‰¡•À‚Ñ‚Ì’¸“_” = ( ‰¡•ªŠ„” * 2 ) - ( ‰¡•ªŠ„” - 1 )
 		// c•À‚Ñ‚Ì’¸“_” = ( c•ªŠ„” * 2 ) - ( c•ªŠ„” - 1 )
@@ -32,14 +31,19 @@ namespace dxe {
 
 			for (int k = 0; k < (div_w + 1); ++k) {
 				float u = k / ((float)div_w);
-				mesh->vtxs_[(i * (div_w + 1)) + k].pos.x = -sx + u * size_wh.x;
-				mesh->vtxs_[(i * (div_w + 1)) + k].pos.y = y;
+				tnl::Vector3 vv = { -sx + u * size_wh.x, y, 0 };
+				mesh->vtxs_[(i * (div_w + 1)) + k].pos.x = vv.x;
+				mesh->vtxs_[(i * (div_w + 1)) + k].pos.y = vv.y;
 				mesh->vtxs_[(i * (div_w + 1)) + k].pos.z = 0;
+
+				far_vtx.x = (fabs(vv.x) > fabs(far_vtx.x)) ? vv.x : far_vtx.x;
+				far_vtx.y = (fabs(vv.y) > fabs(far_vtx.y)) ? vv.y : far_vtx.y;
+				far_vtx.z = (fabs(vv.z) > fabs(far_vtx.z)) ? vv.z : far_vtx.z;
 
 				mesh->vtxs_[(i * (div_w + 1)) + k].norm.x = 0;
 				mesh->vtxs_[(i * (div_w + 1)) + k].norm.y = 0;
 				//mesh->vtxs_[(i * (div_w + 1)) + k].norm.z = (is_left_cycle)? -1.0f : 1.0f;
-				mesh->vtxs_[(i * (div_w + 1)) + k].norm.z = -1;
+				mesh->vtxs_[(i * (div_w + 1)) + k].norm.z = (is_left_cycle) ? 1.0f : -1.0f;
 
 				//mesh->vtxs_[(i * (div_w + 1)) + k].u = u;
 				//mesh->vtxs_[(i * (div_w + 1)) + k].v = 1.0f - v;
@@ -54,13 +58,17 @@ namespace dxe {
 
 		mesh->createPlaneIndex(div_w, div_h, is_left_cycle);
 		mesh->createVBO();
+
+		mesh->bd_sphere_radius_ = far_vtx.length();
+		mesh->bd_box_size_ = far_vtx * 2.0f;
+
 		return mesh;
 	}
 
 
-	Mesh* Mesh::CreatePlaneMV(const tnl::Vector3& size_wh, const int div_w, const int div_h, const bool is_left_cycle,
+	Shared<Mesh> Mesh::CreatePlaneMV(const tnl::Vector3& size_wh, const int div_w, const int div_h, const bool is_left_cycle,
 		const tnl::Vector3& ltop_uv, const tnl::Vector3& rbottom_uv ) noexcept {
-		Mesh* mesh = CreatePlane(size_wh, div_w, div_h, is_left_cycle, ltop_uv, rbottom_uv);
+		Shared<Mesh> mesh = CreatePlane(size_wh, div_w, div_h, is_left_cycle, ltop_uv, rbottom_uv);
 		mesh = CreateConvertMV(mesh);
 		return mesh;
 	}

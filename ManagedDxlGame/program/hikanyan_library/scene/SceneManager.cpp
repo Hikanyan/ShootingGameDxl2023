@@ -91,7 +91,7 @@ void SceneManager::game_start()
 void SceneManager::game_main(float delta_time)
 {
     static float accumulator = 0.0f;
-    const float fixedDeltaTime = 0.02f; // Unityの0.02秒（50回/秒）
+    const float fixedDeltaTime = 0.02f; // 例えば、Unityの0.02秒（50回/秒）
 
     if (active_scene_)
     {
@@ -100,19 +100,17 @@ void SceneManager::game_main(float delta_time)
 
         // 固定更新処理用のアキュムレーターを更新
         accumulator += delta_time;
-
-        // 1フレームに1回だけfixed_updateを呼び出すように調整
-        if (accumulator >= fixedDeltaTime)
+        while (accumulator >= fixedDeltaTime)
         {
+            // 固定タイムステップで固定更新処理を実行
             active_scene_->fixed_update(fixedDeltaTime);
-            accumulator = 0.0f; // アキュムレーターをリセット
+            accumulator -= fixedDeltaTime;
         }
     }
 
     // 描画処理
     draw_screen();
 }
-
 
 void SceneManager::game_end()
 {

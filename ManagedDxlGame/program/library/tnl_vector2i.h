@@ -21,6 +21,9 @@ namespace tnl {
 		// operator
 		//
 
+		bool operator == (const Vector2i& other) noexcept;
+		bool operator != (const Vector2i& other) noexcept;
+
 		Vector2i& operator = (DirectX::XMVECTOR& other) noexcept;
 		Vector2i& operator = (const int32_t other) noexcept;
 
@@ -41,6 +44,7 @@ namespace tnl {
 		Vector2i operator - () const noexcept;
 
 
+
 		//-----------------------------------------------------------------------------------------------------
 		//
 		// inline function
@@ -53,8 +57,20 @@ namespace tnl {
 		// static inline function
 		//
 		static Vector2i Abs( const Vector2i& v ) noexcept;
-		
+		static uint32_t Distance(const Vector2i& v1, const Vector2i& v2) noexcept;
+
+
 	};
+
+	//-----------------------------------------------------------------------------------------------------
+	inline bool Vector2i::operator == (const Vector2i& other) noexcept {
+		return ( this->x == other.x && this->y == other.y  );
+	}
+
+	//-----------------------------------------------------------------------------------------------------
+	inline bool Vector2i::operator != (const Vector2i& other) noexcept {
+		return (this->x != other.x || this->y != other.y);
+	}
 
 	//-----------------------------------------------------------------------------------------------------
 	inline Vector2i& Vector2i::operator = (DirectX::XMVECTOR &other) noexcept {
@@ -150,5 +166,6 @@ namespace tnl {
 		r.abs();
 		return v;
 	}
+
 
 }

@@ -1,16 +1,15 @@
-#include "../dxlib_ext_mesh.h"
+#include "../mesh/dxlib_ext_mesh.h"
 
 namespace dxe {
 
 	//----------------------------------------------------------------------------------------
-	Mesh* Mesh::CreateCylinder(const float radius, const float height, const int div_w, const int div_h, const float angle, const bool is_left_cycle) noexcept
+	Shared<Mesh> Mesh::CreateCylinder(const float radius, const float height, const int div_w, const int div_h, const float angle, const bool is_left_cycle) noexcept
 	{
-		Mesh* mesh = new Mesh();
+		Shared<Mesh> mesh = Shared<Mesh>(new Mesh());
 		mesh->desc_ = std::make_shared<MeshDescCylinder>(radius, height, div_w, div_h, angle, is_left_cycle);
 		mesh->shape_type_ = eShapeType::CYLINDER;
 
-		mesh->bd_sphere_radius_ = radius;
-		mesh->bd_box_size_ = { radius * 2,  radius * 2, radius * 2 };
+		tnl::Vector3 far_vtx = { 0, 0, 0 };
 
 		// ‰¡•À‚Ñ‚Ì’¸“_” = ( ‰¡•ªŠ„” * 2 ) - ( ‰¡•ªŠ„” - 1 )
 		// c•À‚Ñ‚Ì’¸“_” = ( c•ªŠ„” * 2 ) - ( c•ªŠ„” - 1 )
@@ -37,32 +36,32 @@ namespace dxe {
 
 				mesh->vtxs_[(i * (srice + 1)) + k].pos = { v.x, v.y, v.z };
 
+				far_vtx.x = (fabs(v.x) > fabs(far_vtx.x)) ? v.x : far_vtx.x;
+				far_vtx.y = (fabs(v.y) > fabs(far_vtx.y)) ? v.y : far_vtx.y;
+				far_vtx.z = (fabs(v.z) > fabs(far_vtx.z)) ? v.z : far_vtx.z;
+
 				mesh->vtxs_[(i * (srice + 1)) + k].u = 1.0f / (float)srice * k;
 				mesh->vtxs_[(i * (srice + 1)) + k].v = (1.0f / (float)stack * i);
 
-				v = v.xz();
-				v.normalize();
-				if (is_left_cycle) {
-					mesh->vtxs_[(i * (srice + 1)) + k].norm = { -v.x, -v.y, -v.z };
-				}
-				else {
-					mesh->vtxs_[(i * (srice + 1)) + k].norm = { v.x, v.y, v.z };
-				}
-
-
+				mesh->vtxs_[(i * (srice + 1)) + k].norm = { 0, 0, 0 };
 				mesh->vtxs_[(i * (div_w + 1)) + k].dif = GetColorU8(255, 255, 255, 255);
 			}
 		}
 
 		mesh->createPlaneIndex(div_w, div_h, !is_left_cycle);
+		mesh->calcVertexNoraml();
 		mesh->createVBO();
+
+		mesh->bd_sphere_radius_ = far_vtx.length();
+		mesh->bd_box_size_ = far_vtx * 2.0f;
+
 		return mesh;
 
 	}
 
 
-	Mesh* Mesh::CreateCylinderMV(const float radius, const float height, const int div_w, const int div_h, const float angle, const bool is_left_cycle) noexcept {
-		Mesh* mesh = CreateCylinder(radius, height, div_w, div_h, angle, is_left_cycle);
+	Shared<Mesh> Mesh::CreateCylinderMV(const float radius, const float height, const int div_w, const int div_h, const float angle, const bool is_left_cycle) noexcept {
+		Shared<Mesh> mesh = CreateCylinder(radius, height, div_w, div_h, angle, is_left_cycle);
 		mesh = CreateConvertMV(mesh);
 		return mesh;
 	}

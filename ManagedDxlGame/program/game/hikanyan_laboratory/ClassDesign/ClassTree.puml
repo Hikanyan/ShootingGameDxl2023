@@ -1,0 +1,129 @@
+@startuml
+
+class Entity {
+    - position: Point
+    - size: Dimension
+    - sprite: Image
+    + update(): void
+}
+
+class Character extends Entity {
+    - weapon: WeaponBase
+    - status: Status
+    - skills: Skill[]
+    + move(): void
+    + attack(): void
+    + receiveDamage(damage: int): void
+    + equipWeapon(weapon: WeaponBase): void
+    + useWeapon(): void
+    + useSkill(skill: Skill): void
+    + getStatus(): Status
+    + addSkill(skill: Skill): void
+}
+
+class Player extends Character {
+    + processInput(): void
+}
+
+class Enemy extends Character {
+    + aiBehavior(): void
+}
+
+class InputManager {
+    + getInput(): void
+}
+
+class Move {
+    + executeMovement(): void
+}
+
+class EntityController {
+    + manageEntities(): void
+}
+
+class GameManager {
+    + startGame(): void
+    + endGame(): void
+}
+
+class Status {
+    + level: int
+    + experience: int
+    + health: int
+    + maxHealth: int
+    + strength: int
+    + defense: int
+    + updateStatus(): void
+    + gainExperience(amount: int): void
+    + levelUp(): void
+}
+
+class Skill {
+    + name: String
+    + execute(target: Character): void
+}
+
+class Map {
+    + start: Point
+    + goal: Point
+    + ground: Ground[]
+    + deadlyFloor: DeadlyFloor[]
+    + generateMap(): void
+}
+
+class GameFlow {
+    + startGame(): void
+    + endGame(): void
+    + restartGame(): void
+}
+
+class Timer {
+    + startTime: Time
+    + currentTime: Time
+    + updateTimer(): void
+}
+
+class Score {
+    + currentScore: int
+    + highScore: int
+    + addScore(points: int): void
+    + resetScore(): void
+}
+
+abstract class WeaponBase {
+    + use(): void
+}
+
+class Sword extends WeaponBase {
+    + use(): void
+}
+
+class Gun extends WeaponBase {
+    + use(): void
+}
+
+class Magic extends WeaponBase {
+    + use(): void
+}
+
+class Axe extends WeaponBase {
+    + use(): void
+}
+
+Player "uses" .down.> InputManager : <<use>>
+Player "uses" .down.> Move : <<use>>
+Enemy "uses" .down.> Move : <<use>>
+
+GameManager "controls" .right.> EntityController
+GameManager "uses" .down.> GameFlow
+GameManager "uses" .down.> Timer
+GameManager "uses" .down.> Score
+
+EntityController "manages" .down.> Entity
+EntityController "uses" .down.> Map
+
+Character "has" -right-> WeaponBase : has >>
+Character "uses" --> Status
+Character "uses" --> Skill
+
+@enduml

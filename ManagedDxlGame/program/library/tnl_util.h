@@ -6,9 +6,18 @@
 #include <string>
 #include <memory>
 #include <tuple>
+#include <functional>
+#include <chrono>
 #include "tnl_using.h"
 
 namespace tnl{
+
+
+	// work.... メモリ解放マクロ
+	#define TNL_SAFE_FREE( _p )			{ if( nullptr != (_p) ){ free( (_p) ) ; (_p) = nullptr ;  } } 
+	#define TNL_SAFE_DELETE( _p )		{ if( (_p) ){ delete (_p) ; (_p) = nullptr ; } }
+	#define TNL_SAFE_DELETE_ARY( _p )	{ if( (_p) ){ delete[] (_p) ; (_p) = nullptr ; } }
+	#define TNL_SAFE_RELEASE( _p )		{ if( nullptr != (_p) ){ (_p)->Release() ; (_p) = nullptr ;  } } 
 
 	inline int ARGB8( uint8_t a, uint8_t r, uint8_t g, uint8_t b ) { return ( a << 24 | r << 16 | g << 8 | b ); }
 	inline int RGBA8( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 ) { return ( r << 24 | g << 16 | b << 8 | a ); }
@@ -27,6 +36,11 @@ namespace tnl{
 	// }
 	#define for_with_index( it, data, idx, start_idx, fluct ) for( auto[it, idx] = std::pair{ (data).begin(), (start_idx) }; (it) != (data).end(); (it)++, (idx)fluct )
 
+	//----------------------------------------------------------------------------------------------
+	// ベクトル展開
+	#define TNL_DEP_V2(v) v.x, v.y
+	#define TNL_DEP_V3(v) v.x, v.y, v.z
+	#define TNL_DEP_V4(v) v.x, v.y, v.z, v.w
 
 	//----------------------------------------------------------------------------------------------
 	// 列挙型ビットフラグ
@@ -72,6 +86,12 @@ namespace tnl{
 
 
 	//----------------------------------------------------------------------------------------------------------------------------------------
+	// getter setter 簡易記述
+	#define TNL_PROPERTY( type, FuncName, field ) \
+	type get##FuncName(){ return field ; } \
+	void set##FuncName(const type & value){ field = value ; }
+
+	//----------------------------------------------------------------------------------------------------------------------------------------
 	// フィールドと getter 一括定義
 	#define TNL_VL_FIELD(instance_type, instance_name, initialize_value)					\
 	private :																				\
@@ -108,9 +128,17 @@ namespace tnl{
 	// ....... <1> 幅
 	// ....... <2> 高さ
 	// ....... <3> データサイズ
-	// tips... この関数で得られたメモリは内部で新たに確保されたメモリです
-	//         使用者が解放してください
-	std::tuple<uint8_t*, uint32_t, uint32_t, uint32_t> LoadGraphicColorBuffer( const std::string& file_path );
+	std::tuple<std::unique_ptr<uint8_t>, uint32_t, uint32_t, uint32_t> LoadGraphicColorBuffer( const std::string& file_path );
+
+	//----------------------------------------------------------------------------------------------
+	// ファイルメモリからカラーバッファをロードする
+	// arg1... ファイルメモリへのポインタ
+	// arg2... メモリデータサイズ
+	// ret.... <0> カラーバッファ (rgba 各8bit)
+	// ....... <1> 幅
+	// ....... <2> 高さ
+	// ....... <3> データサイズ
+	std::tuple<std::unique_ptr<uint8_t>, uint32_t, uint32_t, uint32_t> LoadGraphicColorBufferFromMemory(const unsigned char* file_data, int file_size);
 
 	//----------------------------------------------------------------------------------------------
 	// カラーバッファからBMPフォーマットのバッファを作成
@@ -120,9 +148,7 @@ namespace tnl{
 	// arg4... 生成されたデータサイズ( byte ) 省略可
 	// ret.... 24bit BMP フォーマットバッファ
 	// tips1.. アルファは適用されません
-	// tips2.. この関数で得られたメモリは内部で新たに確保されたメモリです
-	//         使用者が解放してください
-	char* CreateFormatBmp24(unsigned char* color_buff_rgba8, uint32_t width, uint32_t height, uint32_t* data_size = nullptr);
+	std::unique_ptr<int8_t> CreateFormatBmp24(unsigned char* color_buff_rgba8, uint32_t width, uint32_t height, uint32_t* data_size = nullptr);
 
 	//----------------------------------------------------------------------------------------------
 	// カラーバッファからTGAフォーマットのバッファを作成
@@ -132,15 +158,17 @@ namespace tnl{
 	// arg4... 生成されたデータサイズ( byte ) 省略可
 	// ret.... 32bit TGA フォーマットバッファ
 	// tips1.. アルファが適用されます
-	// tips2.. この関数で得られたメモリは内部で新たに確保されたメモリです
-	//         使用者が解放してください
-	char* CreateFormatTga32(unsigned char* color_buff_rgba8, uint32_t width, uint32_t height, uint32_t* data_size = nullptr);
+	std::unique_ptr<int8_t> CreateFormatTga32(unsigned char* color_buff_rgba8, uint32_t width, uint32_t height, uint32_t* data_size = nullptr);
 
+
+	//----------------------------------------------------------------------------------------------
+	std::chrono::system_clock::time_point BeginClock();
+	float EndClock(const std::chrono::system_clock::time_point& clock_start);
 
 	//----------------------------------------------------------------------------------------------
 	// char から wchar への変換
 	void ToWChara(wchar_t* wstrDest, const char* strSrc, int length);
-	void ToWChara(wchar_t* wstrDest, uint32_t wstr_lenght, const std::string& src);
+	void ToWChara(wchar_t* wstrDest, const std::string& src);
 	wchar_t ToOnceWChara(const char* strSrc);
 	// Sjis UTF8 相互変換
 	std::string UTF8toSjis(const std::string& srcUTF8);
@@ -194,6 +222,26 @@ namespace tnl{
 	bool LeastBit16(const uint16_t value, int& out);
 	bool LeastBit32(const uint32_t value, int& out);
 	bool LeastBit64(const uint64_t value, int& out);
+
+
+	//----------------------------------------------------------------------------------------------
+	template<class T, class U>
+	class FieldAccessor {
+	public:
+		FieldAccessor(T* obj
+			, const std::function<U(T*)>& getter
+			, const std::function<void(T*, const U&)>& setter)
+			: obj_(obj)
+			, getter_(getter)
+			, setter_(setter)
+		{}
+		U get() { return getter_(obj_); }
+		void set(const U& u) { return setter_(obj_, u); }
+	private:
+		T* obj_;
+		std::function<U(T*)> getter_;
+		std::function<void(T*, const U&)> setter_;
+	};
 
 }
 

@@ -1,5 +1,6 @@
 #pragma once
-#include "../dxlib_ext/dxlib_ext.h"
+#include "DxLib.h"
+#include "../library/tnl_vector3.h"
 
 namespace dxe {
 

@@ -10,5 +10,4 @@ namespace tnl {
 	const Vector2i Vector2i::up = { 0, -1 };
 	const Vector2i Vector2i::down = { 0, 1 };
 
-
 }

@@ -1,16 +1,15 @@
-#include "../dxlib_ext_mesh.h"
+#include "../mesh/dxlib_ext_mesh.h"
 
 namespace dxe {
 
 	//----------------------------------------------------------------------------------------
-	Mesh* Mesh::CreateDisk(const float radius, const int div_w, const int div_h, const int angle, const bool is_left_cycle) noexcept
+	Shared<Mesh> Mesh::CreateDisk(const float radius, const int div_w, const int div_h, const int angle, const bool is_left_cycle) noexcept
 	{
-		Mesh* mesh = new Mesh();
+		Shared<Mesh> mesh = Shared<Mesh>(new Mesh());
 		mesh->desc_ = std::make_shared<MeshDescDisk>(radius, div_w, div_h, angle, is_left_cycle);
 		mesh->shape_type_ = eShapeType::DISK;
 
-		mesh->bd_sphere_radius_ = radius;
-		mesh->bd_box_size_ = { radius * 2,  radius * 2, radius * 2 };
+		tnl::Vector3 far_vtx = { 0, 0, 0 };
 
 		uint32_t deg = 360;
 		deg = (angle < 360) ? 180 : deg;
@@ -40,6 +39,10 @@ namespace dxe {
 
 				mesh->vtxs_[(i * (srice + 1)) + k].pos = { vv.x, vv.y, vv.z };
 
+				far_vtx.x = (fabs(vv.x) > fabs(far_vtx.x)) ? vv.x : far_vtx.x;
+				far_vtx.y = (fabs(vv.y) > fabs(far_vtx.y)) ? vv.y : far_vtx.y;
+				far_vtx.z = (fabs(vv.z) > fabs(far_vtx.z)) ? vv.z : far_vtx.z;
+
 				mesh->vtxs_[(i * (srice + 1)) + k].u = 0.5f + (vv.x / radius * 0.5f);
 				mesh->vtxs_[(i * (srice + 1)) + k].v = (0.5f + (vv.y / radius * 0.5f));
 
@@ -53,13 +56,17 @@ namespace dxe {
 
 		mesh->createPlaneIndex(div_w, div_h, is_left_cycle);
 		mesh->createVBO();
+
+		mesh->bd_sphere_radius_ = far_vtx.length();
+		mesh->bd_box_size_ = far_vtx * 2.0f;
+
 		return mesh;
 
 	}
 
 
-	Mesh* Mesh::CreateDiskMV(const float radius, const int div_w, const int div_h, const int angle, const bool is_left_cycle) noexcept {
-		Mesh* mesh = CreateDisk(radius, div_w, div_h, angle, is_left_cycle);
+	Shared<Mesh> Mesh::CreateDiskMV(const float radius, const int div_w, const int div_h, const int angle, const bool is_left_cycle) noexcept {
+		Shared<Mesh> mesh = CreateDisk(radius, div_w, div_h, angle, is_left_cycle);
 		mesh = CreateConvertMV(mesh);
 		return mesh;
 	}

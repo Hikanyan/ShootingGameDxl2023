@@ -9,33 +9,34 @@
 #include "ManagedDxlGame.h"
 #include "DxLib.h"
 #include "program/library/tnl_input.h"
-#include "program\game\game_main.h"
+#include "program/game/gm_main.h"
 #include "program/dxlib_ext/dxlib_ext.h"
 
 #define MAX_LOADSTRING 100
 
 // グローバル変数:
-HINSTANCE hInst; // 現在のインターフェイス
-WCHAR szTitle[MAX_LOADSTRING]; // タイトル バーのテキスト
-WCHAR szWindowClass[MAX_LOADSTRING]; // メイン ウィンドウ クラス名
+HINSTANCE hInst;                                // 現在のインターフェイス
+WCHAR szTitle[MAX_LOADSTRING];                  // タイトル バーのテキスト
+WCHAR szWindowClass[MAX_LOADSTRING];            // メイン ウィンドウ クラス名
 
 // このコード モジュールに含まれる関数の宣言を転送します:
-ATOM MyRegisterClass(HINSTANCE hInstance);
-BOOL InitInstance(HINSTANCE, int);
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
+ATOM                MyRegisterClass(HINSTANCE hInstance);
+BOOL                InitInstance(HINSTANCE, int);
+LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
 static std::chrono::system_clock::time_point clock_start, clock_end;
 static std::chrono::system_clock::time_point fps_clock_start, fps_clock_end;
 
 extern std::string g_drag_file_path;
+extern float g_delta_time;
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                      _In_opt_ HINSTANCE hPrevInstance,
-                      _In_ LPWSTR lpCmdLine,
-                      _In_ int nCmdShow)
+                     _In_opt_ HINSTANCE hPrevInstance,
+                     _In_ LPWSTR    lpCmdLine,
+                     _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
@@ -46,7 +47,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // ウィンドウサイズ設定
     SetGraphMode(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT, 32);
 
-    SetWaitVSyncFlag(FALSE);
+    SetWaitVSyncFlag(TRUE);
 
     // ＤＸライブラリ初期化処理
     if (DxLib_Init() == -1)
@@ -55,6 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return -1;
     }
     SetDrawScreen(DX_SCREEN_BACK);
+    //SetAlwaysRunFlag(TRUE);
 
     // 計測開始時間
     clock_start = std::chrono::system_clock::now();
@@ -67,8 +69,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     SetDragFileValidFlag(TRUE);
     SetAlwaysRunFlag(TRUE);
 
+    // メルセンヌツイスター初期化
+    tnl::SetSeedMersenneTwister32(time(0));
+
+    // DXライブラリ拡張 DirectX 初期化
+    dxe::DirectXInitialize();
+
     // ゲームスタート処理
-    game_start();
+    gameStart();
 
     // メッセージループ
     while (1)
@@ -76,19 +84,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         // フレーム間の経過時間
         // マイクロ秒で計測して秒に変換
         clock_end = std::chrono::system_clock::now();
-        double micro_seconds = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
-            clock_end - clock_start).count());
+        double micro_seconds = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count());
         float delta_time = static_cast<float>(micro_seconds / 1000.0 / 1000.0);
         clock_start = clock_end;
 
-        if (ProcessMessage() == -1)
-        {
+        if (ProcessMessage() == -1) {
             break;
         }
 
-        char filepath[256] = {0};
-        if (0 == GetDragFilePath(filepath))
-        {
+        char filepath[256] = { 0 };
+        if (0 == GetDragFilePath(filepath)) {
             g_drag_file_path = std::string(filepath);
         }
         DragFileInfoClear();
@@ -102,28 +107,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         tnl::Input::Update();
 
         // ゲームメインルーチン
-        game_main(delta_time);
+        g_delta_time = delta_time;
+        gameMain(delta_time);
 
         // バックバッファをフリップ
         ScreenFlip();
 
         // フレームレートコントロール
         fps_clock_end = std::chrono::system_clock::now();
-        double fps_mic = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(
-            fps_clock_end - fps_clock_start).count());
+        double fps_mic = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(fps_clock_end - fps_clock_start).count());
         float fps_mils = static_cast<float>(fps_mic / 1000.0);
-        float fps_lim = 1000.0f / (DXE_FIX_FPS + 1.0f);
+        float fps_lim = 1000.0f / ( DXE_FIX_FPS + 0.5f ) ;
 
-        if (fps_lim > fps_mils)
-        {
+        if (fps_lim > fps_mils) {
             timeBeginPeriod(1);
             Sleep(DWORD(fps_lim - fps_mils));
             timeEndPeriod(1);
         }
+
     }
 
+
     // ゲーム側の終了処理
-    game_end();
+    gameEnd();
+
+
+    // DXライブラリ拡張 DirectX 解放
+    dxe::DirectXRelease();
 
     ReleaseDC(hWnd, hdc);
 
@@ -132,6 +142,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return 0;
 }
+
 
 
 //
@@ -145,17 +156,17 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = WndProc;
-    wcex.cbClsExtra = 0;
-    wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
-    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MANAGEDDXLGAME));
-    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_MANAGEDDXLGAME);
-    wcex.lpszClassName = szWindowClass;
-    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.style          = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc    = WndProc;
+    wcex.cbClsExtra     = 0;
+    wcex.cbWndExtra     = 0;
+    wcex.hInstance      = hInstance;
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MANAGEDDXLGAME));
+    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_MANAGEDDXLGAME);
+    wcex.lpszClassName  = szWindowClass;
+    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     return RegisterClassExW(&wcex);
 }
@@ -172,20 +183,20 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    hInst = hInstance; // グローバル変数にインスタンス ハンドルを格納する
+   hInst = hInstance; // グローバル変数にインスタンス ハンドルを格納する
 
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-                              CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
-    if (!hWnd)
-    {
-        return FALSE;
-    }
+   if (!hWnd)
+   {
+      return FALSE;
+   }
 
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
+   ShowWindow(hWnd, nCmdShow);
+   UpdateWindow(hWnd);
 
-    return TRUE;
+   return TRUE;
 }
 
 //

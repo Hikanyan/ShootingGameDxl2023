@@ -23,7 +23,7 @@ namespace tnl {
 
 		std::string s = (font_type == "") ? "‚l‚r ‚o–¾’©" : font_type;
 		wchar_t buff[256] = { 0 };
-		tnl::ToWChara(buff, 256, s);
+		tnl::ToWChara(buff, s);
 
 		// ƒtƒHƒ“ƒg‚Ì¶¬
 		LOGFONT lf = {

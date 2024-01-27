@@ -96,6 +96,10 @@ namespace tnl {
 		DirectX::XMStoreFloat4(this, DirectX::XMQuaternionSlerp(DirectX::XMLoadFloat4(this), DirectX::XMLoadFloat4(&q), t));
 	}
 
+	void Quaternion::normalize() {
+		DirectX::XMStoreFloat4(this, DirectX::XMQuaternionNormalize(DirectX::XMLoadFloat4(this)));
+	}
+
 	Quaternion Quaternion::LookAt(const Vector3& eye, const Vector3& look, const Vector3& vup) {
 		DirectX::XMMATRIX xm = DirectX::XMMatrixLookAtLH(
 			DirectX::XMLoadFloat3(&eye),

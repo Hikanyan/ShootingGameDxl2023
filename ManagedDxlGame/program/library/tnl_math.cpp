@@ -1,9 +1,12 @@
 #include <random>
 #include <numbers>
 #include "tnl_math.h"
+#include "tnl_quaternion.h"
+#include "tnl_intersect.h"
 
 namespace tnl {
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     std::vector<double> Solve2(std::vector<double>& c) {
         double p = c[1] / (2 * c[2]);
         double q = c[0] / c[2];
@@ -17,6 +20,7 @@ namespace tnl {
             return { sqrt_D - p, -sqrt_D - p };
         }
     }
+    //--------------------------------------------------------------------------------------------------------------------------------
     std::vector<double> Solve3(std::vector<double>& c) {
         /* normal form: x^3 + Ax^2 + Bx + C = 0 */
         double A = c[2] / c[3];
@@ -64,6 +68,7 @@ namespace tnl {
             s[i] -= sub;
         return s;
     }
+    //--------------------------------------------------------------------------------------------------------------------------------
     std::vector<double> Solve4(std::vector<double>& c) {
         /* normal form: x^4 + Ax^3 + Bx^2 + Cx + D = 0 */
         double A = c[3] / c[4];
@@ -138,18 +143,21 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     std::mt19937 g_mersenne ;
     void SetSeedMersenneTwister32(int seed) {
         g_mersenne.seed(seed);
     }
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     float GetRandomDistributionFloat(float min, float max) {
         std::uniform_real_distribution<> param(static_cast<double>(min), static_cast<double>(max));
         return static_cast<float>(param(g_mersenne));
     }
 
 
-	int GetSidesPointAndPlane(const Vector3& v, const Vector3& pn, const Vector3& pv)
+    //--------------------------------------------------------------------------------------------------------------------------------
+    int GetSidesPointAndPlane(const Vector3& v, const Vector3& pn, const Vector3& pv)
 	{
 		Vector3 vec = v - pv;
 		float a = vec.dot( pn );
@@ -158,63 +166,72 @@ namespace tnl {
 		else 				return 0;		// ïΩñ è„
 	}
 
-
-	int GetRegionPointAndRect(const Vector3& p, const Vector3& rp, const int rect_w, const int rect_h) {
+    //--------------------------------------------------------------------------------------------------------------------------------
+    eRegionPtRect GetRegionPointAndRect(const Vector3& p, const Vector3& rp, const int rect_w, const int rect_h) {
 		tnl::Vector3 v1 = tnl::Vector3::Normalize({ float(rect_h), float(rect_w), 0 });
 		tnl::Vector3 v2 = tnl::Vector3::Normalize({ float(rect_h), float(-rect_w), 0 });
-//		tnl::Vector3 vc1 = v1.cross(tnl::Vector3(0, 0, 1));
-//		tnl::Vector3 vc2 = v2.cross(tnl::Vector3(0, 0, 1));
 		tnl::Vector3 vc1 = v1;
 		tnl::Vector3 vc2 = v2;
 
 		int s1 = tnl::GetSidesPointAndPlane(p, vc1, rp);
 		int s2 = tnl::GetSidesPointAndPlane(p, vc2, rp);
 		if (s1 >= 0 && s2 >= 0) {
-			return 1;
+			return eRegionPtRect::RIGHT;
 		}
 		else if (s1 >= 0 && s2 <= 0) {
-			return 2;
+			return eRegionPtRect::DOWN;
 		}
 		else if (s1 <= 0 && s2 >= 0) {
-			return 0;
+			return eRegionPtRect::UP;
 		}
 		else {
-			return 3;
+			return eRegionPtRect::LEFT;
 		}
 	}
 
-    int GetRegionPointAndAABB(const Vector3& p, const Vector3& max, const Vector3& min) {
+    //--------------------------------------------------------------------------------------------------------------------------------
+    eRegionPtAABB GetRegionPointAndAABB(const Vector3& p, const Vector3& max, const Vector3& min) {
+        tnl::Vector3 c = (max + min) * 0.5f;
+        tnl::Vector3 pp = p - c ;
+        tnl::Vector3 mmax = max - c;
+        tnl::Vector3 mmin = min - c;
+
         int side[4] = { 0, 0, 0, 0 };
         tnl::Vector3 t_max[4];
         tnl::Vector3 t_min[4];
         tnl::Vector3 vn[4];
-        t_max[0] = { max.x, 0, max.z };
-        t_min[0] = { min.x, 0, min.z };
-        t_max[1] = { max.x, 0, -max.z };
-        t_min[1] = { min.x, 0, -min.z };
-        t_max[2] = { 0, max.y, max.z };
-        t_min[2] = { 0, min.y, min.z };
-        t_max[3] = { 0, -max.y, max.z };
-        t_min[3] = { 0, -min.y, min.z };
+        t_max[0] = { mmax.x, 0, mmax.z };
+        t_min[0] = { mmin.x, 0, mmin.z };
+        t_max[1] = { mmax.x, 0, -mmax.z };
+        t_min[1] = { mmin.x, 0, -mmin.z };
+        t_max[2] = { 0, mmax.y, mmax.z };
+        t_min[2] = { 0, mmin.y, mmin.z };
+        t_max[3] = { 0, -mmax.y, mmax.z };
+        t_min[3] = { 0, -mmin.y, mmin.z };
         vn[0] = tnl::Vector3::Normalize(tnl::Vector3::Cross((t_min[0] - t_max[0]), { 0, -1, 0 }));
         vn[1] = tnl::Vector3::Normalize(tnl::Vector3::Cross((t_min[1] - t_max[1]), { 0, -1, 0 }));
         vn[2] = tnl::Vector3::Normalize(tnl::Vector3::Cross((t_min[2] - t_max[2]), { -1, 0, 0 }));
         vn[3] = tnl::Vector3::Normalize(tnl::Vector3::Cross((t_min[3] - t_max[3]), { -1, 0, 0 }));
 
-        for (int i = 0; i < 4; ++i) side[i] = GetSidesPointAndPlane(p, vn[i], t_max[i]);
+        for (int i = 0; i < 4; ++i) side[i] = GetSidesPointAndPlane(pp, vn[i], t_max[i]);
 
         // ëOÇÃóÃàÊÇ…ë∂ç›
-        if (-1 == side[0] && -1 == side[1] && 1 == side[2] && -1 == side[3]) return 4;
+        if (-1 == side[0] && -1 == side[1] && 1 == side[2] && -1 == side[3]) return eRegionPtAABB::FORWORD;
 
         // å„ÇÃóÃàÊÇ…ë∂ç›
-        if (1 == side[0] && 1 == side[1] && -1 == side[2] && 1 == side[3]) return 5;
+        if (1 == side[0] && 1 == side[1] && -1 == side[2] && 1 == side[3]) return eRegionPtAABB::BACK;
 
-        return GetRegionPointAndRect(p, (max + min) * 0.5f, (int)(max.x - min.x), (int)(max.y - min.y));
+        eRegionPtAABB region[4] = {
+            eRegionPtAABB::DOWN, eRegionPtAABB::RIGHT, eRegionPtAABB::UP, eRegionPtAABB::LEFT
+        };
+        eRegionPtRect rect_region = GetRegionPointAndRect(pp, (mmax + mmin) * 0.5f, (int)(mmax.x - mmin.x), (int)(mmax.y - mmin.y));
+        return region[static_cast<int>(rect_region)];
     }
 
 
 
-    int GetXzRegionPointAndOBB(const Vector3& p, const Vector3& op, const Vector3& size, const Quaternion& q) {
+    //--------------------------------------------------------------------------------------------------------------------------------
+    eRegionPtXzOBB GetXzRegionPointAndOBB(const Vector3& p, const Vector3& op, const Vector3& size, const Quaternion& q) {
         tnl::Vector3 pv1 = tnl::Vector3::Normalize(size) * 0.5f ;
         tnl::Vector3 pv2 = {-pv1.x, pv1.y, pv1.z};
         tnl::Vector3 pn1 = tnl::Vector3::Normalize( tnl::Vector3::Cross(pv1, pv1.xz()) );
@@ -227,20 +244,21 @@ namespace tnl {
         int s1 = tnl::GetSidesPointAndPlane(p, pn1, pv1);
         int s2 = tnl::GetSidesPointAndPlane(p, pn2, pv2);
         if (s1 >= 0 && s2 >= 0) {
-            return 1;
+            return eRegionPtXzOBB::RIGHT;
         }
         else if (s1 >= 0 && s2 <= 0) {
-            return 2;
+            return eRegionPtXzOBB::BACK;
         }
         else if (s1 <= 0 && s2 >= 0) {
-            return 0;
+            return eRegionPtXzOBB::FORWORD;
         }
         else {
-            return 3;
+            return eRegionPtXzOBB::LEFT;
         }
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     tnl::Vector3 GetNearestPointAABB(const tnl::Vector3& point, const tnl::Vector3& aabb_max, const tnl::Vector3& aabb_min) {
         tnl::Vector3 q;
         float v = point.x;
@@ -262,7 +280,8 @@ namespace tnl {
     }
 
 
-	tnl::Vector3 GetNearestRectPoint(const tnl::Vector3& rect_pos, float w, float h, const tnl::Vector3 &point) {
+    //--------------------------------------------------------------------------------------------------------------------------------
+    tnl::Vector3 GetNearestRectPoint(const tnl::Vector3& rect_pos, float w, float h, const tnl::Vector3 &point) {
 		tnl::Vector3 nearest(0, 0, 0);
 		float hw = w * 0.5f;
 		float hh = h * 0.5f;
@@ -276,6 +295,7 @@ namespace tnl {
 	}
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     tnl::Vector3 GetNearestRectPoint(const tnl::Vector3& rect_pos, const tnl::Vector3& axis_x, const tnl::Vector3& axis_y, const tnl::Vector3& rect_side_length, const tnl::Vector3& point) {
         tnl::Vector3 d = point - rect_pos;
         tnl::Vector3 q = rect_pos;
@@ -292,6 +312,7 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     tnl::Vector3 GetNearestPointTriangle(const tnl::Vector3& p, const tnl::Vector3& a, const tnl::Vector3& b, const tnl::Vector3& c) {
         tnl::Vector3 ab = b - a;
         tnl::Vector3 ac = c - a;
@@ -335,6 +356,7 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     tnl::Vector3 GetNearestPointPlane(const tnl::Vector3& v, const tnl::Vector3& pn, const tnl::Vector3& pv) {
         float d = tnl::Vector3::Dot(pn, pv);
         float t = tnl::Vector3::Dot(pn, v) - d;
@@ -342,6 +364,7 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     tnl::Vector3 GetNearestPointLine(const tnl::Vector3& v, const tnl::Vector3& a, const tnl::Vector3& b) {
         tnl::Vector3 ab = b - a;
         float t = tnl::Vector3::Dot( v-a, ab );
@@ -361,6 +384,7 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     std::tuple<tnl::Vector3, tnl::Vector3> GetNearestLines(const tnl::Vector3& s1, const tnl::Vector3& e1, const tnl::Vector3& s2, const tnl::Vector3& e2) {
 
         float s, t ;
@@ -417,6 +441,27 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
+    tnl::Vector3 GetRandomPointInsidePlane(const tnl::Vector3& plane_position, const tnl::Vector3& plane_normal, float radius) {
+
+        if (plane_normal.length() <= FLT_EPSILON) return plane_position;
+
+        tnl::Vector3 cv = tnl::Vector3::Cross(plane_normal, tnl::Vector3::left);
+        if (cv.length() <= FLT_EPSILON) cv = tnl::Vector3::Cross(plane_normal, tnl::Vector3::up);
+        if (cv.length() <= FLT_EPSILON) cv = tnl::Vector3::Cross(plane_normal, tnl::Vector3::forward);
+
+        tnl::Quaternion rot = tnl::Quaternion::RotationAxis(cv, tnl::ToRadian(90));
+        tnl::Vector3 random_v = tnl::Vector3::TransformCoord(plane_normal, rot);
+
+        float angle = tnl::GetRandomDistributionFloat(-180, 180);
+        rot = tnl::Quaternion::RotationAxis(plane_normal, tnl::ToRadian(angle));
+        random_v = tnl::Vector3::TransformCoord(random_v, rot);
+
+        return plane_position + random_v * tnl::GetRandomDistributionFloat(0, radius);
+
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------------------
     std::tuple<tnl::Vector3, float> CircumscribedCircle(const tnl::Vector3& a, const tnl::Vector3& b, const tnl::Vector3& c){
         tnl::Vector3 a2 = a * a;
         tnl::Vector3 b2 = b * b;
@@ -432,6 +477,7 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
     Vector3 BezierSpline(const Vector3& _a1, const Vector3& _a2, const Vector3& _a3, const Vector3& _a4, float t) {
 
         t = (1.0f < t) ? 1.0f : t;
@@ -466,47 +512,260 @@ namespace tnl {
     }
 
 
-    int GetCorrectPositionIntersectAABB(const tnl::Vector3& a_prev, const tnl::Vector3& a_size, const tnl::Vector3& b, const tnl::Vector3& b_size, tnl::Vector3& out, const float correct_space)
-    {
-        const int DOWN = 0;
-        const int RIGHT = 1;
-        const int UP = 2;
-        const int LEFT = 3;
-        const int FRONT = 4;
-        const int BACK = 5;
-        tnl::Vector3 aa = a_prev - b;
-        tnl::Vector3 bb = { 0, 0, 0 };
-        tnl::Vector3 a_max = tnl::ToMaxAABB(aa, a_size);
-        tnl::Vector3 a_min = tnl::ToMinAABB(aa, a_size);
-        tnl::Vector3 b_max = tnl::ToMaxAABB(bb, b_size);
-        tnl::Vector3 b_min = tnl::ToMinAABB(bb, b_size);
-        tnl::Vector3 near = tnl::GetNearestPointAABB(bb, a_max, a_min);
-        int region = tnl::GetRegionPointAndAABB(near, b_max, b_min);
+    //--------------------------------------------------------------------------------------------------------------------------------
+    eCorrResRect CorrectPositionRect(
+        const tnl::Vector3& a_before
+        , const tnl::Vector3& b_before
+        , const tnl::Vector2i& a_size
+        , const tnl::Vector2i& b_size
+        , tnl::Vector3& a_out
+        , tnl::Vector3& b_out
+        , eCorrTypeRect correct_type_x
+        , eCorrTypeRect correct_type_y
+        , float correct_space ) {
+
+        // à⁄ìÆó ÇÃëÂÇ´Ç¢ï˚Çï‚ê≥ÇÃäÓèÄÇ∆Ç∑ÇÈ
+        float l1 = (a_before - a_out).length();
+        float l2 = (b_before - b_out).length();
+
+        if ((l1 < l2) && eCorrTypeRect::PWRFL_A == correct_type_x) correct_type_x = eCorrTypeRect::PWRFL_B;
+        else if ((l1 < l2) && eCorrTypeRect::PWRFL_B == correct_type_x) correct_type_x = eCorrTypeRect::PWRFL_A;
+
+        if ((l1 < l2) && eCorrTypeRect::PWRFL_A == correct_type_y) correct_type_y = eCorrTypeRect::PWRFL_B;
+        else if ((l1 < l2) && eCorrTypeRect::PWRFL_B == correct_type_y) correct_type_y = eCorrTypeRect::PWRFL_A;
+
+        tnl::Vector2i m_size = (l1 >= l2) ? a_size : b_size;
+        tnl::Vector2i u_size = (l1 >= l2) ? b_size : a_size;
+        tnl::Vector3 m_out = (l1 >= l2) ? a_out : b_out;
+        tnl::Vector3 u_out = (l1 >= l2) ? b_out : a_out;
+        tnl::Vector3 m_before = (l1 >= l2) ? a_before : b_before;
+        tnl::Vector3 u_beore = (l1 >= l2) ? b_before : a_before;
+
+        // äÓèÄÇ∆Ç»Ç¡ÇΩãÈå`ÇÃÇ‡Ç§àÍï˚Ç÷ÇÃç≈ãﬂì_
+        tnl::Vector3 m_near = tnl::GetNearestRectPoint(m_before, (float)m_size.x, (float)m_size.y, u_out);
+
+        // ç≈ãﬂì_Ç™Ç‡Ç§ï–ï˚ÇÃà⁄ìÆëOÇÃãÈå`Ç©ÇÁëŒäpê¸Çà¯Ç¢ÇΩéûè„â∫ç∂âEÇ«ÇÃóÃàÊÇ…ë∂ç›Ç∑ÇÈÇ©
+        tnl::eRegionPtRect region = tnl::GetRegionPointAndRect(m_near, u_beore, u_size.x, u_size.y);
+
+        float aw2 = static_cast<float>(m_size.x >> 1);
+        float ah2 = static_cast<float>(m_size.y >> 1);
+        float bw2 = static_cast<float>(u_size.x >> 1);
+        float bh2 = static_cast<float>(u_size.y >> 1);
+        float aw4 = static_cast<float>(m_size.x >> 2);
+        float ah4 = static_cast<float>(m_size.y >> 2);
+        float bw4 = static_cast<float>(u_size.x >> 2);
+        float bh4 = static_cast<float>(u_size.y >> 2);
+        float half_correct_space = correct_space / 2;
+
+        eCorrResRect return_correct_dir;
+
+        std::function<void()> CorrectUp = [&]() {
+            if (eCorrTypeRect::PWRFL_A == correct_type_y) u_out.y = m_out.y + bh2 + ah2 + correct_space;
+            if (eCorrTypeRect::PWRFL_B == correct_type_y) m_out.y = u_out.y - bh2 - ah2 - correct_space;
+            if (eCorrTypeRect::BOTH == correct_type_y) {
+                float c = (m_out.y + u_out.y) / 2;
+                m_out.y = c - bh4 - ah4 - half_correct_space;
+                u_out.y = c + bh4 + ah4 + half_correct_space;
+            }
+            return_correct_dir = eCorrResRect::UP;
+            };
+
+        std::function<void()> CorrectDown = [&]() {
+            if (eCorrTypeRect::PWRFL_A == correct_type_y) u_out.y = m_out.y - bh2 - ah2 - correct_space;
+            if (eCorrTypeRect::PWRFL_B == correct_type_y) m_out.y = u_out.y + bh2 + ah2 + correct_space;
+            if (eCorrTypeRect::BOTH == correct_type_y) {
+                float c = (m_out.y + u_out.y) / 2;
+                m_out.y = c + bh4 + ah4 + half_correct_space;
+                u_out.y = c - bh4 - ah4 - half_correct_space;
+            }
+            return_correct_dir = eCorrResRect::DOWN;
+            };
+
+        std::function<void()> CorrectRight = [&]() {
+            if (eCorrTypeRect::PWRFL_A == correct_type_x) u_out.x = m_out.x - bw2 - aw2 - correct_space;
+            if (eCorrTypeRect::PWRFL_B == correct_type_x) m_out.x = u_out.x + bw2 + aw2 + correct_space;
+            if (eCorrTypeRect::BOTH == correct_type_x) {
+                float c = (m_out.x + u_out.x) / 2;
+                m_out.x = c + bw4 + aw4 + half_correct_space;
+                u_out.x = c - bw4 - aw4 - half_correct_space;
+            }
+            return_correct_dir = eCorrResRect::RIGHT;
+            };
+
+        std::function<void()> CorrectLeft = [&]() {
+            if (eCorrTypeRect::PWRFL_A == correct_type_x) u_out.x = m_out.x + bw2 + aw2 + correct_space;
+            if (eCorrTypeRect::PWRFL_B == correct_type_x) m_out.x = u_out.x - bw2 - aw2 - correct_space;
+            if (eCorrTypeRect::BOTH == correct_type_x) {
+                float c = (m_out.x + u_out.x) / 2;
+                m_out.x = c - bw4 - aw4 - half_correct_space;
+                u_out.x = c + bw4 + aw4 + half_correct_space;
+            }
+            return_correct_dir = eCorrResRect::LEFT;
+            };
 
         switch (region) {
-        case UP :
-            out.y = b.y + (b_size.y / 2) + (a_size.y / 2) + correct_space;
-            return UP;
-        case DOWN:
-            out.y = b.y - (b_size.y / 2) - (a_size.y / 2) - correct_space;
-            return DOWN;
-        case RIGHT:
-            out.x = b.x + (b_size.x / 2) + (a_size.x / 2) + correct_space;
-            return RIGHT;
-        case LEFT:
-            out.x = b.x - (b_size.x / 2) - (a_size.x / 2) - correct_space;
-            return LEFT;
-        case BACK:
-            out.z = b.z + (b_size.z / 2) + (a_size.z / 2) + correct_space;
-            return BACK;
-        case FRONT:
-            out.z = b.z - (b_size.z / 2) - (a_size.z / 2) - correct_space;
-            return FRONT;
+        case tnl::eRegionPtRect::UP:	CorrectUp(); break;
+        case tnl::eRegionPtRect::DOWN:	CorrectDown(); break;
+        case tnl::eRegionPtRect::RIGHT:	CorrectRight(); break;
+        case tnl::eRegionPtRect::LEFT:	CorrectLeft(); break;
         }
-        return 0;
+
+        a_out = (l1 >= l2) ? m_out : u_out;
+        b_out = (l1 >= l2) ? u_out : m_out;
+        if (l1 < l2) {
+            switch (return_correct_dir) {
+            case eCorrResRect::LEFT:	return_correct_dir = eCorrResRect::RIGHT; break;
+            case eCorrResRect::RIGHT:	return_correct_dir = eCorrResRect::LEFT; break;
+            case eCorrResRect::UP:		return_correct_dir = eCorrResRect::DOWN; break;
+            case eCorrResRect::DOWN:	return_correct_dir = eCorrResRect::UP; break;
+            }
+        }
+
+        return return_correct_dir;
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
+    eCorrResAABB CorrectPositionAABB(
+        const tnl::Vector3& a_before
+        , const tnl::Vector3& b_before
+        , const tnl::Vector3& a_size
+        , const tnl::Vector3& b_size
+        , tnl::Vector3& a_out
+        , tnl::Vector3& b_out
+        , eCorrTypeAABB correct_type_x
+        , eCorrTypeAABB correct_type_y
+        , eCorrTypeAABB correct_type_z
+        , float correct_space)
+    {
+
+        // à⁄ìÆó ÇÃëÂÇ´Ç¢ï˚Çï‚ê≥ÇÃäÓèÄÇ∆Ç∑ÇÈ
+        float l1 = (a_before - a_out).length();
+        float l2 = (b_before - b_out).length();
+
+        if ((l1 < l2) && eCorrTypeAABB::PWRFL_A == correct_type_x) correct_type_x = eCorrTypeAABB::PWRFL_B;
+        else if ((l1 < l2) && eCorrTypeAABB::PWRFL_B == correct_type_x) correct_type_x = eCorrTypeAABB::PWRFL_A;
+
+        if ((l1 < l2) && eCorrTypeAABB::PWRFL_A == correct_type_y) correct_type_y = eCorrTypeAABB::PWRFL_B;
+        else if ((l1 < l2) && eCorrTypeAABB::PWRFL_B == correct_type_y) correct_type_y = eCorrTypeAABB::PWRFL_A;
+
+        if ((l1 < l2) && eCorrTypeAABB::PWRFL_A == correct_type_z) correct_type_z = eCorrTypeAABB::PWRFL_B;
+        else if ((l1 < l2) && eCorrTypeAABB::PWRFL_B == correct_type_z) correct_type_z = eCorrTypeAABB::PWRFL_A;
+
+        tnl::Vector3 m_size = (l1 >= l2) ? a_size : b_size;
+        tnl::Vector3 u_size = (l1 >= l2) ? b_size : a_size;
+        tnl::Vector3 m_out = (l1 >= l2) ? a_out : b_out;
+        tnl::Vector3 u_out = (l1 >= l2) ? b_out : a_out;
+        tnl::Vector3 m_before = (l1 >= l2) ? a_before : b_before;
+        tnl::Vector3 u_before = (l1 >= l2) ? b_before : a_before;
+
+        tnl::Vector3 m_max = tnl::ToMaxAABB(m_before, m_size);
+        tnl::Vector3 m_min = tnl::ToMinAABB(m_before, m_size);
+        tnl::Vector3 u_max = tnl::ToMaxAABB(u_before, u_size);
+        tnl::Vector3 u_min = tnl::ToMinAABB(u_before, u_size);
+
+        tnl::Vector3 nearest = tnl::GetNearestPointAABB(u_out, m_max, m_min);
+        tnl::eRegionPtAABB region = tnl::GetRegionPointAndAABB(nearest, u_max, u_min);
+
+
+        float distance = 0;
+        tnl::Vector3 correct_base_point;
+
+        if (eCorrTypeAABB::PWRFL_A == correct_type_x) correct_base_point.x = m_out.x;
+        if (eCorrTypeAABB::PWRFL_B == correct_type_x) correct_base_point.x = u_out.x;
+        if (eCorrTypeAABB::BOTH == correct_type_x) correct_base_point.x = (m_out.x + u_out.x) / 2.0f;
+
+        if (eCorrTypeAABB::PWRFL_A == correct_type_y) correct_base_point.y = m_out.y;
+        if (eCorrTypeAABB::PWRFL_B == correct_type_y) correct_base_point.y = u_out.y;
+        if (eCorrTypeAABB::BOTH == correct_type_y) correct_base_point.y = (m_out.y + u_out.y) / 2.0f;
+
+        if (eCorrTypeAABB::PWRFL_A == correct_type_z) correct_base_point.z = m_out.z;
+        if (eCorrTypeAABB::PWRFL_B == correct_type_z) correct_base_point.z = u_out.z;
+        if (eCorrTypeAABB::BOTH == correct_type_z) correct_base_point.z = (m_out.z + u_out.z) / 2.0f;
+
+        eCorrResAABB return_correct_dir;
+
+        switch (region) {
+        case tnl::eRegionPtAABB::UP:
+            distance = (m_size.y + u_size.y) * 0.5f;
+            if (eCorrTypeAABB::PWRFL_A == correct_type_y) u_out.y = correct_base_point.y - distance - correct_space;
+            if (eCorrTypeAABB::PWRFL_B == correct_type_y) m_out.y = correct_base_point.y + distance + correct_space;
+            if (eCorrTypeAABB::BOTH == correct_type_y) {
+                m_out.y = correct_base_point.y + (distance * 0.5f) + (correct_space * 0.5f);
+                u_out.y = correct_base_point.y - (distance * 0.5f) - (correct_space * 0.5f);
+            }
+            return_correct_dir = eCorrResAABB::UP;
+            break;
+        case tnl::eRegionPtAABB::DOWN:
+            distance = (m_size.y + u_size.y) * 0.5f;
+            if (eCorrTypeAABB::PWRFL_A == correct_type_y) u_out.y = correct_base_point.y + distance + correct_space;
+            if (eCorrTypeAABB::PWRFL_B == correct_type_y) m_out.y = correct_base_point.y - distance - correct_space;
+            if (eCorrTypeAABB::BOTH == correct_type_y) {
+                m_out.y = correct_base_point.y - (distance * 0.5f) - (correct_space * 0.5f);
+                u_out.y = correct_base_point.y + (distance * 0.5f) + (correct_space * 0.5f);
+            }
+            return_correct_dir = eCorrResAABB::DOWN;
+            break;
+        case tnl::eRegionPtAABB::RIGHT:
+            distance = (m_size.x + u_size.x) * 0.5f;
+            if (eCorrTypeAABB::PWRFL_A == correct_type_x) u_out.x = correct_base_point.x - distance - correct_space;
+            if (eCorrTypeAABB::PWRFL_B == correct_type_x) m_out.x = correct_base_point.x + distance + correct_space;
+            if (eCorrTypeAABB::BOTH == correct_type_x) {
+                m_out.x = correct_base_point.x + (distance * 0.5f) + (correct_space * 0.5f);
+                u_out.x = correct_base_point.x - (distance * 0.5f) - (correct_space * 0.5f);
+            }
+            return_correct_dir = eCorrResAABB::RIGHT;
+            break;
+        case tnl::eRegionPtAABB::LEFT:
+            distance = (m_size.x + u_size.x) * 0.5f;
+            if (eCorrTypeAABB::PWRFL_A == correct_type_x) u_out.x = correct_base_point.x + distance + correct_space;
+            if (eCorrTypeAABB::PWRFL_B == correct_type_x) m_out.x = correct_base_point.x - distance - correct_space;
+            if (eCorrTypeAABB::BOTH == correct_type_x) {
+                m_out.x = correct_base_point.x - (distance * 0.5f) - (correct_space * 0.5f);
+                u_out.x = correct_base_point.x + (distance * 0.5f) + (correct_space * 0.5f);
+            }
+            return_correct_dir = eCorrResAABB::LEFT;
+            break;
+        case tnl::eRegionPtAABB::BACK:
+            distance = (m_size.z + u_size.z) * 0.5f;
+            if (eCorrTypeAABB::PWRFL_A == correct_type_z) u_out.z = correct_base_point.z - distance - correct_space;
+            if (eCorrTypeAABB::PWRFL_B == correct_type_z) m_out.z = correct_base_point.z + distance + correct_space;
+            if (eCorrTypeAABB::BOTH == correct_type_z) {
+                m_out.z = correct_base_point.z + (distance * 0.5f) + (correct_space * 0.5f);
+                u_out.z = correct_base_point.z - (distance * 0.5f) - (correct_space * 0.5f);
+            }
+            return_correct_dir = eCorrResAABB::BACK;
+            break;
+        case tnl::eRegionPtAABB::FORWORD:
+            distance = (m_size.z + u_size.z) * 0.5f;
+            if (eCorrTypeAABB::PWRFL_A == correct_type_z) u_out.z = correct_base_point.z + distance + correct_space;
+            if (eCorrTypeAABB::PWRFL_B == correct_type_z) m_out.z = correct_base_point.z - distance - correct_space;
+            if (eCorrTypeAABB::BOTH == correct_type_z) {
+                m_out.z = correct_base_point.z - (distance * 0.5f) - (correct_space * 0.5f);
+                u_out.z = correct_base_point.z + (distance * 0.5f) + (correct_space * 0.5f);
+            }
+            return_correct_dir = eCorrResAABB::FORWORD;
+            break;
+        }
+
+        a_out = (l1 >= l2) ? m_out : u_out;
+        b_out = (l1 >= l2) ? u_out : m_out;
+        if (l1 < l2) {
+            switch (return_correct_dir) {
+            case eCorrResAABB::LEFT:	return_correct_dir = eCorrResAABB::RIGHT; break;
+            case eCorrResAABB::RIGHT:	return_correct_dir = eCorrResAABB::LEFT; break;
+            case eCorrResAABB::UP:		return_correct_dir = eCorrResAABB::DOWN; break;
+            case eCorrResAABB::DOWN:	return_correct_dir = eCorrResAABB::UP; break;
+            case eCorrResAABB::FORWORD:	return_correct_dir = eCorrResAABB::BACK; break;
+            case eCorrResAABB::BACK:	return_correct_dir = eCorrResAABB::FORWORD; break;
+            }
+        }
+
+        return return_correct_dir;
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------
     std::vector<tnl::Vector2i> GetBresenhamsLine(const tnl::Vector2i& st, const tnl::Vector2i& en) {
 
         std::vector<tnl::Vector2i> lines;
@@ -551,6 +810,91 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
+    void EasyAdjustObjectVelocity(
+        float centroid_radius,
+        float mass,
+        float friction,
+        tnl::Vector3& prev_move_vel,
+        tnl::Vector3& move_vel,
+        tnl::Vector3& center_of_gravity)
+    {
+        const float mass_max = 100.0f;
+        mass = std::clamp(mass, 0.0f, mass_max);
+
+        tnl::Vector3 displacement = move_vel - prev_move_vel;
+        prev_move_vel = move_vel;
+
+        center_of_gravity -= displacement * (mass / centroid_radius);
+        if (center_of_gravity.length() > centroid_radius) {
+            center_of_gravity.normalize();
+            center_of_gravity *= centroid_radius;
+        }
+
+        // äµê´ÇÃå∏êäó¶( èdÇ¢ÇŸÇ«å∏êäÇµÇ√ÇÁÇ¢ÇÊÇ§åvéZ ) 
+        float inertia_decay_rate = mass / (mass_max + 1.0f);
+        center_of_gravity *= inertia_decay_rate;
+
+        float friction_decay_rate = (inertia_decay_rate * 0.5f) + (1.0f - friction);
+        friction_decay_rate = std::clamp(friction_decay_rate, 0.0f, 1.0f);
+        move_vel *= friction_decay_rate;
+
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------
+    uint32_t CountPolygonIntersections(const std::vector<tnl::Vector2i>& polygon_vertexs, const tnl::Vector2i& point) {
+        if (polygon_vertexs.size() < 3) return 0;
+        uint32_t crossing_count = 0;
+        for (int i = 0; i < polygon_vertexs.size() - 1; ++i) {
+            bool y_condition1 = (polygon_vertexs[i].y <= point.y) && (polygon_vertexs[i + 1].y > point.y);
+            bool y_condition2 = (polygon_vertexs[i].y > point.y) && (polygon_vertexs[i + 1].y <= point.y);
+            if (!(y_condition1 || y_condition2)) continue;
+            int32_t vertical_ratio = (point.y - polygon_vertexs[i].y) / (polygon_vertexs[i + 1].y - polygon_vertexs[i].y);
+            if (!(point.x < (polygon_vertexs[i].x + (vertical_ratio * (polygon_vertexs[i + 1].x - polygon_vertexs[i].x))))) continue;
+            ++crossing_count;
+        }
+        return crossing_count;
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------------------
+    void CutOverLineLoop(std::vector<tnl::Vector2i>& line_points, bool is_add_loop_point) {
+        for (int i = 2; i < line_points.size(); ++i) {
+            tnl::Vector3 v1[2];
+            v1[0] = line_points[i - 2];
+            v1[1] = line_points[i - 1];
+            tnl::Vector2i segment1[2] = { line_points[i - 2], line_points[i - 1] };
+
+            for (int k = i + 4; k < line_points.size(); ++k) {
+                tnl::Vector3 v2[2];
+                v2[0] = line_points[k - 2];
+                v2[1] = line_points[k - 1];
+                if (!tnl::IsIntersectLine2D(v1[0], v1[1], v2[0], v2[1])) continue;
+
+                auto np = GetNearestLines(v1[0], v1[1], v2[0], v2[1]);
+                line_points[i - 2] = { (int32_t)std::get<0>(np).x, (int32_t)std::get<0>(np).y };
+                line_points[k - 1] = { (int32_t)std::get<1>(np).x, (int32_t)std::get<1>(np).y };
+
+
+                auto begin = line_points.begin() + k;
+                if (begin != line_points.end()) {
+                    line_points.erase(begin, line_points.end());
+                }
+
+                begin = line_points.begin();
+                if (0 < (i - 2)) line_points.erase(begin, begin + (i - 2));
+
+                return;
+            }
+        }
+
+        if (is_add_loop_point) {
+            line_points.emplace_back(line_points[0]);
+        }
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------
     CubicSpline::CubicSpline(const std::vector<tnl::Vector3>& v) {
 
         int n = static_cast<int>(v.size()) - 1;
@@ -608,6 +952,114 @@ namespace tnl {
     }
 
 
+    //--------------------------------------------------------------------------------------------------------------------------------
+    float SingleOscillationy( eOscStart osc_start, float decay, float period, float progress_time) {
+
+        float ret;
+        if (osc_start == eOscStart::CENTER) {
+            // å∏êäêUìÆÇÃåˆéÆ y = e^-ax * sin(bx)
+            ret = powf(static_cast<float>(std::numbers::e), -decay * progress_time) * sinf(period * progress_time);
+        }
+        else if (osc_start == eOscStart::STOK) {
+            float t = -(static_cast<float>(std::numbers::pi) / 2);
+            ret = 1.0f + powf(static_cast<float>(std::numbers::e), -decay * progress_time) * sinf( t + ( period * progress_time) ) ;
+        }
+        return ret;
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------
+    float UniformLerp(float s, float e, float time_limit, float ct) {
+        if (time_limit <= 0 || fabs(e - s) <= FLT_EPSILON) return s;
+        if (ct >= time_limit) return e;
+        return s + (e - s) * (ct / time_limit);
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------
+    float SmoothLerp(float s, float e, float time_limit, float ct, int strength ) {
+        if (time_limit <= 0 || fabs(e - s) <= FLT_EPSILON) return s;
+        if (ct >= time_limit) return e;
+        strength = (strength > 5) ? 5 : strength;
+
+        float t = 0;
+        float si = 0;
+        float cct = ct;
+
+        for (int i = 0; i < strength; ++i) {
+            float ss = 0;
+            float ee = time_limit;
+
+            t = cct / time_limit * 180;
+            si = 0.5f + sinf(tnl::ToRadian(-90) + tnl::ToRadian(t)) * 0.5f;
+            cct = ss + si * (ee - ss);
+        }
+
+        t = cct / time_limit * 180;
+        si = 0.5f + sinf(tnl::ToRadian(-90) + tnl::ToRadian(t)) * 0.5f;
+        return s + si * (e - s);
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------
+    float AccelLerp(float s, float e, float time_limit, float ct, int strength ) {
+
+        // É[ÉçÇ‹ÇΩÇÕïâÇÃéûä‘êßå¿ÅAÇ‹ÇΩÇÕèâä˙à íuÇ∆èIóπà íuÇ™ìØÇ∂èÍçá
+        if (time_limit <= 0 || fabs(e - s) <= FLT_EPSILON) return s;
+        if (ct >= time_limit) return e;
+        strength = (strength > 5) ? 5 : strength;
+
+        float distance = 0;
+        float fluctuation = 0;
+        float a = 0;
+        float vn = 0;
+        float cct = ct;
+
+        for (int i = 0; i < strength; ++i) {
+            float ss = 0;
+            float ee = time_limit;
+
+            distance = ee - ss;
+            fluctuation = (2.0f * distance) / powf(time_limit, 2.0f);
+
+            a = fluctuation;
+            vn = (ee - ss) / fabs(ee - ss);
+            cct = vn * ((fluctuation * powf(cct, 2)) * 0.5f);
+        }
+
+        // é©óRóéâ∫ÇÃåˆéÆÇóòópÇµÇƒâ¡ë¨ìxÇåvéZ 
+        // åˆéÆ t = sqrt( 2h / g )
+        // ïœå`ÇµÇƒ g = 2h / t^2
+        // [ t:éûä‘  h:çÇÇ≥  g:èdóÕâ¡ë¨ìx ]
+        distance = e - s;
+        fluctuation = (2.0f * distance) / powf(time_limit, 2.0f);
+
+        // ìôâ¡ë¨íºê¸â^ìÆÇÃåˆéÆ x = x0 + ( v0 * t ) + ( 1/2 * a * t^2 )
+        // ( v0 * t ) ÇÕèâë¨ÇæÇ™ç°âÒÇÕégÇÌÇ»Ç¢ÇÃÇ≈è»ó™
+        // [ x:åªç›à íu  x0:èâä˙à íu  t:éûä‘  a:â¡ë¨ìx ]
+        a = fluctuation;
+        vn = (e - s) / fabs(e - s);
+        return s + vn * ((fluctuation * powf(cct, 2)) * 0.5f);
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------------------
+    float DecelLerp(float s, float e, float time_limit, float ct) {
+
+        // É[ÉçÇ‹ÇΩÇÕïâÇÃéûä‘êßå¿ÅAÇ‹ÇΩÇÕèâä˙à íuÇ∆èIóπà íuÇ™ìØÇ∂èÍçá
+        if (time_limit <= 0 || fabs(e - s) <= FLT_EPSILON) return s;
+        if (ct >= time_limit) return e;
+
+        float distance = e - s;
+        float fluctuation = (2.0f * distance) / powf(time_limit, 2.0f);
+
+        float a = fluctuation;
+        float t = ct;
+        float vn = (e - s) / fabs(e - s);
+        return e - vn * ((a * powf(time_limit - t, 2)) * 0.5f);
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------
     PointsLerp::PointsLerp(const std::vector< tnl::Vector3 >& points) {
         points_.resize(points.size());
         section_lengths_.resize(points.size());
@@ -640,4 +1092,62 @@ namespace tnl {
         }
         return 0;
     }
+
+    //------------------------------------------------------------------------------------------------------------
+    // ê≥òZäpå`ÇÃï”ÇÃí∑Ç≥ÇïùÇå≥Ç…éÊìæ
+    // arg1... ê≥òZäpå`ÇÃïù
+    // ret.... ï”ÇÃí∑Ç≥
+    float GetHexagonEdgeLenght(float width) {
+        return (width / 2.0f) / sqrt(3.0f) * 2.0f;
+    }
+
+    //------------------------------------------------------------------------------------------------------------
+    // ê≥òZäpå`ÇÃçÇÇ≥ÇïùÇ©ÇÁéÊìæ
+    // arg1... ê≥òZäpå`ÇÃïù
+    // ret.... ï”ÇÃí∑Ç≥
+    float GetHexagonHeight(float width) {
+        // ê≥òZäpå`Ç…é˚Ç‹ÇÈâ~ÇÃîºåa
+        float radius = width / 2;
+        // â~ÇàÕÇ§ê≥òZäpå`ÇÃï”ÇÃí∑Ç≥
+        float edge = radius / sqrt(3.0f) * 2.0f;
+        // ê≥òZäpå`ÇÃíÜêSÇ©ÇÁÇÃçÇÇ≥
+        float height = tnl::Vector3(-radius, edge * 0.5f, 0).length();
+        return height * 2;
+    }
+
+
+    //------------------------------------------------------------------------------------------------------------
+    // ê≥òZäpå`ÇÃí∏ì_ç¿ïWÇéÊìæ
+    // arg1... ê≥òZäpå`ÇÃïù
+    // ret.... í∏ì_ç¿ïWîzóÒ
+    // tips... ñﬂÇËílÇÃîzóÒÇÕí∑Ç≥ 6 Ç≈Ç†ÇÈÇ±Ç∆Ç…íçà”
+    std::vector<tnl::Vector3> GetHexagonVertices(float width) {
+
+        std::vector<tnl::Vector3> vertex;
+        // ê≥òZäpå`Ç…é˚Ç‹ÇÈâ~ÇÃîºåa
+        float radius = width / 2;
+        // â~ÇàÕÇ§ê≥òZäpå`ÇÃï”ÇÃí∑Ç≥
+        float edge = radius / sqrt(3.0f) * 2.0f;
+        // ê≥òZäpå`ÇÃíÜêSÇ©ÇÁÇÃçÇÇ≥
+        float height = tnl::Vector3(-radius, edge * 0.5f, 0).length();
+
+        vertex.resize(6);
+
+        // ÇUäpå`ÇÃç∂è„
+        vertex[0] = tnl::Vector3(-radius, edge * 0.5f, 0);
+        // ÇUäpå`ÇÃè„
+        vertex[1] = tnl::Vector3(0, height, 0);
+        // ÇUäpå`ÇÃâEè„
+        vertex[2] = tnl::Vector3(radius, edge * 0.5f, 0);
+        // ÇUäpå`ÇÃâEâ∫
+        vertex[3] = tnl::Vector3(radius, -edge * 0.5f, 0);
+        // ÇUäpå`ÇÃâ∫
+        vertex[4] = tnl::Vector3(0, -height, 0);
+        // ÇUäpå`ÇÃç∂â∫
+        vertex[5] = tnl::Vector3(-radius, -edge * 0.5f, 0);
+
+        return std::move(vertex);
+    }
+
+
 }

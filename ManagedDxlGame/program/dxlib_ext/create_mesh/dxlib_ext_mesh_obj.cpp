@@ -1,13 +1,13 @@
 #include "../OBJLoader.h"
-#include "../dxlib_ext_mesh.h"
+#include "../mesh/dxlib_ext_mesh.h"
 
 namespace dxe {
 
 	//----------------------------------------------------------------------------------------
-	std::vector<Mesh*> Mesh::CreateFromFileObj(const std::string& file_path, const float scl)
+	std::vector<Shared<Mesh>> Mesh::CreateFromFileObj(const std::string& file_path, const float scl)
 	{
 		OBJMESH* obj = new OBJMESH();
-		std::vector<Mesh*> create_meshs;
+		std::vector<Shared<Mesh>> create_meshs;
 
 		obj->LoadFile(file_path.c_str());
 
@@ -25,9 +25,10 @@ namespace dxe {
 
 			if (0 == vertex_num) continue;
 
-			Mesh* mesh = new Mesh();
+			Shared<Mesh> mesh = Shared<Mesh>(new Mesh());
 			mesh->vtxs_.resize(vertex_num);
 			mesh->idxs_.resize(index_num);
+			mesh->shape_type_ = Mesh::eShapeType::RESOUCE;
 			mesh->desc_ = std::make_shared<MeshDescResouce>(file_path, scl);
 
 			OBJMATERIAL* mtl = &obj->GetMaterials()[obj->GetSubsets()[i].materialIndex];
@@ -85,6 +86,8 @@ namespace dxe {
 					mesh->idxs_[a] = a;
 					mesh->vtxs_[a].pos = { px, py, pz };
 					mesh->vtxs_[a].norm = { nx, ny, nz };
+					mesh->vtxs_[a].su = 0 ;
+					mesh->vtxs_[a].sv = 0 ;
 					mesh->vtxs_[a].u = u * ru;
 					mesh->vtxs_[a].v = v * rv;
 					mesh->vtxs_[a].dif = GetColorU8(255, 255, 255, 255);
@@ -106,12 +109,17 @@ namespace dxe {
 		return create_meshs;
 	}
 
-	std::vector<Mesh*> Mesh::CreateFromFileObjMV(const std::string& file_path, const float scl) {
-		std::vector<Mesh*> objs = CreateFromFileObj(file_path, scl);
-		std::vector<Mesh*> meshs;
+	std::vector<Shared<Mesh>> Mesh::CreateFromFileObjMV(const std::string& file_path, const float scl) {
+		std::vector<Shared<Mesh>> objs = CreateFromFileObj(file_path, scl);
+		std::vector<Shared<Mesh>> meshs;
+		std::vector<tnl::Matrix> mat;
+		mat.emplace_back(tnl::Matrix());
 		meshs.resize(objs.size());
 		for (size_t i = 0; i < objs.size(); ++i) {
-			meshs[i] = CreateConvertMV(objs[i]);
+			meshs[i] = CreateStaticMeshGroupMV(objs[i], mat);
+			meshs[i]->setTexture(objs[i]->getTexture());
+			meshs[i]->shape_type_ = eShapeType::RESOUCE;
+			meshs[i]->desc_ = objs[i]->getCreateDesc()->createClone() ;
 		}
 		return meshs;
 	}

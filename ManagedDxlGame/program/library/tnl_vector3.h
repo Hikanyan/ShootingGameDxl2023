@@ -6,7 +6,7 @@
 namespace tnl {
 	class Matrix;
 	class Quaternion;
-
+	class Vector2i;
 	class Vector3 final : public DirectX::XMFLOAT3 {
 	public :	
 		Vector3() noexcept :DirectX::XMFLOAT3(0, 0, 0) {}
@@ -14,6 +14,7 @@ namespace tnl {
 		explicit Vector3(const float xyz) noexcept : DirectX::XMFLOAT3(xyz, xyz, xyz) {}
 		explicit Vector3(DirectX::XMVECTOR& v) noexcept { DirectX::XMStoreFloat3(this, v); }
 		explicit Vector3(DirectX::XMFLOAT3& v) noexcept : DirectX::XMFLOAT3(v.x, v.y, v.z) {}
+		explicit Vector3(const tnl::Vector2i& v) noexcept ;
 
 		static const Vector3 forward;
 		static const Vector3 back;
@@ -48,6 +49,7 @@ namespace tnl {
 
 		Vector3& operator = (DirectX::XMVECTOR& other) noexcept;
 		Vector3& operator = (const float other) noexcept;
+		Vector3& operator = (const tnl::Vector2i& other) noexcept;
 
 		Vector3 operator * (const float other) const noexcept;
 		Vector3 operator * (const Vector3& other) const noexcept;
@@ -69,9 +71,10 @@ namespace tnl {
 		//
 		// inline function
 		//
+		void	normalize()				noexcept;
+		void	abs()					noexcept;
 		float	dot(const Vector3& v)	noexcept;
 		float	angle(const Vector3& v) const noexcept;
-		void	normalize()				noexcept;
 		Vector3	cross(const Vector3& v) const noexcept;
 		float	length()				const noexcept;
 		Vector3	xy()					const noexcept;
@@ -85,13 +88,20 @@ namespace tnl {
 		// static inline function
 		//
 		static Vector3	Normalize(const Vector3& v) noexcept;
-		static Vector3	Lerp(const tnl::Vector3& s, const tnl::Vector3& e, float t) noexcept;
+		static Vector3	Abs(const Vector3& v) noexcept;
 		static float	Dot(const tnl::Vector3& v1, const tnl::Vector3& v2) noexcept;
 		static Vector3	Cross(const tnl::Vector3& v1, const tnl::Vector3& v2) noexcept;
 		static Vector3	Rot2D(const tnl::Vector3 v, float sin, float cos) noexcept;
 		static Vector3	Transform(const tnl::Vector3& v, const tnl::Matrix& m) noexcept;
 		static Vector3	TransformNormal(const tnl::Vector3& v, const tnl::Matrix& m) noexcept;
 		static Vector3	Reflection(const tnl::Vector3& in, const tnl::Vector3& normal) noexcept;
+
+		//-----------------------------------------------------------------------------------------------------------
+		// 指標となるベクトルから指定範囲の角度内でランダムなベクトルを返す
+		// arg1... 指標ベクトル
+		// arg2... ランダムベクトルが生成される最大角度
+		// ret.... ランダムベクトル
+		static tnl::Vector3 RandomAxis(const tnl::Vector3& base_axis, float limit_angle) noexcept ;
 
 		//-----------------------------------------------------------------------------------------------------
 		//
@@ -104,6 +114,46 @@ namespace tnl {
 		static Vector3 CreateScreenRay(const int screen_x, const int screen_y, const int screen_w, const int screen_h, const tnl::Matrix& view, const tnl::Matrix& proj) noexcept ;
 		static Vector3 ConvertToScreen(const Vector3& v, const float screen_w, const float screen_h, const Matrix& view, const Matrix& proj) noexcept;
 		static Vector3 Random( const float min_x, const float max_x, const float min_y, const float max_y, const float min_z, const float max_z ) noexcept;
+
+		// 等間隔な値の補間
+		// arg1... 始値
+		// arg2... 終値
+		// arg3... 補間補間完了までの時間
+		// arg4... 経過時間
+		// ret.... 補間値
+		static Vector3 UniformLerp(const Vector3& s, const Vector3& e, float time_limit, float ct) noexcept ;
+
+		// sin 波 -90 ~ +90度までを利用した値の補間
+		// arg1... 始値
+		// arg2... 終値
+		// arg3... 補間完了までの時間
+		// arg4... 経過時間
+		// arg5... 内部で時間に対する補間を行う回数 ( デフォルトは0回 最大5回 )
+		// ret.... 補間値
+		// tips... 通常の sin 波による補間では間隔がやや単調だと思う場合
+		// ....... arg5 の引数で補間の間隔を広げ、よりエッジの効いた補間を行うことができます
+		static Vector3 SmoothLerp(const Vector3& s, const Vector3& e, float time_limit, float ct, int strength = 0) noexcept;
+
+		// 等加速直線運動を利用した値の補間
+		// arg1... 始値
+		// arg2... 終値
+		// arg3... 補間完了までの時間
+		// arg4... 経過時間
+		// arg5... 内部で時間に対する補間を行う回数 ( デフォルトは0回 最大5回 )
+		// ret.... 補間値
+		// tips... 通常の 等加速度による補間では間隔がやや単調だと思う場合
+		// ....... arg5 の引数で指数関数的に速度が上がるよう調整できます
+		static Vector3 AccelLerp(const Vector3& s, const Vector3& e, float time_limit, float ct, int strength = 0) noexcept ;
+
+
+		// 等減速直線運動を利用した値の補間
+		// arg1... 始値
+		// arg2... 終値
+		// arg3... 補間完了までの時間
+		// arg4... 経過時間
+		// ret.... 補間値
+		static Vector3 DecelLerp(const Vector3& s, const Vector3& e, float time_limit, float ct) noexcept ;
+
 
 	private:
 		static const Vector3 axis[static_cast<uint32_t>(eAxis::MAX)];
@@ -227,6 +277,17 @@ namespace tnl {
 	}
 
 	//-----------------------------------------------------------------------------------------------------
+	inline void Vector3::normalize() noexcept {
+		DirectX::XMStoreFloat3(this, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(this)));
+	}
+	//-----------------------------------------------------------------------------------------------------
+	inline void Vector3::abs() noexcept {
+		x = fabs(x);
+		y = fabs(y);
+		z = fabs(z);
+	}
+
+	//-----------------------------------------------------------------------------------------------------
 	inline float Vector3::dot(const Vector3& v) noexcept {
 		return DirectX::XMVector3Dot(DirectX::XMLoadFloat3(this), DirectX::XMLoadFloat3(&v) ).m128_f32[0];
 	}
@@ -237,10 +298,6 @@ namespace tnl {
 		t1.normalize();
 		t2.normalize();
 		return acosf(t1.dot(t2));
-	}
-	//-----------------------------------------------------------------------------------------------------
-	inline void Vector3::normalize() noexcept {
-		DirectX::XMStoreFloat3(this, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(this)));
 	}
 	//-----------------------------------------------------------------------------------------------------
 	inline Vector3 Vector3::cross(const Vector3& v) const noexcept {
@@ -279,9 +336,14 @@ namespace tnl {
 		return static_cast<Vector3>(f3);
 	}
 	//-----------------------------------------------------------------------------------------------------
-	inline Vector3 Vector3::Lerp(const tnl::Vector3& s, const tnl::Vector3& e, float t) noexcept {
-		return s + (e - s) * t;
+	inline Vector3 Vector3::Abs(const Vector3& v) noexcept {
+		Vector3 v3 ;
+		v3.x = fabs(v.x);
+		v3.y = fabs(v.y);
+		v3.z = fabs(v.z);
+		return v3 ;
 	}
+
 	//-----------------------------------------------------------------------------------------------------
 	inline float Vector3::Dot(const tnl::Vector3& v1, const tnl::Vector3& v2) noexcept {
 		return DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&v1), DirectX::XMLoadFloat3(&v2)).m128_f32[0];

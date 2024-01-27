@@ -1,17 +1,16 @@
 #include <directxmath.h>
-#include "../dxlib_ext_mesh.h"
+#include "../mesh/dxlib_ext_mesh.h"
 
 namespace dxe {
 
 	//----------------------------------------------------------------------------------------
-	Mesh* Mesh::CreateTorus(const float radius, const float thickness, const int tessellation, const int angle) noexcept
+	Shared<Mesh> Mesh::CreateTorus(const float radius, const float thickness, const int tessellation, const int angle) noexcept
 	{
-		Mesh* mesh = new Mesh();
+		Shared<Mesh> mesh = Shared<Mesh>(new Mesh());
 		mesh->desc_ = std::make_shared<MeshDescTorus>(radius, thickness, tessellation, angle);
 		mesh->shape_type_ = eShapeType::TORUS;
 
-		mesh->bd_sphere_radius_ = radius;
-		mesh->bd_box_size_ = { radius * 2,  radius * 2, radius * 2 };
+		tnl::Vector3 far_vtx = { 0, 0, 0 };
 
 		uint32_t deg = 360;
 		deg = (angle < 360) ? 180 : deg;
@@ -59,6 +58,10 @@ namespace dxe {
 				position = tnl::Vector3::Transform(position, transform);
 				normal = tnl::Vector3::TransformNormal(normal, transform);
 
+				far_vtx.x = (fabs(position.x) > fabs(far_vtx.x)) ? position.x : far_vtx.x;
+				far_vtx.y = (fabs(position.y) > fabs(far_vtx.y)) ? position.y : far_vtx.y;
+				far_vtx.z = (fabs(position.z) > fabs(far_vtx.z)) ? position.z : far_vtx.z;
+
 				VERTEX3D vtx;
 				vtx.pos = { position.x, position.y, position.z };
 				vtx.norm = { normal.x,  normal.y, normal.z };
@@ -94,14 +97,17 @@ namespace dxe {
 		memcpy(mesh->vtxs_.data(), vtxs.data(), sizeof(VERTEX3D) * vtx_size);
 		memcpy(mesh->idxs_.data(), idxs.data(), sizeof(uint32_t) * idx_size);
 
+		mesh->bd_sphere_radius_ = far_vtx.length();
+		mesh->bd_box_size_ = far_vtx * 2.0f;
+
 		mesh->createVBO();
 		return mesh;
 
 	}
 
 
-	Mesh* Mesh::CreateTorusMV(const float radius, const float thickness, const int tessellation, const int angle) noexcept {
-		Mesh* mesh = CreateTorus(radius, thickness, tessellation, angle);
+	Shared<Mesh> Mesh::CreateTorusMV(const float radius, const float thickness, const int tessellation, const int angle) noexcept {
+		Shared<Mesh> mesh = CreateTorus(radius, thickness, tessellation, angle);
 		mesh = CreateConvertMV(mesh);
 		return mesh;
 	}

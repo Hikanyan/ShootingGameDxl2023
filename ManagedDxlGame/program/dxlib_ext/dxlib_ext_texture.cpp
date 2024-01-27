@@ -2,6 +2,7 @@
 #include "../library/stb_image.h"
 #include "../library/tnl_util.h"
 #include "dxlib_ext_texture.h"
+#include <WICTextureLoader.h>
 
 namespace dxe {
 
@@ -22,6 +23,9 @@ namespace dxe {
 			tex->file_name_ = regist_key_;
 			tex->file_path_ = regist_key_;
 		}
+		tex->data_size_ = data_size;
+		tex->file_data_ = new char[tex->data_size_];
+		memcpy(tex->file_data_, file_data, tex->data_size_);
 		managed_map_.insert(std::make_pair(hash, tex));
 		return tex;
 	}
@@ -35,11 +39,11 @@ namespace dxe {
 
 		std::shared_ptr<Texture> tex = std::shared_ptr<Texture>(new Texture());
 		uint32_t data_size = 0;
-		char* buff_tga = tnl::CreateFormatTga32((unsigned char*)color_buffer_rgba8, width, height, &data_size);
-		tex->graph_hdl_ = CreateGraphFromMem(buff_tga, data_size);
+		auto buff_tga = tnl::CreateFormatTga32((unsigned char*)color_buffer_rgba8, width, height, &data_size);
+
+		tex->graph_hdl_ = CreateGraphFromMem(buff_tga.get(), data_size);
 		tex->width_ = width;
 		tex->height_ = height;
-		delete[] buff_tga;
 
 		managed_map_.insert(std::make_pair(hash, tex));
 

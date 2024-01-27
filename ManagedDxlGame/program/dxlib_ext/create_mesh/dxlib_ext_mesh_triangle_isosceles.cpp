@@ -1,11 +1,11 @@
-#include "../dxlib_ext_mesh.h"
+#include "../mesh/dxlib_ext_mesh.h"
 
 namespace dxe {
 
 	//----------------------------------------------------------------------------------------
-	Mesh* Mesh::CreateTriangleIsosceles(const tnl::Vector3& size_wh, const int div_w, const int div_h, const bool is_left_cycle) noexcept
+	Shared<Mesh> Mesh::CreateTriangleIsosceles(const tnl::Vector3& size_wh, const int div_w, const int div_h, const bool is_left_cycle) noexcept
 	{
-		Mesh* mesh = new Mesh();
+		Shared<Mesh> mesh = Shared<Mesh>(new Mesh());
 		mesh->desc_ = std::make_shared<MeshDescTriangleIsosceles>(size_wh, div_w, div_h, is_left_cycle);
 		mesh->shape_type_ = eShapeType::TRIANGLE_ISOSCELES;
 
@@ -41,7 +41,7 @@ namespace dxe {
 
 				mesh->vtxs_[(i * (srice + 1)) + k].norm.x = 0;
 				mesh->vtxs_[(i * (srice + 1)) + k].norm.y = 0;
-				mesh->vtxs_[(i * (srice + 1)) + k].norm.z = -1;
+				mesh->vtxs_[(i * (srice + 1)) + k].norm.z = (is_left_cycle) ? 1.0f : -1.0f;
 
 				mesh->vtxs_[(i * (div_w + 1)) + k].dif = GetColorU8(255, 255, 255, 255);
 			}
@@ -52,10 +52,8 @@ namespace dxe {
 		return mesh;
 	}
 
-
-
-	Mesh* Mesh::CreateTriangleIsoscelesMV(const tnl::Vector3& size_wh, const int div_w, const int div_h, const bool is_left_cycle) noexcept {
-		Mesh* mesh = CreateTriangleIsosceles(size_wh, div_w, div_h, is_left_cycle);
+	Shared<Mesh> Mesh::CreateTriangleIsoscelesMV(const tnl::Vector3& size_wh, const int div_w, const int div_h, const bool is_left_cycle) noexcept {
+		Shared<Mesh> mesh = CreateTriangleIsosceles(size_wh, div_w, div_h, is_left_cycle);
 		mesh = CreateConvertMV(mesh);
 		return mesh;
 	}
