@@ -3,182 +3,168 @@
 #include <vector>
 #include "../../hikanyan_library/include/mono_behaviour/GameObject.h"
 #include "CollisionManager.h"
+#include "GameObjectManager.h"
 
-//game_objectの処理をgame_object_managerで行い、scene_baseで
 class SceneBase
 {
 protected:
     // シーンの名前
     std::string name_;
-    // シーンに所属するゲームオブジェクト
-    std::list<std::shared_ptr<GameObject>> game_objects_;
-
-    // シーンに所属するゲームオブジェクトの衝突判定を管理するクラス
-    CollisionManager collision_manager;
-    // 任意の処理をゲームオブジェクトに対して行う関数
-
-    void for_each_game_object(const std::function<void(std::shared_ptr<GameObject>)>& action) const
-    {
-        for (auto& game_object : game_objects_)
-        {
-            if (game_object && game_object->get_active())
-            {
-                action(game_object);
-            }
-        }
-    }
+    // ゲームオブジェクトを管理するマネージャー
+    GameObjectManager game_object_manager_;
+    // 衝突管理
+    CollisionManager collision_manager_;
 
 public:
     SceneBase() = default;
     virtual ~SceneBase() = default;
 
+    // シーン名を設定する
     void set_name(const std::string& name)
     {
         name_ = name;
     }
 
+    // シーン名を取得する
     const std::string& get_name() const
     {
         return name_;
     }
 
+    // 新しいゲームオブジェクトを作成する
     virtual std::shared_ptr<GameObject> new_game_object(const std::string& name)
     {
         std::shared_ptr<GameObject> game_object = std::make_shared<GameObject>();
         game_object->set_name(name);
         game_object->add_component<Transform>();
-        add_game_object(game_object);
+        game_object_manager_.add_game_object(game_object);
         return game_object;
     }
 
-    // ゲームオブジェクトを追加する関数
+    // ゲームオブジェクトを追加する
     virtual void add_game_object(const std::shared_ptr<GameObject>& game_object)
     {
-        game_objects_.push_back(game_object);
-        // コライダーの登録
+        game_object_manager_.add_game_object(game_object);
         if (const auto collider = game_object->get_component<Collider2D>())
         {
-            collision_manager.addCollider(std::shared_ptr<Collider2D>(collider));
+            collision_manager_.addCollider(std::shared_ptr<Collider2D>(collider));
         }
     }
 
-    // ゲームオブジェクトを削除する関数
+    // ゲームオブジェクトを削除する
     virtual void remove_game_object(const std::shared_ptr<GameObject>& game_object)
     {
-        game_objects_.remove(game_object);
-        // コライダーの削除
+        game_object_manager_.remove_game_object(game_object);
         if (const auto collider = game_object->get_component<Collider2D>())
         {
-            collision_manager.removeCollider(std::shared_ptr<Collider2D>(collider));
+            collision_manager_.removeCollider(std::shared_ptr<Collider2D>(collider));
         }
     }
 
-
+    // 初期化処理
     virtual void init()
     {
-        for_each_game_object([](const std::shared_ptr<GameObject>& obj)
+        game_object_manager_.for_each_game_object([](const std::shared_ptr<GameObject>& obj)
         {
             obj->init();
         });
     }
 
+    // 起動処理
     virtual void awake()
     {
-        for_each_game_object([](const std::shared_ptr<GameObject>& obj)
+        game_object_manager_.for_each_game_object([](const std::shared_ptr<GameObject>& obj)
         {
             obj->awake();
         });
     }
 
+    // 開始処理
     virtual void start()
     {
-        for_each_game_object([](const std::shared_ptr<GameObject>& obj)
+        game_object_manager_.for_each_game_object([](const std::shared_ptr<GameObject>& obj)
         {
             obj->start();
         });
     }
 
+    // 描画処理
     virtual void draw()
     {
-        for_each_game_object([](const std::shared_ptr<GameObject>& obj)
+        game_object_manager_.for_each_game_object([](const std::shared_ptr<GameObject>& obj)
         {
             obj->draw();
         });
     }
 
+    // 更新処理
     virtual void update(float delta_time)
     {
-        for_each_game_object([delta_time](const std::shared_ptr<GameObject>& obj)
+        game_object_manager_.for_each_game_object([delta_time](const std::shared_ptr<GameObject>& obj)
         {
             obj->update(delta_time);
         });
-        // コリジョンのチェック
-        collision_manager.checkCollisions();
+        collision_manager_.checkCollisions();
     }
 
+    // 定期的な更新処理
     virtual void fixed_update(float fixed_delta_time)
     {
-        for_each_game_object([fixed_delta_time](const std::shared_ptr<GameObject>& obj)
+        game_object_manager_.for_each_game_object([fixed_delta_time](const std::shared_ptr<GameObject>& obj)
         {
             obj->fixed_update(fixed_delta_time);
         });
     }
 
+    // 有効化処理
     virtual void on_enable()
     {
-        for_each_game_object([](const std::shared_ptr<GameObject>& obj)
+        game_object_manager_.for_each_game_object([](const std::shared_ptr<GameObject>& obj)
         {
             obj->on_enable();
         });
     }
 
+    // 無効化処理
     virtual void on_disable()
     {
-        for_each_game_object([](const std::shared_ptr<GameObject>& obj)
+        game_object_manager_.for_each_game_object([](const std::shared_ptr<GameObject>& obj)
         {
             obj->on_disable();
         });
     }
 
-    // ゲームオブジェクトをインスタンス化する関数
+    // ゲームオブジェクトのインスタンス化
     template <typename... Args>
     std::shared_ptr<GameObject> instantiate(Args&&... args)
     {
         auto obj = Object::instantiate<GameObject>(std::forward<Args>(args)...);
-        add_game_object(obj);
+        game_object_manager_.add_game_object(obj);
         return obj;
     }
 
-    // ゲームオブジェクトを破棄する関数
+    // シーンの破棄
     void scene_destroy()
     {
-        game_objects_.clear(); // shared_ptr が自動的にリソースを解放する
+        game_object_manager_.clear_game_objects();
     }
 
-    // ゲームオブジェクトを名前で検索する関数
+    // 名前に基づいてゲームオブジェクトを検索する
     std::shared_ptr<GameObject> find_game_object_by_name(const std::string& name) const
     {
-        const auto it = std::ranges::find_if(game_objects_,
-                                             [&name](const std::shared_ptr<GameObject>& obj)
-                                             {
-                                                 return obj && obj->get_name() == name;
-                                             });
-        return (it != game_objects_.end()) ? *it : nullptr;
+        return game_object_manager_.find_game_object_by_name(name);
     }
 
+    // タグに基づいてゲームオブジェクトを検索する
+    std::vector<std::shared_ptr<GameObject>> find_game_objects_by_tag(const std::string& tag) const
+    {
+        return game_object_manager_.find_game_objects_by_tag(tag);
+    }
 
-    // 任意の条件を満たすゲームオブジェクトを見つける関数
+    // 条件に基づいてゲームオブジェクトを検索する
     std::vector<std::shared_ptr<GameObject>> find_game_objects_by_condition(
         const std::function<bool(const std::shared_ptr<GameObject>&)>& condition) const
     {
-        std::vector<std::shared_ptr<GameObject>> found_objects;
-        for (const auto& game_object_ : game_objects_)
-        {
-            if (game_object_ && condition(game_object_))
-            {
-                found_objects.push_back(game_object_);
-            }
-        }
-        return found_objects;
+        return game_object_manager_.find_game_objects_by_condition(condition);
     }
 };

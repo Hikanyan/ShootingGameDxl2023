@@ -5,14 +5,14 @@
 void TitleScene::init()
 {
     // 新しいGameObjectインスタンスを作成し、初期設定を行う
-    title_text_ui_object = new_game_object("title_text_ui_object");
-    title_text_ui_object->get_transform().set_position(
+    title_text_ui_object_ = new_game_object("title_text_ui_object");
+    title_text_ui_object_->get_transform().set_position(
         tnl::Vector3(DXE_WINDOW_WIDTH / 2, DXE_WINDOW_HEIGHT * 0.2, 0));
-    title_text_ui_object->add_component<Text>();
-    title_text_ui_object->get_component<Text>()->set_alignment(Text::TextAlignment::Center);
-    title_text_ui_object->get_component<Text>()->set_text("タイトルシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーン");
-    input_enter_object = new_game_object("input_enter_object");
-    input_enter_object->add_component<InputManager>();
+    title_text_ui_object_->add_component<Text>();
+    title_text_ui_object_->get_component<Text>()->set_alignment(Text::TextAlignment::Center);
+    title_text_ui_object_->get_component<Text>()->set_text("タイトルシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーン");
+    input_enter_object_ = new_game_object("input_enter_object");
+    input_enter_object_->add_component<InputManager>();
     
 
     SceneBase::init();
