@@ -13,15 +13,15 @@ private:
 
 public:
     // ゲームオブジェクトを追加する
-    void add_game_object(const std::shared_ptr<GameObject>& gameObject)
+    void add_game_object(const std::shared_ptr<GameObject>& game_object)
     {
-        game_objects_.push_back(gameObject);
+        game_objects_.push_back(game_object);
     }
 
     // ゲームオブジェクトを削除する
-    void remove_game_object(const std::shared_ptr<GameObject>& gameObject)
+    void remove_game_object(const std::shared_ptr<GameObject>& game_object)
     {
-        game_objects_.remove(gameObject);
+        game_objects_.remove(game_object);
     }
 
     // ゲームオブジェクトを名前で検索する
