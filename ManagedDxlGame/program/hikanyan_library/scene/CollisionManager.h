@@ -9,17 +9,17 @@ private:
     std::vector<std::shared_ptr<Collider2D>> colliders_;
 
 public:
-    void addCollider(const std::shared_ptr<Collider2D>& collider)
+    void add_collider(const std::shared_ptr<Collider2D>& collider)
     {
         colliders_.push_back(collider);
     }
 
-    void removeCollider(const std::shared_ptr<Collider2D>& collider)
+    void remove_collider(const std::shared_ptr<Collider2D>& collider)
     {
-        colliders_.erase(std::remove(colliders_.begin(), colliders_.end(), collider), colliders_.end());
+        std::erase(colliders_, collider);
     }
 
-    void checkCollisions()
+    void check_collisions() const
     {
         for (size_t i = 0; i < colliders_.size(); ++i)
         {
