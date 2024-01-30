@@ -47,7 +47,7 @@ public:
         game_object_manager_.add_game_object(game_object);
         if (const auto collider = game_object->get_component<Collider2D>())
         {
-            collision_manager_.addCollider(std::shared_ptr<Collider2D>(collider));
+            collision_manager_.add_collider(std::shared_ptr<Collider2D>(collider));
         }
     }
 
@@ -57,7 +57,7 @@ public:
         game_object_manager_.remove_game_object(game_object);
         if (const auto collider = game_object->get_component<Collider2D>())
         {
-            collision_manager_.removeCollider(std::shared_ptr<Collider2D>(collider));
+            collision_manager_.remove_collider(std::shared_ptr<Collider2D>(collider));
         }
     }
 
@@ -104,7 +104,7 @@ public:
         {
             obj->update(delta_time);
         });
-        collision_manager_.checkCollisions();
+        collision_manager_.check_collisions();
     }
 
     // 定期的な更新処理

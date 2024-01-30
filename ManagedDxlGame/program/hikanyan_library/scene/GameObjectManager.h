@@ -10,11 +10,17 @@ class GameObjectManager
 private:
     // ゲームオブジェクトのリスト
     std::list<std::shared_ptr<GameObject>> game_objects_;
+    int next_id_ = 0; // 次に割り当てるID
+    int generate_next_id()
+    {
+        return next_id_++; // 次のIDを生成し、次回のためにインクリメント
+    }
 
 public:
     // ゲームオブジェクトを追加する
     void add_game_object(const std::shared_ptr<GameObject>& game_object)
     {
+        game_object->set_id(generate_next_id());
         game_objects_.push_back(game_object);
     }
 
