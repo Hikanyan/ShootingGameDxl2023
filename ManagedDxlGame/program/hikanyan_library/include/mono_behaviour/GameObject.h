@@ -24,9 +24,8 @@ public:
     {
         if (const auto* casted_obj = dynamic_cast<GameObject*>(obj))
         {
-            // object の各プロパティを個別にコピー
-            this->set_id(casted_obj->get_id());
-            this->set_name(casted_obj->get_name());
+            // object の各プロパティを個別にコピー id はGameObjectManagerで設定する
+            this->Object::set_name(casted_obj->get_name());
             this->tag_value_ = casted_obj->tag_value_;
             this->components_ = casted_obj->components_;
             // その他必要なプロパティがあればここに追加
@@ -108,6 +107,7 @@ public:
     {
         return *get_component_required<BoxCollider2D>("BoxCollider2D component not found");
     }
+
     Rigidbody2D& get_rigidbody() const
     {
         return *get_component_required<Rigidbody2D>("Rigidbody2D component not found");

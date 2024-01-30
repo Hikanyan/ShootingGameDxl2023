@@ -13,7 +13,8 @@ void TitleScene::init()
     title_text_ui_object_->get_component<Text>()->set_text("タイトルシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーンシーン");
     input_enter_object_ = new_game_object("input_enter_object");
     input_enter_object_->add_component<InputManager>();
-    
+    Debug::log(std::to_string(title_text_ui_object_->get_id()));
+
 
     SceneBase::init();
 }
@@ -30,8 +31,6 @@ void TitleScene::start()
 
 void TitleScene::update(float delta_time)
 {
-    
-    
     SceneBase::update(delta_time);
 }
 

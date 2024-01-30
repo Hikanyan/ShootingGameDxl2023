@@ -2,44 +2,40 @@
 #include <memory>
 #include <string>
 
+
+class GameObjectManager; // GameObjectManagerクラスの前方宣言
+
 class Object
 {
 public:
-    Object() : id_(instantiate_id()), name_("DefaultName")
+    Object() : id_(-1), name_("DefaultName")
     {
-    }
-
-    explicit Object(std::string name) : id_(instantiate_id()), name_(std::move(name))
+    } // デフォルトコンストラクタ
+    explicit Object(std::string name) : id_(-1), name_(std::move(name))
     {
-    }
+    } // 名前指定コンストラクタ
 
-    //objectは通常、参照によって管理されます。
-    //一つのオブジェクトが複数の場所から参照されることがありますが、その実体は一つだけです。
-    //他のオブジェクトとの関連を持つ可能性があるため、オブジェクトの意図せずなコピーを防ぐために重要です。
+    virtual ~Object() = default; // デストラクタ
 
-    virtual ~Object() = default; //デストラクタ
-    Object(const Object& other) = delete; // コピー禁止
-    Object& operator=(const Object& other) = delete; // コピー代入禁止
-    Object(Object&& other) noexcept = default; // ムーブコンストラクタ
-    Object& operator=(Object&& other) noexcept = default; // ムーブ代入
+    // コピー禁止
+    Object(const Object& other) = delete;
+    Object& operator=(const Object& other) = delete;
 
-    int get_id() const { return id_; }
-    void set_id(int id) { id_ = id; }
+    // ムーブコンストラクタとムーブ代入
+    Object(Object&& other) noexcept = default;
+    Object& operator=(Object&& other) noexcept = default;
 
-    const std::string& get_name() const { return name_; }
-    void set_name(const std::string& name) { name_ = name; }
+    // IDと名前のゲッター
+    [[nodiscard]] virtual int get_id() const { return id_; }
+    [[nodiscard]] virtual const std::string& get_name() const { return name_; }
 
-    static int instantiate_id()
-    {
-        static int nextID = 0;
-        return ++nextID; // IDは1から始まる
-    }
+    // 名前のセッター
+    virtual void set_name(const std::string& name) { name_ = name; }
 
     // 新しい object のインスタンスを作成する静的メソッド
     template <typename T, typename... Args>
     static std::shared_ptr<T> instantiate(Args&&... args)
     {
-        
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
 
@@ -49,12 +45,19 @@ public:
     }
 
 private:
-    int id_;
-    std::string name_;
+    int id_; // オブジェクトの一意識別子
+    std::string name_; // オブジェクトの名前
+
+    // IDのセッター（GameObjectManagerのみがアクセス可能）
+    virtual void set_id(const int new_id) { id_ = new_id; }
+    friend class GameObjectManager; // GameObjectManagerをフレンドクラスとして指定
 };
+
 
 // 以下はオブジェクトの破棄を安全に行うためのスマートポインタのラッパーです。
 //C++のRAII(Resource Acquisition Is Initialization)の原則に従い、リソースの管理を自動化します。
+// スマートポインタで良くない...?w
+
 template <typename T>
 class object_ptr
 {
