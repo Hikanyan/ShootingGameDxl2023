@@ -187,6 +187,10 @@
     <ClCompile Include="program\dxlib_ext\OBJLoader.cpp" />
     <ClCompile Include="program\game\gm_main.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\Entity\Character.cpp" />
+    <ClCompile Include="program\game\hikanyan_laboratory\Entity\EnemyBase.cpp" />
+    <ClCompile Include="program\game\hikanyan_laboratory\Entity\Enemy\Enemy.cpp" />
+    <ClCompile Include="program\game\hikanyan_laboratory\Entity\Enemy\EnemyFactory.cpp" />
+    <ClCompile Include="program\game\hikanyan_laboratory\Entity\Enemy\EnemyType.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\Entity\Entity.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\Entity\Player.cpp" />
     <ClCompile Include="program\game\hikanyan_laboratory\Entity\Skill\FireballSkill.cpp" />
@@ -576,6 +580,10 @@
     <ClInclude Include="program\dxlib_ext\OBJLoader.h" />
     <ClInclude Include="program\game\gm_main.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\Entity\Character.h" />
+    <ClInclude Include="program\game\hikanyan_laboratory\Entity\EnemyBase.h" />
+    <ClInclude Include="program\game\hikanyan_laboratory\Entity\Enemy\Enemy.h" />
+    <ClInclude Include="program\game\hikanyan_laboratory\Entity\Enemy\EnemyFactory.h" />
+    <ClInclude Include="program\game\hikanyan_laboratory\Entity\Enemy\EnemyType.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\Entity\Entity.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\Entity\Player.h" />
     <ClInclude Include="program\game\hikanyan_laboratory\Entity\Skill\FireballSkill.h" />
