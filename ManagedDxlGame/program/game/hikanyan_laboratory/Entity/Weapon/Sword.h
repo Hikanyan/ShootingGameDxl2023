@@ -4,7 +4,7 @@
 class Sword : public WeaponBase
 {
 public:
-    void use() override
+    void use(Character& character) override
     {
         // 剣を振る動作を定義
     }

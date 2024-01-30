@@ -14,7 +14,7 @@ void TitleScene::init()
     input_enter_object_ = new_game_object("input_enter_object");
     input_enter_object_->add_component<InputManager>();
     Debug::log(std::to_string(title_text_ui_object_->get_id()));
-
+    Debug::log(std::to_string(input_enter_object_->get_id()));
 
     SceneBase::init();
 }
@@ -29,12 +29,12 @@ void TitleScene::start()
     SceneBase::start();
 }
 
-void TitleScene::update(float delta_time)
+void TitleScene::update(const float delta_time)
 {
     SceneBase::update(delta_time);
 }
 
-void TitleScene::fixed_update(float delta_time)
+void TitleScene::fixed_update(const float delta_time)
 {
     SceneBase::fixed_update(delta_time);
 }
