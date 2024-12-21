@@ -1,1 +1,4 @@
 # ShootingGameDxl2023
+
+自作のlibraryを作成
+UnityのMonoBehaviourを模倣して作成
