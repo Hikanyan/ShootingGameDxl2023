@@ -45,9 +45,9 @@ public:
     virtual void add_game_object(const std::shared_ptr<GameObject>& game_object)
     {
         game_object_manager_.add_game_object(game_object);
-        if (const auto collider = game_object->get_component<Collider2D>())
+        if (const auto collider = game_object->get_component<Collider2D>().lock())
         {
-            collision_manager_.add_collider(std::shared_ptr<Collider2D>(collider));
+            collision_manager_.add_collider(collider);
         }
     }
 
@@ -55,9 +55,9 @@ public:
     virtual void remove_game_object(const std::shared_ptr<GameObject>& game_object)
     {
         game_object_manager_.remove_game_object(game_object);
-        if (const auto collider = game_object->get_component<Collider2D>())
+        if (auto collider = game_object->get_component<Collider2D>().lock()) // 直接ロックして有効性を確認
         {
-            collision_manager_.remove_collider(std::shared_ptr<Collider2D>(collider));
+            collision_manager_.remove_collider(collider);
         }
     }
 

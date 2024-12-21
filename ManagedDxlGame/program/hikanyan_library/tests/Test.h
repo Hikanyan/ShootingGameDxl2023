@@ -16,7 +16,10 @@ public:
 
     void draw() override
     {
-        DrawBoxEx(owner_->get_transform().get_position(), owner_->get_transform().get_scale().x,
-                  owner_->get_transform().get_scale().y, false);
+        if (auto transform = owner_->get_transform().lock())
+        {
+            DrawBoxEx(transform->get_position(), transform->get_scale().x,
+                      transform->get_scale().y, false);
+        }
     }
 };
