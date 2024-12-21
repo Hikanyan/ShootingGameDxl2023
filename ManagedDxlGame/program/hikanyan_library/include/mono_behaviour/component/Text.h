@@ -46,23 +46,26 @@ public:
     // 描画処理を行う
     void draw() override
     {
-        int x = owner_->get_transform().get_position().x;
-        int y = owner_->get_transform().get_position().y;
-
-        switch (alignment_)
+        if (const auto transform = owner_->get_transform().lock())
         {
-        case TextAlignment::Center:
-            x -= GetDrawStringWidth(text_.c_str(), text_.length()) / 2;
-            break;
-        case TextAlignment::Right:
-            x -= GetDrawStringWidth(text_.c_str(), text_.length());
-            break;
-        case TextAlignment::Left:
-        default:
-            // 左寄せの場合は特に調整は不要
-            break;
-        }
+            int x = transform->get_position().x;
+            int y = transform->get_position().y;
 
-        DrawString(x, y, text_.c_str(), GetColor(255, 255, 255));
+            switch (alignment_)
+            {
+            case TextAlignment::Center:
+                x -= GetDrawStringWidth(text_.c_str(), text_.length()) / 2;
+                break;
+            case TextAlignment::Right:
+                x -= GetDrawStringWidth(text_.c_str(), text_.length());
+                break;
+            case TextAlignment::Left:
+            default:
+                // 左寄せの場合は特に調整は不要
+                break;
+            }
+
+            DrawString(x, y, text_.c_str(), GetColor(255, 255, 255));
+        }
     }
 };

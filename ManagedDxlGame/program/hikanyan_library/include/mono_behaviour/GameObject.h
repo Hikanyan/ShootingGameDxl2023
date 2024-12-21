@@ -74,20 +74,26 @@ public:
 
     // コンポーネントを追加する
     template <typename T, typename... Args>
-    T* add_component(Args&&... args)
+    std::weak_ptr<T> add_component(Args&&... args)
     {
         const auto type_index = std::type_index(typeid(T));
         if (components_.contains(type_index))
         {
             throw std::logic_error("Component already exists");
         }
-        auto newComponent = std::make_shared<T>(std::forward<Args>(args)...);
-        T* component_ptr = newComponent.get();
-        components_[type_index] = std::move(newComponent);
-        //set_ownerをする
+
+        // 新しいコンポーネントを作成してマップに追加
+        auto new_component = std::make_shared<T>(std::forward<Args>(args)...);
+        T* component_ptr = new_component.get();
+        components_[type_index] = std::move(new_component);
+
+        // 所有者を設定
         component_ptr->set_owner(this);
-        return component_ptr;
+
+        // std::weak_ptr を返す
+        return std::dynamic_pointer_cast<T>(components_[type_index]);
     }
+
 
     // コンポーネントを削除する
     template <typename T>
@@ -100,35 +106,35 @@ public:
     }
 
     // 特定のコンポーネントへのアクセスメソッド
-    [[nodiscard]] Transform& get_transform() const
+    [[nodiscard]] std::weak_ptr<Transform> get_transform() const
     {
         const auto transform = get_component<Transform>().lock();
         if (!transform)
         {
             throw std::runtime_error("Transform component not found");
         }
-        return *transform;
+        return transform;
     }
 
     // 特定のコンポーネントへのアクセスメソッド
-    [[nodiscard]] BoxCollider2D& get_collider() const
+    [[nodiscard]] std::weak_ptr<BoxCollider2D> get_collider() const
     {
         const auto collider = get_component<BoxCollider2D>().lock();
         if (!collider)
         {
             throw std::runtime_error("BoxCollider2D component not found");
         }
-        return *collider;
+        return collider;
     }
 
-    [[nodiscard]] Rigidbody2D& get_rigidbody() const
+    [[nodiscard]] std::weak_ptr<Rigidbody2D> get_rigidbody() const
     {
         const auto rigidbody = get_component<Rigidbody2D>().lock();
         if (!rigidbody)
         {
             throw std::runtime_error("Rigidbody2D component not found");
         }
-        return *rigidbody;
+        return rigidbody;
     }
 
 private:

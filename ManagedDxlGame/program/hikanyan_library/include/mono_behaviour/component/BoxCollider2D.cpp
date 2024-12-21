@@ -3,9 +3,20 @@
 
 bool BoxCollider2D::intersects(const Collider2D* other) const
 {
-    const tnl::Vector3 own_position = owner_->get_transform().get_position();
-    const tnl::Vector3 other_position = other->get_owner()->get_transform().get_position();
-    return intersects(*other, own_position, other_position);
+    const auto own_transform_weak = owner_->get_transform();
+    if (const auto own_transform = own_transform_weak.lock())
+    {
+        // 相手の Transform を取得
+        const auto other_transform_weak = other->get_owner()->get_transform();
+        if (const auto other_transform = other_transform_weak.lock())
+        {
+            const tnl::Vector3 own_position = own_transform->get_position();
+            const tnl::Vector3 other_position = other_transform->get_position();
+
+            // 位置情報を基に衝突判定
+            return intersects(*other, own_position, other_position);
+        }
+    }
 }
 
 bool BoxCollider2D::intersects(const Collider2D& other, const tnl::Vector3& position,
