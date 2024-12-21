@@ -38,7 +38,7 @@ public:
     }
 
     // タグのgetter/setter
-    std::string get_tag() const
+    [[nodiscard]] std::string get_tag() const
     {
         return tag_value_;
     }
@@ -53,20 +53,23 @@ public:
         is_active_ = value;
     }
 
-    bool get_active() const
+    [[nodiscard]] bool get_active() const
     {
         return is_active_;
     }
 
     // コンポーネントを取得する
     template <typename T>
-    T* get_component() const
+    std::weak_ptr<T> get_component() const // weak_ptrを使用。弱い参照
     {
         if (const auto it = components_.find(std::type_index(typeid(T))); it != components_.end())
         {
-            return dynamic_cast<T*>(it->second.get());
+            if (auto casted = std::dynamic_pointer_cast<T>(it->second))
+            {
+                return casted; // 有効な weak_ptr を返す
+            }
         }
-        return nullptr;
+        return {}; // 空の weak_ptr を返す
     }
 
     // コンポーネントを追加する
@@ -97,20 +100,35 @@ public:
     }
 
     // 特定のコンポーネントへのアクセスメソッド
-    Transform& get_transform() const
+    [[nodiscard]] Transform& get_transform() const
     {
-        return *get_component_required<Transform>("Transform component not found");
+        const auto transform = get_component<Transform>().lock();
+        if (!transform)
+        {
+            throw std::runtime_error("Transform component not found");
+        }
+        return *transform;
     }
 
     // 特定のコンポーネントへのアクセスメソッド
-    BoxCollider2D& get_collider() const
+    [[nodiscard]] BoxCollider2D& get_collider() const
     {
-        return *get_component_required<BoxCollider2D>("BoxCollider2D component not found");
+        const auto collider = get_component<BoxCollider2D>().lock();
+        if (!collider)
+        {
+            throw std::runtime_error("BoxCollider2D component not found");
+        }
+        return *collider;
     }
 
-    Rigidbody2D& get_rigidbody() const
+    [[nodiscard]] Rigidbody2D& get_rigidbody() const
     {
-        return *get_component_required<Rigidbody2D>("Rigidbody2D component not found");
+        const auto rigidbody = get_component<Rigidbody2D>().lock();
+        if (!rigidbody)
+        {
+            throw std::runtime_error("Rigidbody2D component not found");
+        }
+        return *rigidbody;
     }
 
 private:
@@ -120,7 +138,7 @@ private:
 
     // 必須コンポーネントを取得するヘルパーメソッド
     template <typename T>
-    T* get_component_required(const char* error_message) const
+    std::weak_ptr<T> get_component_required(const char* error_message) const
     {
         auto* comp = get_component<T>();
         if (!comp)
@@ -169,7 +187,7 @@ public:
     }
 
     // 毎フレーム呼ばれる更新処理
-    void update(float delta_time)
+    void update(const float delta_time)
     {
         for (const auto& comp : components_ | std::views::values)
         {
@@ -181,7 +199,7 @@ public:
     }
 
     // 定期的な時間間隔で呼ばれる更新処理
-    void fixed_update(float fixed_delta_time)
+    void fixed_update(const float fixed_delta_time)
     {
         for (const auto& comp : components_ | std::views::values)
         {
